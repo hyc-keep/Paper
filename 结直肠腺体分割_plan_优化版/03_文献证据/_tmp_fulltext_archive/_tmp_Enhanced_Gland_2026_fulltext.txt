@@ -1,0 +1,966 @@
+Enhanced colorectal gland 
+segmentation through multi-scale 
+attention and contextual feature 
+fusion
+Ponnarasee B. K.1, Lalithamani N.1 & Adeyemi Abel Ajibesin2
+Histological image segmentation of colorectal cancer plays a crucial role in reliable cancer grading, 
+prognosis evaluation, and treatment planning. Nevertheless, existing automated approaches often 
+struggle due to fine-grained glandular structures, staining variations, acquisition differences across 
+scanners and highly heterogeneous tissue morphology. To address these challenges, we propose MAC-
+Net, an enhanced deep learning model that integrates multi-scale feature fusion with attention-guided 
+contextual decoding to achieve precise gland segmentation across diverse tumor differentiation 
+stages. MAC-Net retains fine structural information by channel-wise attention, enhances learning of 
+discriminative features by the increased number of enriched encoder-decoder lateral connections, 
+and the global contextual information, by means of multi-scale spatial pooling at the bottleneck. To 
+determine the generalizability of the model, we trained the model on the EBHI-Seg data (2228 images) 
+and cross-validated it on the GIaS data (165 images). MAC-Net achieved 95.08% Dice, 90.92% IoU, 
+95.83% Precision, and 95.65% Recall, outperforming existing architectures. Furthermore, Gradient-
+weighted Class Activation Mapping visualization and uncertainty analysis enhance interpretability, 
+provides deeper insight on model’s transparent behavior and supports reliable clinical decision-making 
+in the field of digital pathology.
+Keywords Colorectal cancer segmentation, Deep learning, Explainable AI, Histopathological segmentation, 
+Hybrid loss
+Colorectal cancer (CRC) is a fast-growing cancerous disease globally, as it takes the second position in the global 
+mortality rate. CRC in India has been posting a gradual, steady rise of between 2%-3% in incidence over the past 
+two decades, with a survival rate markedly lower than that in developed countries 1,2. Traditionally, healthcare 
+professionals rely on labor-intensive manual histopathological analysis for detection and classification, which 
+informs treatment strategies. Nevertheless, manual analysis is prone to misdiagnosis due to subjectivity, inter-
+observer variability, and the complexity of human tissue structures 3.The use of Artificial Intelligence (AI) has 
+changed the paradigm of pathology by enabling precise diagnoses, simplifying clinical work, and customizing 
+treatment. The emergence of Machine Learning (ML) and Deep Learning (DL) has given greater attention to 
+digital pathology. The systematic pathological examination of tissue samples is still the gold standard of CRC 
+diagnosis4, but AI may be used to aid pathologists in their work, such as tissue segmentation, subtyping of 
+cancer, prediction of cancer margins, and survival analysis 5,6. ML/DL-based approaches can be more effective 
+and reliable than the manual ones as they enable faster reporting and enhance objectivity in measurement7,8.
+Manual gland segmentation is a highly time-consuming and subjective process that requires the expertise 
+of well-trained pathologists 3. This explains why automated approaches are necessary to aid cancer diagnosis. 
+However, it is still difficult to develop segmentation models that are robust across all the grades of CRC 9. The 
+ML approaches are useful in preliminary segmentation and classification, but in cases of severe tissue variation 
+and textual inequality, they fail. These complexities, however, can be very well expressed in the DL models 10,11.
+Among these, U-Net has been one of the well-known biomedical segmentation models. Its encoder-decoder 
+structure with skip connections maintains both global context and fine-scale spatial data that is important in the 
+segmentation of complex structures such as glands and tumorous areas12.
+1Department of Computer Science and Engineering, Amrita School of Computing, Coimbatore, Amrita Vishwa 
+Vidyapeetham, India. 2Department of IT, Faculty of Informatics & Design, Cape Peninsula University of Technology, 
+Cape Town, South Africa. email: n_lalitha@cb.amrita.edu
+OPEN
+Scientific Reports |         (2026) 16:4300 1| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+The challenges associated with histopathological images of CRC include intricate tissue structure, 
+morphological deviations, and slight disparities among tissue classes. The conventional U-Net finds difficulty 
+in reflecting these complex patterns because its skip connections are limited in combining low-level spatial and 
+high-level semantic features. Therefore, the U-Net results in poor performance on class imbalance segmentation. 
+Later studies added UNet++13 and VNet14, which use nested and dense skip connections to enhance localization, 
+yet they are still weak at global context. Attention UNet 15 increases the saliency of features via attention gates 
+and has difficulty with variability in multi-resolution due to variations in lesion size and shape. In a bid to 
+address these shortcomings, hybrid Convolutional Neural Network (CNN) models have been employed, and 
+these have resulted in good segmentation in more complex tissue environments. Nevertheless, they have high 
+computational overhead due to their greater complexity in architecture, which impedes practical deployment16,17. 
+Several challenges to effective segmentation of colorectal histopathology images have thus been identified as the 
+need to tackle the existence of varying gland sizes, intra-class variation, delicate inter-tissue variations, and 
+staining artifacts.
+Our proposed MAC-Net is frameworked with a system of information fusion among various spatial resolutions 
+to delineate the boundaries of glands and tumors in the most accurate way 18. It improves representation of 
+features by dynamically exploiting informative areas and dropping irrelevant or noisy features, and is resistant 
+to background clutter and staining aliasing 19. MAC-Net processes multiple scales of semantic cues to provide 
+the larger context, which allows the distinction between precancerous and malignant tissues 20. Transformer-
+augmented and prior attention-based models emphasize the importance of enriched context21, although most of 
+them focus on one or two of them independently. MAC-Net integrates the spatial, channel-level, and contextual 
+features in a single encoder-decoder (U-Net) system as its backbone and optimizes hierarchy to offer robust 
+features in segmentation among different stages of CRC. Figure 1 gives a comprehensive overview of the entire 
+framework.
+Fig. 1. MAC-Net model for enhanced colorectal histopathological segmentation.
+ 
+Scientific Reports |         (2026) 16:4300 2| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+The major contributions of this work are summarized as follows, 
+ 1. Our proposed framework, MAC-Net, a gland segmentation system for colorectal cancer histopathology im-
+ages, is a versatile system that combines better feature association, dynamic attention, and multi-scale con -
+text modelling.
+ 2. A context-capturing module is introduced at the core of the network to consolidate the information across 
+multiple scales, while on the other hand, the attention mechanisms fine-tune features before fusion in the 
+reconstruction path.
+ 3. We introduce a tailored loss function - an integration of Dice, Focal, and Edge losses to enhance the accuracy 
+of the boundaries and to counter the imbalance existing among the classes trained.
+ 4. Grad-CAM facilitates model transparency and interpretability by visualizing influential regions of deci -
+sion-making in segmentation.
+ 5. Monte Carlo Dropout is employed to quantify prediction uncertainty, enabling identification of low-confi -
+dence cases that may require expert review.
+ 6. The generalizability of MAC-Net is validated through cross-dataset testing on the GIaS dataset, demonstrat-
+ing robustness to unseen histopathological data with varying characteristics.
+Related works
+This section reviews existing approaches in CRC histopathological segmentation, including CNN-based U-Net 
+models, their variants, attention-enhanced models, and hybrid frameworks, with additional focus on emerging 
+transformer-based techniques. We also highlight contributions utilizing self-supervised and multi-task learning 
+strategies.
+CNN and U-Net variants
+Sengupta et al.22 conducted a comparative study to evaluate the performance of six CNN-based segmentation 
+models - namely, U-Net, Attention U-Net, and U-Net with backbone networks including ResNet50, MobileNetV2, 
+EfficientNetB0, and DenseNet121 for gland segmentation in histopathological images. Their finding indicated 
+that the U-Net with DenseNet121 and ResNet50 backbones achieved superior segmentation accuracy compared 
+to the other variants. Liyu et al.23 introduced the EBHI-Seg dataset for analysis of CRC at various stages - early to 
+advanced. They evaluated a host of ML and DL models on the dataset. The precision of the ML methods reached 
+up to 70%, whereas the DL methods reached a much higher level (90%).
+Attention enhanced and hybrid models
+Although the U-Net is a very successful model in extracting local features, it does not always provide the larger 
+global context. To overcome this shortcoming, the U-Net is coupled with an Efficient Multi-scale Attention 
+(EMA) module 24. This EMA-Swin U-Net model allows the presence of robust feature representation across 
+tissue scales. Similarly, the Dynamic Mixture of Convolutions U-Net (DMoC-UNet) 25, uses adaptive expert 
+pathways that dynamically adapt to structural variations, improving segmentation of heterogeneous lesion areas.
+Transformer based models
+Although the number of reported applications is low, recent research has proven the increasing interest in 
+Transformer-based models, supported by their ability to process spatially heterogeneous histopathological 
+images.26,27. CervixFormer is a Swin Transformer-based classification framework showing excellent performance 
+in classifying malignant cells, with Grad-CAM visualizations that were used to interpret the classified images28. 
+The models leverage a self-attention mechanism to obtain long-range dependencies in images, which is beneficial 
+to task segmenting large and spatially intricate structures in Whole Slide Images (WSI). Minimal Information 
+Loss Dilated Network (MILD-Net) is a fully convolutional network that preserves significant information by 
+reintroducing the original image and atrous spatial pyramid pooling, thereby discretionary the extraction of 
+features on multi-scale level. MILD-Net uses random transformations at test time in order to deal with prediction 
+uncertainty, and this improves segmentation and highlights ambiguous regions29.
+Multi-task and self-supervised learning
+In addition to the supervised methods, self-supervised learning (SSL) has been considered to utilise unlabeled 
+CRC data. The multi-resolution SSL framework involves context-target fusion and masked jigsaw tasks modules, 
+to promote multi-resolution feature learning and hence leading to the improvement of segmentation of cancer 
+datasets over current approaches in WSI 30. Graham et al applied a multi-task learning (MTL) framework for 
+the simultaneous segmentation and classification of nuclei, glands, lumina, and various tissue regions in in 
+diagnosing CRC. A tailored sampling technique and shared features of the framework enabled them to learn 
+from multiple datasets31.
+Methodology
+This section presents the methodology adopted for developing the MAC-Net framework for gland segmentation 
+in CRC histopathological images. MAC-Net uses channel-wise attention, multi-scale feature fusion, and 
+contextual information aggregation implied with an encoder-decoder architecture in order to increase the 
+precision of segmentation among all stages of cancer and also glandular structures. Each module is discussed 
+in detail in the upcoming subsections. The systematic architecture of the proposed model is illustrated in Fig. 2.
+Scientific Reports |         (2026) 16:4300 3| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+MAC-Net architecture
+The input of the model is a normalized histopathological image, which is 256 ×256 pixels (px) with 3 color 
+channels. T o extract semantic and spatial features, the encoder path has four convolutional blocks, each with two 
+convolutional layers, then dropout, and max pooling. Each encoder block is followed by a feature enhancement 
+attention module, which is also used in the skip connections, learning to refine the features before combining 
+them with the decoder in order to provide rich context representations. A multi-scale feature extraction unit is 
+present at the bottleneck, which takes in contextual information with pooled representation at various spatial 
+levels, which are produced by the use of convolution and upsampling operations. The decoder also assumes a 
+hierarchical architecture with every upsampling stage incorporating improved encoder characteristics through 
+lateral skip connections. And these concatenated features are aimed at and polished with convolution layers. 
+MAC-Net is trained by a hybrid loss that uses the Dice loss, Focal loss, and Edge loss. The architecture guarantees 
+cluster-accurate region segmentation, resistance to class imbalance, and delineation of the boundaries correctly.
+Hierarchical feature extraction
+The MAC-Net encoder is designed as a hierarchical feature extractor, which has four levels of downsampling to 
+extract characteristic features of colorectal histopathology images at various levels of abstraction. The encoder 
+includes four convolutional blocks, each consisting of two convolutional layers with kernel size 3 ×3, ReLU 
+activation, and same padding, followed by a Dropout layer to regularize learning. The number of filters doubles 
+at each subsequent level starting from 32, 64, 128, and 256. A MaxPooling2D operation with a 2×2 window and 
+stride 2 is applied only after the first three blocks to increase the receptive field and reduce spatial dimensions.
+The output of each convolution block is defined below, where F(l−1) is the input feature map from the 
+previous block,W(l) and b(l) are the weights and bias of the convolution kernel at level l, convolution operation 
+is represented as *, D is the random dropout regularization, δ is the applied ReLU activation function, and F(l) 
+is the output feature map of the current block.
+ F(l) = δ
+(
+D(W(l) ∗ F(l−1) + b(l))
+)
+ (1)
+Fig. 2. MAC-Net architecture highlighting multi-scale feature aggregation and contextual-attention fusion.
+ 
+Scientific Reports |         (2026) 16:4300 4| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+The intermediate outputs x1, x2, x3 from the first three blocks are downsampled through MaxPooling2D to 
+produce p1, p2, p3, which are preserved for later use in skip connections to support spatial detail recovery. The 
+final convolutional block processes the output of p3 through two Conv2D layers with 256 filters and a dropout 
+rate of 0.2, without further pooling. This generates a 4×4 high-level semantic representation, which is passed to 
+a multi-scale context aggregation module. The absence of pooling in this final stage allows the network to retain 
+the highest semantic abstraction while preserving fine spatial granularity, an important factor for enhancing 
+boundary-level segmentation during decoding.
+Contextual feature aggregation
+To enhance the network for modeling long-range dependencies and global structures across variable-sized 
+tissue regions, the deepest encoder output is passed through a multi-scale context aggregation module. This 
+module performs average pooling at multiple granularities (e.g., 2 ×2 and 4 ×4) on the encoded feature map 
+F ∈ RH×W ×C , followed by dimensionality reduction using 1 ×1 convolutions, and spatial upsampling to the 
+original size via bilinear interpolation. The original feature map and the upsampled features from all scales are 
+concatenated along the channel dimensions to form an enhanced feature representation as defined below,
+ Fagg = Concat
+(
+F, U psample(Conv 1×1(AvgP ool2×2(F))), U psample(Conv 1×1(AvgP ool4×4(F)))
+)
+ (2)
+The fusion yields FPPM ∈ RH×W ×C′
+, where C′ = C + C1 + C2. By integrating features across multiple 
+scales, this representation strengthens the network’ s robustness in differentiating similar textured regions, such 
+as overlapping glands or ill-defined tumor margins. This context-enriched output then acts as the input to the 
+decoder.
+Decoder with multi-scale attention fusion
+Segmentation map is progressively reconstructed in the decoder by combining context-enhanced features 
+from the encoder and upsampled decoder outputs through lateral skip connections. Each stage includes an 
+upsampling operation, feature refinement from the encoder pathway, and fusion via concatenation followed by 
+convolution as below. Dfi+1 represents the decoder output at a coarser level and Efi the encoder output at the 
+same spatial resolution. These are combined to form the decoder feature at stage i,
+ Dfi = Conv 2D
+(
+Concat
+(
+Up (Dfi+1),A (Efi)
+))
+ (3)
+Here, A(·) denotes a channel attention operation that dynamically reweights features based on their importance. 
+This module performs spatial squeezing and excitation via a pair of fully connected layers and global average 
+pooling. The aggregated channel descriptor gc is applied as below,
+ 
+gc = 1
+H × W
+H∑
+i=1
+W∑
+j=1
+F(i,j,c),c =1 , 2,...,C  (4)
+The resulting vector g ∈ RC  passes through non-linear transformations to yield learned channel weights e as 
+applied below,
+ e = σ
+(
+W2 · δ(W1 · g)
+)
+ (5)
+where W1 ∈ R
+C
+r ×C , W2 ∈ RC× C
+r  and r is the reduction ratio, δ is the ReLU activation, and σ is the sigmoid 
+function. These weights recalibrate the original feature map as below,
+ ˜F(i,j,c) = ec · F(i,j,c) (6)
+This recalibration sharpens focus on diagnostically relevant structures such as gland borders, epithelial layers, 
+and tumor boundaries. These enriched features from encoder levels x1, x2, x3 are merged with decoder outputs 
+to guide spatially-aware reconstruction.
+Output segmentation layer
+After feature refinement across all decoder stages, the final output feature map of size 256×256×32 is processed 
+by a 1 ×1 convolution layer followed by a sigmoid activation to generate a binary segmentation mask. The 
+convolutional layer feature is then processed through the sigmoid activation function to produce a probability 
+map as below,
+ S =Conv1×1(Fdec)  (7)
+ 
+ˆY(i,j) =σ(S(i,j))= 1
+1+ e−S(i,j)
+ (8)
+where Fdec ∈ R256×256×32 is the output feature map from the decoder, and Conv1×1 denotes a convolution 
+with kernel size 1 ×1. S ∈ R256×256×1 is the projected single–channel feature map, S(i,j) is the pixel value at 
+Scientific Reports |         (2026) 16:4300 5| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+location (i, j) in S, σ denotes the sigmoid function, and ˆY(i,j) represents the predicted probability that pixel (i, j) 
+belongs to the glandular region.
+Representing the confidence that a given pixel belongs to the glandular region, the process ensures that each 
+probability value lies within the range [0,1]. A threshold of 0.5 is applied to convert the probability map into a 
+binary segmentation mask as below,
+ 
+Yij =
+{
+1, if ˆY(i,j) ≥ 0.5
+0, otherwise  (9)
+where Yij  denotes the binary classification of each pixel, with 1 indicating gland and 0 indicating background. 
+Y ∈{ 0, 1}256×256 is the final binary segmentation map.
+Combined loss function
+We propose LHybrid, a hybrid loss function which is a weighted combination of Focal Loss, Dice Loss, and 
+Edge Loss. Each component targets a specific limitation in medical image segmentation such as class imbalance, 
+small structure sensitivity, and boundary precision. The final model is trained by minimizing this composite 
+loss function using backpropagation with the Adam optimizer. The Dice Loss measures ˆY overlap with Y, the 
+ground truth mask. This loss addresses class imbalance. Dice loss promotes overlap and equally avoids under- 
+and over-segmentation, which is critical for small or sparse gland regions.
+ 
+LDice =1 − 2
+∑N
+i=1 Yi ˆYi + ϵ
+∑N
+i=1 Yi +
+∑N
+i=1
+ˆYi + ϵ
+ (10)
+The Focal Loss is used to reduce the influence of pixels that were correctly predicted and place more focus on the 
+hard-to-classify pixels near gland boundaries or uncertain regions. Such a loss actively scales down the cross-
+entropy loss to focus more on misclassified pixels and enhances generalization in cases of extreme imbalance 
+between classes.
+ 
+LF ocal = − 1
+N
+N∑
+i=1
+[
+α(1 − ˆYi)γ Yi log( ˆYi)+( 1 − α) ˆY γ
+i (1 − Yi) log(1 − ˆYi)
+]
+ (11)
+The Edge Loss promotes convergence between the expected and ground truth bounds with the application of 
+gradient-based edge detection with Sobel filters. This loss term punishes disparities in the sharpness of edges and 
+leads to clearer glandular edges as described below,
+ 
+LEdge = 1
+N
+N∑
+i=1
+⏐⏐EYi − E ˆYi
+⏐⏐,E Yi =
+√
+(Sx ∗ Yi)2 +( Sy ∗ Yi)2 + ϵ (12)
+The hybrid loss is then defined as below:
+ LHybrid = α · LDice + β · LF ocal + γ · LEdge (13)
+In this work, α, β, γ were assigned equal importance, with each set to 0.3. The residual weight of 0.1 was kept for 
+regularization or minor adjustments if required. This balanced setup helps the model improve region accuracy, 
+address class imbalance, and sharpen boundaries, thereby enabling more reliable gland segmentation.
+Grad-CAM based explainability
+To improve interpretability of the proposed MAC-Net model, Grad-CAM was applied to visualize spatial regions 
+that contribute to the model’s decision32. In binary segmentation, Grad-CAM was computed by averaging the 
+predicted output prior to backpropagating the gradients to the final convolution layer. For each feature map Ak  
+in the last convolutional layer, the corresponding importance weight αk  was computed as below,
+ 
+αk = 1
+Z
+∑
+i
+∑
+j
+(
+∂ ˆy
+∂Ak
+i,j
+)
+ (14)
+where ˆy is the predicted output, Z is the total number of pixels in the feature map, and ∂ ˆy
+∂Ak
+i,j
+ denotes the 
+gradient of the output with respect to the activation at spatial location (i, j) in the k-th feature map. Grad-CAM 
+highlights the regions that most influence the model’ s prediction by combining the weighted feature maps using 
+their importance scores and applying a ReLU operation, as defined below,
+ 
+LGrad-CAM = ReLU
+(∑
+k
+αk Ak
+)
+ (15)
+Scientific Reports |         (2026) 16:4300 6| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+Uncertainty estimation
+To estimate the model-related (epistemic) uncertainty in segmentation outputs, we employed Monte Carlo (MC) 
+Dropout during inference33,34. Dropout layers, usually disabled during inference, were kept active to introduce 
+randomness in predictions. This enabled the model to produce multiple outputs per input, allowing uncertainty 
+estimation through variability measurement across predictions. For each test image, the model performed 
+T = 10 stochastic forward passes, generating multiple segmentation outputs {ˆy1, ˆy2,..., ˆyT }. The mean of 
+these predictions was regarded as the final segmentation result, as expressed below:
+ 
+¯y = 1
+T
+T∑
+t=1
+ˆyt (16)
+where ˆyt represents the predicted probability map from the t-th forward pass and T  is the number of stochastic 
+passes. Pixel-wise variance across outputs was computed to represent epistemic uncertainty, as shown below:
+ 
+V ar(y)= 1
+T
+T∑
+t=1
+(ˆyt − ¯y)2 (17)
+where ˆyt is the prediction from the t-th pass and ¯y is the mean prediction across all passes. The uncertainty 
+approach was implemented using a T ensorFlow inference loop, ensuring dropout remained active at test time. 
+The resulting variance map highlights areas where the model is less certain, while image-wise mean variance was 
+used as an overall uncertainty score.
+Experiment and results
+In this section, we provide a comprehensive overview of the experimental setup and present the evaluation 
+results demonstrating the performance of MAC-Net.
+Dataset description
+The investigation in this work adopted the publicly available EBHI-Seg dataset 23, which consists of 4,452 
+histopathological images: 2,226 hematoxylin and eosin (H&E)-stained colon tissue images and 2,226 
+corresponding ground truth segmentation masks. TThe images were taken under 400X magnification with 
+Nissan Olympus microscope and stored in 256×256 pixels in portable network graphics (PNG) format. The data 
+set was carefully filtered with ethical guidance by highly qualified pathologists in the Cancer Hospital of China 
+Medical University, Shenyang, Liaoning, China, and was released online. EBHI-Seg is unique in the sense that 
+it includes six annotated classes of colorectal tissues consisting of diverse tumor stages such as normal, polyp, 
+low-grade, and high-grade intraepithelial neoplasia (IN), serrated adenoma, and adenocarcinoma. It gives a 
+detailed description of the progressive stages of CRC presented in terms of training, validation, and test sets. This 
+renders the dataset applicable in training and evaluating semantic segmentation networks such as MAC-Net in a 
+clinically meaningful setting. Generalizability of MAC-Net was also tested on the GIaS dataset35, comprising 165 
+colon histological image samples of benign or malignant cancer, and expert-labeled gland segmentation masks. 
+The GIaS images are characterized by high inter-subject variability in the distribution of the stain and structure 
+of the tissue, and varied magnifications, as well as a resolution of about 0.465 µm/ pixel. This cross-dataset 
+validation justifies the strength of MAC-Net in a variety of clinical imaging settings. Figure 3 demonstrate a 
+sample of the respective dataset (EBHI-Seg and GIaS).
+Experimental details
+MAC-Net has been trained on Google Colab with a Tesla T4 16GB VRAM with the help of TensorFlow 2.12.0. 
+The model was trained using a batch size of 10 and 100 epochs with the input size set at 256 ×256×3. All 
+the images and masks were scaled to 256 x 256 pixels, and the min-max scaling was used to normalize to the 
+range [0,1]. A fixed random seed ensured consistent augmentation across training epochs. T o ensure fair and 
+reproducible comparison and division of the dataset, the benchmark was used to split the EBHI-Seg dataset into 
+training, validation, and test sets in a 4:4:2 ratio. A large enough validation set minimizes chances of overfitting, 
+which can happen with smaller splits (e.g., 8:1:1). Monitor validation performance and save the best-performing 
+model were done by early stopping (patience =10,verbose=1), learning rate reduction on plateau (factor = 0.1, 
+patience = 5, minimum learning rate = 1e-4), and model checkpointing.
+Data Augmentation pipeline implemented with Keras ImageDataGenerator incorporated the following 
+transformations:
+• Random rotation of up to 10◦ and width and height shifts up to 5% of the original size,
+• Shearing transformations with a maximum intensity of 5% and zoom variations within 5%,
+• Random horizontal flipping is employed with nearest-fill mode for empty regions.
+MAC-Net was compiled using Adam and a hybrid loss consisting of Focal, Dice, and Edge losses. Dice Score, 
+Precision, Recall, Intersection-over-Union (IoU), and Conformity Coefficient were used to measure performance 
+of the model. Interpretability was done with Grad-CAM visualizations and inference with Monte Carlo Dropout 
+to produce multifold predictions for inference of both the mean and variance-based uncertainty maps.
+Scientific Reports |         (2026) 16:4300 7| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+Evaluation metrics
+To internally validate, the EBHI-Seg data were divided into training, validation, and test subsets in a 4:4:2 
+proportion, ensuring balanced representation across all six CRC classes. The training and validation sets 
+each contained 890 images, while the test set had 446 images. This stratified split enabled fair and consistent 
+evaluation. Cross-dataset generalizability was evaluated using the GIaS dataset as an external test set. The 
+evaluation metrics used were Dice Score, Precision, Recall, IoU, and Conformity Coefficient, as defined in the 
+EBHI-Seg benchmark23. Their mathematical definitions are given as follows:
+ 
+Dice Score = 2
+∑I
+i=1 PiGi
+∑I
+i=1 Pi +
+∑I
+i=1 Gi + ϵ
+ (18)
+ 
+IoU =
+∑I
+i=1 PiGi
+∑I
+i=1 Pi +
+∑I
+i=1 Gi −
+∑I
+i=1 PiGi + ϵ
+ (19)
+ 
+Precision =
+∑I
+i=1 PiGi
+∑I
+i=1 Pi + ϵ
+ (20)
+ 
+Recall =
+∑I
+i=1 PiGi
+∑I
+i=1 Gi + ϵ
+ (21)
+ 
+Dice Score =1 −
+∑I
+i=1 |Pi − Gi|
+∑I
+i=1 Gi + ϵ
+ (22)
+Here, Pi represents the predicted probability at pixel i and Gi represents the ground truth at pixel i. ϵ is a small 
+constant (e.g., 10−7) to avoid division by zero. Dice and IoU measure overlap between predicted and actual 
+Fig. 3. Sample images from EBHI-Seg and GIaS dataset.
+ 
+Scientific Reports |         (2026) 16:4300 8| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+regions; Precision and Recall assess missing or extra regions, and the Conformity Coefficient evaluates overall 
+prediction accuracy against the ground truth.
+Results and analysis of segmentation
+This section provides a detailed evaluation of the proposed MAC-Net segmentation model on the EBHI-Seg 
+dataset. Figure 4 illustrates the training and validation accuracy and loss curves across epochs.Training and 
+validation accuracy rose significantly during the initial epochs, stabilizing after approximately 40 epochs. 
+Training and validation losses decreased significantly within the first 10 epochs and continued to decline 
+gradually thereafter. Training loss decreased continuously, but there was a small deviation in validation loss 
+between the 20-50 epochs. Altogether, the learning curves indicate a low level of overfitting and show a steady 
+convergence.
+The model during training had an accuracy of 92.74%, an IoU of 91.95%, and a loss of 0.0887. When tested 
+on the validation, it had an accuracy of 93.38%, a IoU of 90.21%, and a loss of 0.1101. To test, the model achieved 
+an accuracy of 93.76%, a 90.55% ratio of IoU, and a loss of 0.1065.
+Figure 5 shows an example of a prediction output, the original histopathological image, ground truth 
+mask, predicted mask, and error map. The starting image depicts a thick gland area with complicated borders. 
+The glands are marked by the ground truth mask as brown and non-glands as purple. The mask prediction 
+is very close to the ground truth. The False Positives (FP) are indicated in red in the error map and the False 
+Negatives (FN) in blue. The majority of errors are made at the boundaries of glands with irregular morphology. 
+Nevertheless, the segmentation seems to be trustworthy in the majority of the areas, yet mistakes are close to 
+complicated boundaries.
+Table 1 shows segmentation performance for various types (stages) of cancer. The overall metrics across 
+categories are: 95.08% Dice score, 90.92% IoU, 95.83% Precision, 94.65% Recall, and 95.18% Conformity 
+Coefficient. The reliability was also stable, as the results when five independent runs were conducted using 
+different random states were consistent, with a minor variation of ±0.23 in evaluation metrics. Low-grade IN 
+had the lowest scores when compared with other types, which is probably related to its transitional character, as 
+it had similar features with high-grade IN and polyp, and it is harder to distinguish it from other types.
+Tables 2 and 3 present a comparative analysis of the gland segmentation performance on EBHI-Seg. Table 2 
+shows only the methods that have been trained and tested on the same 4:4:2 data split as our proposed MAC-
+Net to achieve a fair assessment. In the same conditions, MAC-Net gives the best Dice and IoU scores, and this 
+proves that it is useful in the detection of a complex gland boundary. Seg-Net is more successful than UNet and 
+Fig. 5. Sample MAC-Net segmentation output for the polyp class with error maps.
+ 
+Fig. 4. MAC-Net Model training and validation performance metrics over epochs.
+ 
+Scientific Reports |         (2026) 16:4300 9| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+MedT in the range of the baseline methods, especially in Recall and IoU, but UNet and MedT are less accurate 
+in the complicated areas with irregular gland morphology. Shi, Liyu, et al. 23 further reported that UNet is more 
+susceptible to the Normal tissue regions, whereas MedT is less robust on the samples of Adenocarcinoma and 
+Serrated Adenoma.
+Table 3 provides a further comparison to the current methods reported in the literature, but these are the 
+models that were trained and tested on other train-test partitions (e.g., 90:10 and 80:20). Due to such differences 
+in data splitting, their measures cannot be directly compared with those in Table 2. Rather, the results appear only 
+as supplementary information and help to demonstrate broader performance tendencies and to contextualize 
+MAC-Net’s position within the wider landscape of gland segmentation models. Attention U-Net, U-Net with 
+DenseNet121, TransUNet, and DMoC-UNet, continuously achieve the high Dice scores (93–94%), and this can 
+be explained by the architectural improvements, including dual attention modules, hybrid loss functions, and 
+dynamic convolution mechanisms as highlighted by J. Zhu et al. 25. Altogether, the performance of MAC-Net is 
+superior in the context of the unified evaluation protocol, highlighting its contribution as a reliable and effective 
+framework for precise gland segmentation.
+Cross dataset testing on GIaS dataset
+In order to test the generalizability of MAC-Net, we tested the model in the GIaS dataset, which contains 165 
+histopathological images and their associated ground truth annotations. GIaS images were initially pre-processed 
+to deal with high inter-subject variation, with processes such as normalization, contrast enhancement, and noise 
+elimination. The trained MAC-Net model, which was trained on the weights of the EBHI-Seg, was used to 
+directly infer GIaS images. The model achieved 80.1% accuracy, 81.0% Dice score, 70.1% IoU, 80.25% precision, 
+85.7% recall, and 80.9% conformity coefficient. Figure 6 depicts a sample from segmentation produced on the 
+GIaS dataset.
+Figure 7 shows a performance comparison between MAC-Net on EBHI-Seg and the GIaS data. Even though it 
+was trained on EBHI-Seg only, it generalized moderately at GIaS with a total performance of around 80%. Models 
+that are trained and tested on GIaS normally achieve a performance of 70-85% 25,36. The observed performance 
+drop can be explained by the fact that EBHI-Seg has defined categories of cancer and homogenous staining 
+Author Model Parameters Data Split Dice(%) IoU(%) Precision(%) Recall(%)
+Sagarika Sengupta et al.22 Attention U-Net
+100 epochs 90:10
+94.51 89.02 87.76 93.65
+U-Net + DenseNet121 93.98 83.20 91.93 92.46
+Jingwei Zhu et al.25
+TransUnet
+LR=0.001,
+Hybrid Loss,
+150 epochs,
+Adam Optimizer
+80:20
+94.22 89.22 – –
+SAM-Path 89.12 88.08 – –
+SwinUnet 77.36 64.40 – –
+CMUNeXt 94.37 89.72 – –
+DMoC-UNet 94.65 90.20 – –
+Table 3. Performance overview of existing gland segmentation methods on EBHI-Seg.
+ 
+Author Model Parameters Data Split Dice(%) IoU(%) Precision(%) Recall(%)
+Liyu Shi et al.23
+UNet
+100 epochs,
+Adam Optimizer,
+Cross-Entropy Loss 4:4:2
+83.45 65.50 75.95 77.41
+Seg-Net 88.40 80.33 87.10 92.55
+MedT 76.08 63.73 78.91 87.18
+Proposed Work MAC-Net
+100 epochs,
+Adam Optimizer,
+Hybrid Loss
+4:4:2 95.08 90.92 95.83 95.65
+Table 2. Performance comparison of MAC-Net with existing methods on EBHI-Seg dataset.
+ 
+CRC Stage Category Dice Score (%) IoU(%) Precision(%) Recall(%) Conformity(%)
+Adenocarcinoma 94.86 90.75 95.33 94.93 94.18
+High-grade IN 96.04 92.52 96.20 96.00 96.43
+Low-grade IN 93.81 88.87 94.66 93.66 92.85
+Normal 95.05 90.74 96.71 93.57 95.50
+Polyp 95.52 91.71 95.52 95.72 96.03
+Serrated adenoma 95.20 90.91 96.54 94.02 96.07
+Table 1. Evaluation results for each cancer stage category.
+ 
+Scientific Reports |         (2026) 16:4300 10| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+properties, whereas GIaS has more significant variability in tissue appearance, structure, and distribution of 
+stains. MAC-Net was also superior in EBHI-Seg compared to DMoC-UNet25. DMoC-UNet, which was trained 
+using 85 GIaS images and tested using 80 images, achieved an average accuracy of 85%. By comparison, the 
+MAC-Net achieves an accuracy of 80% without any pre-training or fine-tuning on GIaS, which suggests that it 
+did experience some cross-dataset generalization even with the data shift. Compared to the model mentioned 
+above, MAC-Net exhibited competitive flexibility on unseen GIaS samples.
+To infer from the Segmentation outputs from the GIaS dataset in terms to highlight best, average, and worst-
+case performance scenarios. The best case (Dice = 0.96) shows a great match between prediction and ground 
+truth, with small differences in the boundaries. There is a good agreement in the average case (Dice = 0.83); the 
+contours of the fine-scale glands are not entirely well-conserved in structure. The worst scenario (Dice = 0.3014) 
+was when there were dense stromal patterns and severe distortion thereof, which posed a great challenge. 
+Notably, high recall values ( 95%) implying that MAC-Net would minimize the number of false negatives of the 
+glandular structures in this data, which is desirable in terms of a diagnostic perspective.
+To the best of our knowledge, EBHI-Seg and GlaS are the only publicly accessible colorectal gland 
+segmentation datasets in histopathology, and both were used for quantitative evaluation in this work. To further 
+assess the generalizability of MAC-Net beyond colorectal tissue, we additionally conducted a small-scale cross-
+domain evaluation on two non-CRC datasets – PanNuke (1185 images) 37 and the Amgad 2019 (151 images) 
+breast gland histopathology dataset38. These datasets differ substantially from EBHI-Seg in organ type, staining 
+characteristics, annotation protocol (nuclei-centric vs. gland-centric), and morphological structure. A strict 
+zero-shot setting was employed, where the EBHI-Seg-trained MAC-Net model was tested without any fine-
+tuning. Under this configuration, MAC-Net achieved an average accuracy of 59.80%, Dice score of 34.46%, and 
+IoU of 22.48% on the PanNuke datase, and 60.79% accuracy, 20.55% Dice, and 12.73% IoU on the Amgad breast 
+gland dataset. Although these results are considerably lower than those obtained on EBHI-Seg and GlaS, they 
+are expected given the large domain shift and task mismatch. The results indicate that MAC-Net can generalize 
+reasonably within colorectal histopathology. While robust transfer to different organs or annotation paradigms 
+remains challenging, it defines a direction for future research.
+Fig. 7. Model output comparison: trained vs. external dataset.
+ 
+Fig. 6. MAC-Net model training and validation performance metrics over epochs.
+ 
+Scientific Reports |         (2026) 16:4300 11| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+Interpretability and uncertainty analysis
+Grad-CAM visualization and Monte Carlo Dropout-based uncertainty analysis were used to test the interpretability 
+and reliability of MAC-Net predictions. The resulting Grad-CAM heatmaps were scaled and superimposed onto 
+the original histopathological images to show where the model in question was paying attention to during the 
+segmentation process, thus pointing to the fact that the model seems to be paying attention to areas that are 
+relevant to biologically meaningful tissue structures in the sample of CRC. The approach minimizes the black-
+box aspects that are often attributed to the deep learning structure and contributes to the creation of a system of 
+explainable AI (XAI). Figure 8 shows six representative images, one of each tumour type (Normal, Polyp, Low-
+grade IN, High-grade IN, Serrated Adenoma, and Adenocarcinoma) and the associated Grad-CAM mappings.
+The strong activation is represented in red-colored areas in the heatmaps, and it relates to tumoral structures. 
+The model is mostly focused on densely compacted glands in adenocarcinoma, distorted gland formations or 
+mucosal protrusions in serrated adenoma and polyps, and irregular glandular architecture with nuclear atypia 
+in low and high-grade intraepithelial neoplasia. These areas are highlighted in line with diagnostic patterns that 
+are usually studied by pathologists, implying that the model focuses on patterns occurring at tissue levels that 
+are consistent with clinically meaningful ones. This interpretability can be used to refine the systematic model, 
+as well as potentially aid in more transparently assessing the model in the medical setting.
+Monte Carlo Dropout was additionally used on inference to measure the uncertainty of predictions. Table 4 
+provides a summary of uncertainty values on test images, which are obtained by means of predictive variance. 
+The small value of mean uncertainty (0.0011) shows that the model is able to make consistent predictions on 
+the majority of the test samples. The uncertainty was the greatest (0.0063), which indicated that there were no 
+extremely ambiguous or clear outlier cases in this test set. There is also a low standard deviation (0.0008), which 
+indicates that there is very little uncertainty variation in images. The skewed distribution of the uncertainty 
+values, as illustrated by Fig. 9, also proves that most of the predictions of the MAC-Net are very certain, with a 
+few having a slight increase in uncertainty.
+Computational complexity analysis
+In order to determine the viability of investigating the implementation of MAC-Net within the resource-limited 
+clinical environment, we calculated its computational efficiency. MAC-Net has 2.48 million trainable parameters 
+(approximately 9.46 MB), which is quite lightweight in comparison with most of the current attention-driven 
+or transformer-based networks used in segmentation 25. A layer-wise analytical FLOP estimation, based on 
+multiply accumulate operations across all convolutional and dense layers, yields approximately 22.51 GFLOPs 
+for a 256×256×3 input, reflecting a moderate computational load relative to the achieved accuracy. Empirical 
+inference evaluation further demonstrated an average processing time of 0.6048 s per image on an NVIDIA T4 
+Uncertainty Values
+Min Uncertainty 0.0002
+Max Uncertainty 0.0063
+Mean Uncertainty 0.0011
+Standard Deviation of Uncertainty 0.0008
+Table 4. Uncertainty analysis across test image.
+ 
+Fig. 8. Grad-CAM visualizations for interpretability.
+ 
+Scientific Reports |         (2026) 16:4300 12| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+GPU in Google Colab (using a 20-image batch). In future studies, we aim to explore optimization strategies to 
+reduce inference latency and enable real-time deployment on edge devices.
+Ablation studies
+A series of ablation experiments were conducted using the EBHI-Seg dataset to evaluate the individual and 
+combined contributions of MAC-Net’s core components. The evaluation began with a baseline U-Net encoder–
+decoder model, after which hierarchical feature extraction (H), attention refinement (A), and multi-scale 
+contextual fusion (M) were introduced incrementally. Each module was individually tested in all the possible 
+pairwise and complete combinations. Table 5 gives a summary of the performance of every variant.
+The findings suggest that adding any one of the individual modules (H, A, and M) to the baseline U-Net 
+will result in a statistically significant segmentation improvement. Additional developments are seen when 
+two modules are merged. The full architecture of MAC-Net that incorporates all three modules is the most 
+accurate and can be used to justify its usefulness in the process of histopathological segmenting of the CRC on 
+the EBHI-Seg dataset. In Fig. 10, the visual comparison between segmentation outputs of the baseline U-Net and 
+its module-augmented counterparts is shown. All rows display the various stages of the CRC, and all columns 
+indicate predictions of a specific model set-up. At all times, MAC-Net generates segmentation masks that are 
+much closer to the ground truth with better localization of boundaries and better structural preservation, 
+compared to its U-Net variants - particularly in complicated tissue areas.
+The progressive improvement of each variant points to the robustness of the unified architecture of MAC-
+Net. With the hierarchical feature extraction, adaptive attention, and multi-scale contextual fusion, the model 
+represents the detailed local information at the same time, preserving the higher-level structural context. 
+This synergy helps to achieve more accurate gland segmentation at boundaries and enhances morphological 
+continuity, where even the single-module variants are limited in the difficult tissue cases.
+Discussion
+The findings made in EBHI-Seg and GIaS prove that MAC-Net is able to segment the gland structures in 
+colorectal glands correctly, particularly in samples with proper glandular borders. The hierarchical part of 
+Model No Model Variant Dice Score (%) IoU (%) Precision (%) Recall (%) Conformity (%)
+1 Baseline 92.25 87.57 91.96 93.07 91.59
+2 Baseline + H 92.43 87.89 92.91 92.46 92.06
+3 Baseline + A 92.69 87.27 93.25 92.57 92.12
+4 Baseline + M 92.62 88.18 93.52 92.19 92.39
+5 Baseline + H + A 92.72 88.30 93.54 92.34 92.21
+6 Baseline + H + M 92.56 88.05 93.27 92.29 92.16
+7 Baseline + A + M 92.78 88.41 93.68 92.28 92.16
+8 MAC-Net
+(proposed model) 95.08 90.92 95.83 94.65 95.18
+Table 5. Variant-wise performance analysis.
+ 
+Fig. 9. Uncertainty score distribution.
+ 
+Scientific Reports |         (2026) 16:4300 13| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+feature extraction, attention refinement, and multi-scale aggregation modules seems to be correlated in their 
+operation to maintain continuity of structure and minimize fragmentation. This finding is supported by Ablation 
+experiments, which demonstrate that the full model provides better performance than all the simplified variants 
+and that the integration of modules together increases both the detailed boundary detection and the contextual 
+reasoning.
+Evaluation across external datasets gives information on the generalization of the models. MAC-Net retained 
+high performance on EBHI-Seg and moderate performance on GIaS without retraining; the decrease in staining 
+on PanNuke and Amgad demonstrates that the organ morphology, tissue characteristics, and staining variability 
+affect segmentation performance. Such results suggest that MAC-Net is able to learn visual patterns on CRC 
+better, yet it cannot be generalized to other types of datasets with various structural properties or nucleus-based 
+attributes. This limitation could be overcome through the incorporation of multimodal data in the process of 
+training, as they would offer a more diverse representation of features. The same behaviour was reported in earlier 
+gland segmentation works, revealing that domain shift will continue to be a major obstacle to histopathological 
+AI systems.
+The uncertainty and interpretability studies help in the knowledge of model reliability. Grad-CAM images 
+indicate that MAC-Net is focused on gland-rich and boundary-relevant figures, which are consistent with 
+pathological decision features. The small uncertainty distribution indicates the confidence is constant in the 
+majority of predictions, though the large uncertainty in the areas of complex stroma expresses that the model is 
+less certain in the situations where the boundaries of the glands are ambiguous. These observances reinforce the 
+importance of using the network as a decision-support tool alongside expert review rather than as a standalone 
+diagnostic system.
+In order to put MAC-Net perspectives into perspective, we relate its design to the latest trends in medical 
+image segmentation. NHBS-Net 39, uses feature-fusion attention on neonatal hip ultrasound segmentation, 
+which proves the capability of hierarchical representation combination to better segmentation in terms of 
+boundary interpretation. Further, a dual-encoder 40 provides an inter-view cross-attention of low- and high-
+magnification images to show both the global and fine-structure information of the tissue during the process of 
+histopathological cancer analysis. MAC-Net adheres to the same architectural trend and integrates multi-scale 
+representation, hierarchical context encoding, and attention-refined feature refinement into one end-to-end 
+system, which, in our experiments, ensures the preservation of tissue boundaries and novel gland morphologies.
+Even though MAC-Net is proposed and tested to work on the specific task of colorectal gland segmentation, 
+the framework is domain-agnostic. Multi-scale feature aggregation helps the model to detect structural 
+differences in the different resolutions, and contextual-attention fusion facilitates the isolation of meaningful 
+and uninformative areas. These characteristics suggest potential flexibility to the other context of segmentation, 
+like differentiating between true and reflective objects, which cannot be detected in a mirror 41and selecting 
+saliently structured information in low-density underwater images 42. Although these applications are outside 
+the clinical scope of this paper, they show an encouraging trend in the direction of future research and suggest 
+that the MAC-Net can be potentially applied to non-medical segmentation tasks, although additional validation 
+of the hypothesis is required.
+There are several limitations that should be acknowledged. The experiment relies on two colorectal datasets, 
+which is a limitation to exposure to different tissue variability. The reduction in performance observed during 
+Fig. 10. Visual comparison of MAC-Net and its variants.
+ 
+Scientific Reports |         (2026) 16:4300 14| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+domain shift underscores the importance of stain normalization, domain adaptation, and multi-institution 
+assessment. The speed of processing is average, and unlike batch inference, it will need additional refinement to 
+be deployed as a whole slide in real-time. Clinical validation by expert pathologists remains outstanding, and it 
+is a critical action to be taken to achieve quality translational application.
+On the whole, MAC-Net is effective in colorectal gland segmentation and may have a useful potential in the 
+analysis of CRC glands. The enhanced stain robustness, cross-domain adaptation, and inference speed, as well 
+as expert validation in the future, will make it more applicable. The further development of such aspects can 
+facilitate the development towards reliable clinical integration and extension to other segmentation conditions 
+other than colorectal tissue.
+Conclusion and future work
+This article introduced MAC-Net as a hybrid deep learning system that is used to segment colorectal cancer 
+histopathological images. The combination of top-down feature extraction and bottom-up contextual refinement 
+led to the model showing strong results on EBHI-Seg and promising results on GIaS, with deteriorating results in 
+the presence of large domain variation. Grad-CAM and uncertainty mapping allowed gaining an insight into the 
+behaviour of the prediction, underlining the areas that impact the model results and proving the cases when the 
+prediction needs further inspection by specialists. Ablation experiments also affirmed that all the components 
+played a significant role in the overall segmentation capacity. Combined, these findings indicate that MAC-
+Net could function as an interpretable and efficient component within digital pathology-assisted workflows, 
+provided that further validation is undertaken.
+The remaining challenges will be addressed in future research. Relatively lower results with transitional tissue 
+classes indicate that domain-sensitive learning of features and multimodal indications that are more attentive to 
+subtle morphological changes are required. Pruning, quantization, or lightweight architectural variants can be 
+used to achieve efficiency and can be deployed faster on a clinical or resource-constrained system. Massive, inter-
+center validation and stain-diverse data will be necessary to guarantee high-quality generalizability between 
+patient populations and imaging circumstances.
+Overall, MAC-Net is ascertained to be an accurate, interpretable, and adaptable system in the reviewed field, 
+which makes it a promising research basis in the field of CRC histopathological image analysis. Continuous 
+work will consist of evaluating more organs, adding clinical metadata, and making the model oriented towards 
+real-time diagnostic integration.
+Data availability
+All datasets used in this work, including the two additional datasets used to assess generalisability, are publicly 
+available and cited within the manuscript. The datasets can also be accessed at: EBHI-SEGDataset:  h t t p s :  / / w w w 
+.  k a g g l e  . c o m / d  a t a s e  t s / o r v  i l e / e b  h i - s e g  - c o l o r e c t a l - c a n c e r GlaS@MICCAI’2015 Dataset:  h t t p s :  / / w w w .  k a g g l e  . c o m / 
+d  a t a s e  t s / s a n  i 8 4 / g l  a s m i c c  a i 2 0 1 5 - g l a n d - s e g m e n t a t i o n PanNuke Dataset Dataset:  h t t p s :  / / w w w .  k a g g l e  . c o m / d  a t a s e  
+t s / t h e  r e d l a d  / p a n n u  k e - d a t a s e t - e x p e r i m e n t a l - d a t a BCSS Amgad2019 Dataset:  h t t p s :   /  / w w  w . k a g g l  e . c  o m  / d a t a s  e  t s / 
+j  g c o l u m   b i a / b   c s s - b  r  e a s t -  c a  n c e  r - s e m   a n t i c - s e g m e n t a t i o n.
+Received: 11 October 2025; Accepted: 29 December 2025
+References
+ 1. Shivshankar, S., Patil, P . S., Deodhar, K. & Budukh, A. M. Epidemiology of colorectal cancer: A review with special emphasis on 
+india. Indian J. Gastroenterol. 44, 142–153 (2025).
+ 2. Vishakan, A. S. et al. Decadal trends and associated factors of colorectal cancer in kerala between 2010 and 2021 among patients 
+in a tertiary hospital-based cancer registry. Cureus 16, e75030 (2024).
+ 3. Wang, J., Wang, T., Han, R., Shi, D. & Chen, B. Artificial intelligence in cancer pathology: Applications, challenges, and future 
+directions. CytoJournal 22, 45 (2025).
+ 4. Krishna, S., Suganthi, S., Bhavsar, A., Y esodharan, J. & Krishnamoorthy, S. An interpretable decision-support model for breast 
+cancer diagnosis using histopathology images. J. Pathol. Inform. 14, 100319 (2023).
+ 5. Asif, A. et al. Unleashing the potential of ai for pathology: challenges and recommendations. J. Pathol. Inform. 260, 564–577 (2023).
+ 6. Shafi, S. & Parwani, A. V . Artificial intelligence in diagnostic pathology. Diagn. Pathol. 18, 109 (2023).
+ 7. Song, A. H. et al. Artificial intelligence for digital and computational pathology. Nat. Rev. Bioeng. 1, 930–949 (2023).
+ 8. Berbís, M. A. et al. Computational pathology in 2030: a delphi study forecasting the role of ai in pathology within the next decade. 
+EBioMedicine 88, 104427 (2023).
+ 9. Rastogi, P ., Khanna, K. & Singh, V . Gland segmentation in colorectal cancer histopathological images using u-net inspired 
+convolutional network. Neural Comput. Appl. 34, 5383–5395 (2022).
+ 10. Wu, Y . et al. Recent advances of deep learning for computational histopathology: principles and applications. Cancers 14, 1199 
+(2022).
+ 11. Ponnarasee, B. et al. Stainsegnet: Stain normalization and segmentation-driven colorectal tumor tissues classification. In: 2023 
+International Conference on Computational Science and Computational Intelligence (CSCI), 1202–1207 (2023).
+ 12. Zunair, H. & Hamza, A. B. Sharp u-net: Depthwise convolutional network for biomedical image segmentation. Comput. Biol. Med. 
+136, 104699 (2021).
+ 13. Zhou, Z., Rahman Siddiquee, M. M., Tajbakhsh, N. & Liang, J. Unet++: A nested u-net architecture for medical image segmentation. 
+In International workshop on deep learning in medical image analysis, 3–11 (2018).
+ 14. Li, Y . et al. A hierarchical graph v-net with semi-supervised pre-training for histological image based breast cancer classification. 
+IEEE Trans. Med. Imaging 42, 3907–3918 (2023).
+ 15. Al Qurri, A. & Almekkawy, M. Improved unet with attention for medical image segmentation. Sensors 23, 8589 (2023).
+ 16. Shafi, S. M. & Chinnappan, S. K. Hybrid transformer-cnn and lstm model for lung disease segmentation and classification. PeerJ 
+Comput. Sci. 10, e2444 (2024).
+ 17. Srikantamurthy, M. M., Rallabandi, V . S., Dudekula, D. B., Natarajan, S. & Park, J. Classification of benign and malignant subtypes 
+of breast cancer histopathology imaging using hybrid cnn-lstm based transfer learning. BMC Med. Imaging 23, 19 (2023).
+Scientific Reports |         (2026) 16:4300 15| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+ 18. Lin, T.-Y . et al. Feature pyramid networks for object detection. In: Proceedings of the IEEE conference on computer vision and pattern 
+recognition, 2117–2125 (2017).
+ 19. Hu, J., Shen, L. & Sun, G. Squeeze-and-excitation networks. In: Proceedings of the IEEE conference on computer vision and pattern 
+recognition, 7132–7141 (2018).
+ 20. Zhao, H., Shi, J., Qi, X., Wang, X. & Jia, J. Pyramid scene parsing network. In: Proceedings of the IEEE conference on computer vision 
+and pattern recognition, 2881–2890 (2017).
+ 21. Li, X. et al. Attransunet: An enhanced hybrid transformer architecture for ultrasound and histopathology image segmentation. 
+Comput. Biol. Med. 152, 106365 (2023).
+ 22. Sengupta, S. et al. Assessment of different u-net backbones in segmenting colorectal adenocarcinoma from h&e histopathology. 
+Comput. Biol. Med. 266, 155820 (2025).
+ 23. Shi, L. et al. Ebhi-seg: A novel enteroscope biopsy histopathological hematoxylin and eosin image dataset for image segmentation 
+tasks. Front. Med. 10, 1114673 (2023).
+ 24. Cheng, H. et al. Glandular tissue segmentation based on ema-swin unet model. Authorea Preprint,  h t t p s : / / d o i . o r g / 1 0 . 2 2 5 4 1 / a u . 1 7 
+3 6 4 1 6 0 0 . 0 1 0 0 7 8 7 0 / v 1     (2025).
+ 25. Zhu, J. et al. Dmoc-unet: A dynamic mixture-of-convolution network for enhanced pathological image segmentation. IEEE Access 
+13, 82652–82667 (2025).
+ 26. Nguyen, C., Asad, Z., Deng, R. & Huo, Y . Evaluating transformer-based semantic segmentation networks for pathological image 
+segmentation. In: Medical Imaging 2022: Image Processing, vol. 12032, 942–947 (SPIE, 2022).
+ 27. Sreelekshmi, V ., Pavithran, K. & Nair, J. J. Swincnn: an integrated swin transformer and cnn for improved breast cancer grade 
+classification. IEEE Access 12, 68697–68710 (2024).
+ 28. Khan, A., Han, S., Ilyas, N., Lee, Y .-M. & Lee, B. Cervixformer: A multi-scale swin transformer-based cervical pap-smear wsi 
+classification framework. Comput. Methods Programs Biomed. 240, 107718 (2023).
+ 29. Graham, S. et al. Mild-net: Minimal information loss dilated network for gland instance segmentation in colon histology images. 
+Med. Image Anal. 52, 199–211 (2019).
+ 30. Wang, H., Ahn, E. & Kim, J. A multi-resolution self-supervised learning framework for semantic segmentation in histopathology. 
+Pattern Recognit. 155, 110621 (2024).
+ 31. Graham, S. et al. One model is all you need: multi-task learning enables simultaneous histology image segmentation and 
+classification. Med. Image Anal. 83, 102685 (2023).
+ 32. Raveenthini, M., Lavanya, R. & Benitez, R. Grad-cam based explanations for multiocular disease detection using xception net. 
+Image Vis. Comput. 154, 105419 (2025).
+ 33. Y elleni, S. H. et al. Monte carlo dropblock for modeling uncertainty in object detection. Pattern Recognit. 146, 110003 (2024).
+ 34. Sudhamsh, G., Girisha, S. & Rashmi, R. Semi-supervised tissue segmentation from histopathological images with consistency 
+regularization and uncertainty estimation. Sci. Rep. 15, 6506 (2025).
+ 35. Sirinukunwattana, K. et al. Gland segmentation in colon histology images: The glas challenge contest. Med. Image Anal. 35, 489–
+502 (2017).
+ 36. Zhang, X. et al. Hadiff: hierarchy aggregated diffusion model for pathology image segmentation. The Visual Computer 41, 5689–
+5700 (2025).
+ 37. Gamper, J. et al. Pannuke dataset extension, insights and baselines. arXiv preprint arXiv:2003.10778 (2020).
+ 38. Amgad, M. et al. Structured crowdsourcing enables convolutional segmentation of histology images. Bioinformatics 35, 3461–3467 
+(2019).
+ 39. Liu, R. et al. Nhbs-net: A feature fusion attention network for ultrasound neonatal hip bone segmentation. IEEE Trans. Med. 
+Imaging 40, 3446–3458 (2021).
+ 40. Juybari, J., Hamilton, J., Chen, C., Khalil, A. & Zhu, Y . Context-guided segmentation for histopathologic cancer segmentation. Sci. 
+Rep. 15, 5404 (2025).
+ 41. Zha, M. et al. Weakly-supervised mirror detection via scribble annotations. Proc. AAAI Conf. Artif. Intell. 38, 6953–6961 (2024).
+ 42. Zha, M. et al. Heterogeneous experts and hierarchical perception for underwater salient object detection. IEEE Trans. Image 
+Process. 34, 3703–3717 (2025).
+Acknowledgements
+We are very grateful to Dr. G. Bakthavathsalam, Chairman and Managing Trustee of KG Hospital, Coimbatore, 
+for his kind support toward this research work. We also sincerely thank Dr. Saranya V , Head of Pathology at KG 
+Hospital, Coimbatore, for sharing her valuable knowledge in pathology. Her guidance helped me gain a better 
+understanding of the medical aspects of this work.
+Author contributions
+P .B.K. conceptualized the study, developed the methodology, conducted the investigation, performed the formal 
+analysis, and prepared the original draft and manuscript revisions, L.N. contributed to conceptualization, meth-
+odology development, and manuscript review, A.A.A. contributed to conceptualization, methodology develop-
+ment, and manuscript review. All authors reviewed and approved the final manuscript.
+Funding
+This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-
+profit sectors.
+Declarations
+Competing interests
+The authors declare no competing interests.
+Declaration of generative AI and AI-assisted technologies in the writing process
+During the preparation of this work the authors used ChatGPT and Grammarly minimally for language 
+refinement only. After using this tool/service, the authors reviewed and edited the content as needed and 
+take(s) full responsibility for the content of the publication.
+Scientific Reports |         (2026) 16:4300 16| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+Additional information
+Correspondence and requests for materials should be addressed to L.N.
+Reprints and permissions information is available at www.nature.com/reprints.
+Publisher’s note Springer Nature remains neutral with regard to jurisdictional claims in published maps and 
+institutional affiliations.
+Open Access  This article is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 
+4.0 International License, which permits any non-commercial use, sharing, distribution and reproduction in 
+any medium or format, as long as you give appropriate credit to the original author(s) and the source, provide 
+a link to the Creative Commons licence, and indicate if you modified the licensed material. Y ou do not have 
+permission under this licence to share adapted material derived from this article or parts of it. The images or 
+other third party material in this article are included in the article’s Creative Commons licence, unless indicated 
+otherwise in a credit line to the material. If material is not included in the article’s Creative Commons licence 
+and your intended use is not permitted by statutory regulation or exceeds the permitted use, you will need to 
+obtain permission directly from the copyright holder. To view a copy of this licence, visit  h t t p : / / c r e a t i v e c o m m o 
+n s . o r g / l i c e n s e s / b y - n c - n d / 4 . 0 /     .  
+© The Author(s) 2026 
+Scientific Reports |         (2026) 16:4300 17| https://doi.org/10.1038/s41598-025-34548-5
+www.nature.com/scientificreports/
+Content courtesy of Springer Nature, terms of use apply. Rights reserved
+
+1.
+2.
+3.
+4.
+5.
+6.
+Terms and Conditions 
+Springer Nature journal content, brought to you courtesy of Springer Nature Customer Service Center GmbH (“Springer Nature”). 
+Springer Nature supports a reasonable amount of sharing of  research papers by authors, subscribers and authorised users (“Users”), for small-
+scale personal, non-commercial use provided that all copyright, trade and service marks and other proprietary notices are maintained. By
+accessing, sharing, receiving or otherwise using the Springer Nature journal content you agree to these terms of use (“Terms”). For these
+purposes, Springer Nature considers academic use (by researchers and students) to be non-commercial. 
+These Terms are supplementary and will apply in addition to any applicable website terms and conditions, a relevant site licence or a personal
+subscription. These Terms will prevail over any conflict or ambiguity with regards to the relevant terms, a site licence or a personal subscription
+(to the extent of the conflict or ambiguity only). For Creative Commons-licensed articles, the terms of the Creative Commons license used will
+apply. 
+We collect and use personal data to provide access to the Springer Nature journal content. We may also use these personal data internally within
+ResearchGate and Springer Nature and as agreed share it, in an anonymised way, for purposes of tracking, analysis and reporting. We will not
+otherwise disclose your personal data outside the ResearchGate or the Springer Nature group of companies unless we have your permission as
+detailed in the Privacy Policy. 
+While Users may use the Springer Nature journal content for small scale, personal non-commercial use, it is important to note that Users may
+not:  
+use such content for the purpose of providing other users with access on a regular or large scale basis or as a means to circumvent access
+control;
+use such content where to do so would be considered a criminal or statutory offence in any jurisdiction, or gives rise to civil liability, or is
+otherwise unlawful;
+falsely or misleadingly imply or suggest endorsement, approval , sponsorship, or association unless explicitly agreed to by Springer Nature in
+writing;
+use bots or other automated methods to access the content or redirect messages
+override any security feature or exclusionary protocol; or
+share the content in order to create substitute for Springer Nature products or services or a systematic database of Springer Nature journal
+content. 
+In line with the restriction against commercial use, Springer Nature does not permit the creation of a product or service that creates revenue,
+royalties, rent or income from our content or its inclusion as part of a paid for service or for other commercial gain. Springer Nature journal
+content cannot be used for inter-library loans and librarians may not upload Springer Nature journal content on a large scale into their, or any
+other, institutional repository. 
+These terms of use are reviewed regularly and may be amended at any time. Springer Nature is not obligated to publish any information or
+content on this website and may remove it or features or functionality at our sole discretion, at any time with or without notice. Springer Nature
+may revoke this licence to you at any time and remove access to any copies of the Springer Nature journal content which have been saved. 
+To the fullest extent permitted by law, Springer Nature makes no warranties, representations or guarantees to Users, either express or implied
+with respect to the Springer nature journal content and all parties disclaim and waive any implied warranties or warranties imposed by law,
+including merchantability or fitness for any particular purpose. 
+Please note that these rights do not automatically extend to content, data or other material published by Springer Nature that may be licensed
+from third parties. 
+If you would like to use or distribute our Springer Nature journal content to a wider audience or on a regular basis or in any other manner not
+expressly permitted by these Terms, please contact Springer Nature at  
+onlineservice@springernature.com 

@@ -1,0 +1,495 @@
+GLAND SEGMENTA TION VIA DUAL ENCODERS AND BOUNDARY-ENHANCED
+A TTENTION
+Huadeng Wang†§, Jiejiang Yu§, Bingbing Li ‡, Xipeng Pan†§, Zhenbing Liu †§, Rushi Lan †§∗ , Xiaonan Luo †§
+†Guangxi Key Laboratory of Image and Graphic Intelligent Processing, Guilin, China
+§School of Computer Science and Information Security, Guilin University of Electronic Technology, Guilin, China
+‡Department of Pathology, Ganzhou Municipal Hospital, Ganzhou, China
+ABSTRACT
+Accurate and automated gland segmentation on pathological
+images can assist pathologists in diagnosing the malignancy
+of colorectal adenocarcinoma. However, due to various gland
+shapes, severe deformation of malignant glands, and overlap-
+ping adhesions between glands. Gland segmentation has al-
+ways been very challenging. To address these problems, we
+propose a DEA model. This model consists of two branches:
+the backbone encoding and decoding network and the local
+semantic extraction network. The backbone encoding and de-
+coding network extracts advanced Semantic features, uses the
+proposed feature decoder to restore feature space informa-
+tion, and then enhances the boundary features of the gland
+through boundary enhancement attention. The local semantic
+extraction network uses the pre-trained DeepLabv3+ as a Lo-
+cal semantic-guided encoder to realize the extraction of edge
+features. Experimental results on two public datasets, GlaS
+and CRAG, confirm that the performance of our method is
+better than other gland segmentation methods.
+Index Terms— Gland Segmentation, Dual Encoder, Lo-
+cal Semantic Guided Encoder, Boundary Enhance Attention
+1. INTRODUCTION
+Colorectal adenocarcinoma originates from the glandular tis-
+sue of the inner wall of the colon and is a malignant tumor in
+the digestive system that is often seen in clinical practice[1].
+Accuracy of gland instance segmentation in histopathology
+images is key for pathologists in quantitative analysis of col-
+orectal adenocarcinoma. In the research on gland segmenta-
+tion based on gland deep learning, pathologists are required
+to annotate pathological images for training, which requires a
+lot of time and human resources [2]. Therefore, to reduce the
+workload of pathologists, It is of great research significance
+to use computer-aided diagnosis systems to automatically and
+accurately segment glands from histopathological sections.
+However, gland segmentation has the following challenges:
+* Corresponding author.
+This work was partially supported by the Guangxi Natural Science Foundation
+(Grant Nos. 2019GXNSFFA245014 and 2020GXNSFBA238014), the National Natural
+Science Foundation of China (Grant Nos. 62362014, 62172120, and 62002082), and
+the Innovation Project of GUET Graduate Education (Grant No. 2023YCXS049).
+(1) There is a great morphological difference between benign
+glands and malignant glands, and the severe deformation of
+malignant glands makes it difficult for the network to segment
+malignant glands (the orange box in Figure 1b highlights the
+severely deformed malignant glands); (2) Adhesions exist be-
+tween adjacent glands, making it more difficult to separate
+each gland from other glands (adhesive glands highlighted by
+green boxes in Figure 1a); (3) The outline, size, and shape
+of many glands are inconsistent, and under-segmentation is
+prone to occur. (different glands highlighted by the red box in
+Figure 1c).
+Fig. 1 . Morphological structure of glands. (a) The green
+framed part is the cohesive gland, (b) The orange framed part
+is the severely deformed malignant gland, (c) The red framed
+part is the gland with different shapes.
+Most of the early gland segmentation used some struc-
+tural knowledge inside the gland, such as morphology-based
+methods [3] and graph-based methods [4]. These methods
+only achieved good segmentation results on benign glands.
+With the great success of deep learning in the field of med-
+ical image segmentation, U-Net can effectively capture the
+multi-scale context information in medical images [5], but for
+the complex and diverse structures of glands, U-Net does not
+perform well, Rastogi [6] proposed a colorectal adenocarci-
+noma histopathological image segmentation algorithm based
+on U-Net inspired convolutional network, Ding [7] proposed
+a dual-path colorectal adenocarcinoma pathological image
+segmentation algorithm, Wen [8] designed Cascade Squeeze
+Double Attention (CSBA) module to spatial information at
+different scales, Chen [9] proposed a multi-task learning net-
+work based on FCN to simultaneously generate gland regions
+and contours. Xu [10] A deep three-channel network was
+proposed to separate dense glands, Graham [11] proposed
+MILD-Net with both instance and contour segmentation,
+and Qu [12] proposed a full-resolution network. Although
+arXiv:2401.15990v2  [eess.IV]  9 May 2024
+
+these methods are benign good results have been achieved in
+gland segmentation, but the gland segmentation of malignant
+glands and adhesions still fails. The main reason is that these
+methods have too much downsampling, resulting in the loss
+of local features at the edge of the gland and the blurring of
+the gland boundary difficult to identify.
+To solve these problems, this paper designs a dual-
+encoder DEA-Net network based on boundary-enhanced
+attention for gland segmentation. The main work and in-
+novations of this paper are as follows: (1) A dual-encoder
+DEA-Net is proposed for gland segmentation, in which the
+pre-trained Deeplabv3+ is used in the local semantic guid-
+ance encoder to extract the low-level features of the gland
+edge, and the main encoder uses a convolutional network to
+obtain contextual features. (2) A multi-scale feature fusion
+method is designed to fuse the features extracted by the dual
+encoders, which effectively solves the problem of missing
+glandular edge features in the backbone network. (3) A fea-
+ture decoder and a boundary-enhanced attention mechanism
+are designed on the backbone network to enhance the bound-
+ary learning of the gland and better restore the spatial feature
+information of the gland.
+2. PROPOSED METHOD
+Our proposed DEA-Net network structure, as depicted in Fig-
+ure 2a, consists of an encoder and a decoder, featuring sev-
+eral crucial modules, including the Local Semantic Encoder
+(LD), the main encoder, Feature Fusion Module (FFM), the
+Decoder Feature Block (DFB), Boundary-Enhanced Atten-
+tion (BEA), and the deep supervision module. We employ
+two encoders to extract feature information effectively. The
+Local Semantic-Guided Encoder is dedicated to capturing the
+edge features of glandular structures, utilizing a pre-trained
+DeepLabv3+ network that has undergone two downsampling
+layers. Its role is to compensate for the loss of edge features
+caused by downsampling in the main network. The back-
+bone encoder consists of 3×3 convolution blocks and max
+pooling, and the features extracted by both encoders are then
+fed into the Multiscale Feature Fusion Module (FFM), which
+enhances the richness of feature context. Subsequently, the
+Deep Feature Decoder Block (DFB) is employed to retrieve
+comprehensive feature context information. To ensure the ef-
+fective restoration of feature information, we have incorpo-
+rated the Boundary-Enhanced Attention mechanism (BEA) at
+the end of each decoder to enhance the recovery of glandu-
+lar boundary information, ultimately achieving more precise
+glandular segmentation. Finally, the model utilizes bilinear
+interpolation for upsampling and convolution operations for
+output. The network employs a variance-constrained cross-
+entropy loss function to simplify the learning process and ex-
+ecutes deep supervision operations on each decoder layer to
+supervise the recovery of feature information at each level.
+2.1. Feature Fusion Method
+Due to significant differences in the sizes of glandular features
+extracted by two distinct encoders, and recognizing the inher-
+ent limitations of a single receptive field in capturing regions
+of interest, an approach is proposed in this study to enhance
+the utilization of edge features extracted by locally semantic-
+guided encoders. To this end, we introduce a multi-scale fea-
+ture fusion module, denoted as the Feature Fusion Module
+(FFM) as illustrated in Figure 2b, aimed at facilitating im-
+proved integration of edge features within the main network
+architecture. This module comprises multiple scale extractors
+and a channel attention mechanism. It facilitates the fusion of
+low-level features Fl from locally semantic-guided encoders
+with features Fh extracted by the main network, resulting in
+the fused feature map F′
+h, Furthermore, a channel attention
+mechanism is applied to the fused feature map F′
+h to weight
+it, thereby directing the network’s focus towards more salient
+features. The specific computational process is elucidated as
+equation (1):
+Fa = F ′
+h⊗σ1 (C1 (P1 (F ′
+h))) (1)
+In this Equation, C1 denotes a 1×1 convolution operation, P1
+represents an adaptive global pooling operation, and σ1 sig-
+nifies the Sigmoid activation function, employed to map the
+values of the feature map within the range of 0 to 1. The
+multi-scale extractor can adaptively extract effective informa-
+tion from multiple receptive fields, thereby enhancing the ro-
+bustness of the network. The specific operation of this module
+is shown in equations (2) and (3):
+F ′
+i = Fi, i= 1 (2)
+F ′
+i = Fi−1⊕Fi, i∈ [2, 4] (3)
+Where Fl corresponds to the feature maps obtained from F′
+h
+following convolution operations with diverse dilation rates.
+Ultimately, a residual feature fusion is conducted on these five
+distinct-scale feature maps, and the specific procedure is out-
+lined in equation (4)：
+Fm = σ2
+
+C1
+
+F ′
+1© F ′
+2© F ′
+3© F ′
+4© Fa
+
+⊕ G (F ′
+h) (4)
+In this equation, the symbol © represents the operation of
+concatenating feature maps, denoted asC1 which corresponds
+to a single 1x1 convolution operation. Additionally, the sym-
+bol σ2 denotes the application of the non-linear Rectified Lin-
+ear Unit (ReLU) activation function.
+2.2. Deep Feature Decoder Module
+To enhance the restoration of information within the fused
+dual encoder, we have devised a deep feature decoder (DFB)
+specifically tailored for the recovery of spatial information
+about the gland. The detailed design of this decoder is il-
+lustrated in Figure 2d. DFB is divided into two branches, and
+the specific process is shown in equation (5) and (6):
+Fm
+′ = Fm⊕σ1 (C (P2 ((Fm)))) (5)
+Fc =
+
+Fm
+′⊕ Up (Fn)
+
+© Up (Fn) (6)
+Among them, Fm is the low-level feature map extracted by
+the encoder, P2 is the adaptive maximum pooling operation,
+Fn is the high-level feature map with rich information, andUp
+represents the bilinear interpolation upsampling operation.
+
+Fig. 2. DEA-Net Architecture diagram
+2.3. Boundary Enhanced Attention Mechanism
+The boundary recognition of glands plays a key role in the
+network’s accuracy of gland segmentation results. To bet-
+ter enable the network to recognize the boundary features
+of glands, we design a gland boundary-enhanced attention
+mechanism behind the decoder DFB (BEA). Through this
+adaptive threshold attention mechanism, we increase the
+weight of gland boundary pixels, so that the network is more
+focused on the boundary of the gland. The specific design of
+BEA is shown in Figure 2c. The specific process is shown in
+equation (7) and (8):
+Fg = Cv (Cl (C2 (Fs))) © Cl (Cv (C2 (Fs))) (7)
+Mg = σ1 (C1 (Fg)) (8)
+Among them, Fs is the feature map obtained by the decoder
+DFB, C2 means to perform a 3x3 convolution operation, Cl
+is to use a 7×1 convolution operation, Cv is to use a 1×7 con-
+volution operation, and © is the stitching of feature maps
+operate.
+In the gland boundary enhancement module, we perform
+threshold processing on the pixel values of the gland bound-
+ary to perform an enhancement operation on the boundary.
+The specific process is shown in equation (9)
+Mb = σ1 (C1 (Mt© Mg)) (9)
+Mb is the weight map of the gland boundary, Cl represents a
+1×1 convolution operation, © is the splicing operation of the
+feature map, and Mt is a threshold processing on the feature
+map to obtain a preliminary boundary feature map. The spe-
+cific process is shown in equation (10). To better obtain the
+boundary features, we obtain the adaptive threshold δ from
+Mg, which is defined as formula (11). Finally, the feature
+enhancement operation is performed on the boundary of the
+gland. The specific process is shown in equation (12).
+Mt[i, j] =
+(
+1 Mg ≥ δ
+0 Mg < δ (10)
+δ = C1 (P1 (Mg)) (11)
+F ′
+s = C
+
+Fs⊗ Mg
+
+⊕
+
+Fs⊗ Mt
+
+⊕ Fs (12)
+3. EXPERIMENTS AND ANALYSIS
+3.1. Datasets
+In this paper, the two data sets of the Gland Segmentation
+challenge (GlaS[15]) and Colorectal Adenocarcinoma Gland
+(CRAG[11]) are used in the experiments. The GlaS dataset
+has 165 H&E-stained histopathology images extracted from
+16 WSI images. The image size mostly is 775 × 522 pixels.
+The training set consists of 85 images, including 37 benign
+and 48 malignant, the test set is divided into two parts: test
+set A (60 images) and test set B (20 images). All experiments
+on GlaS are average experimental results on test sets A and
+B. CRAG has 213 H&E-stained histopathology images from
+38 WSI images. The scanned image size is 1512 ×1516 pix-
+els with the corresponding instance-level ground truth. The
+training set has 173 images and the test set has 40 images
+with different cancer grades. The CRAG dataset has more ir-
+regular malignant glands, which are more difficult to identify
+than the GlaS dataset.
+3.2. Implementation Details and Evaluation Criteriat
+The experiments in this article used two NVIDIA GeForce
+GTX 3090 GPUs for training and adopted the deep learn-
+ing PyTorch framework. In all experiments, we performed
+
+Table 1. Ablation experimental results on GlaS dataset
+Methods F1(%) Dice(%) Huasdorff
+Backbone 86.1 85.1 87.318
+Backbone+LD 87.4 86.9 72.181
+Backbone+LD+FFM 88.1 87.8 68.405
+Backbone+LD+FFM+BEA 89.1 88.8 63.786
+DEA-Net 89.3 89.6 60.774
+training for 1000 epochs, using the Adam optimizer with an
+initial learning rate set to 5× 10−4 and a training batch size
+of 4. Due to the noise in the data set and the limited num-
+ber of images, we adopted a data expansion strategy, includ-
+ing horizontal flipping, affine transformation, random elastic
+transformation, and random cropping. Enhancement opera-
+tion, The size of the final image input to the network is GlaS
+416×416 and CRAG 512×152. We made a triple mask for
+each gland and used cross-entropy loss to better supervise
+network learning. We used the three indicators specified by
+the MICCAI 2015 Challenge to evaluate the segmentation re-
+sults, including F1, object-level Dice, and object-level Haus-
+dorff distance, where F1 is to evaluate the accuracy of a sin-
+gle gland detection, and object-level Dice is an assessment
+of volume-based segmentation accuracy of individual glands,
+object-level Hausdorff distance evaluates the shape similarity
+between the segmentation result and its ground truth.
+3.3. Ablation Experiment
+To verify the effectiveness of our proposed module, we use
+U-Net as a Backbone to conduct ablation experiments on the
+GlaS dataset, as shown in Table 1. The bold part represents
+the highest index. There are limitations in the Backbone seg-
+mentation effect. The LD module was added to Backbone,
+and the index was significantly improved. To better integrate
+features, we added the FFM module, and the index was fur-
+ther improved. For the gland boundary, we introduced the
+BEA mechanism to enhance it, and the segmentation index
+improved again. When we added the DFB module, F1 was
+86.1%, Dice was 89.6%, and Hausdorff was 60.774. To bet-
+ter show the effectiveness of these modules, as shown in Fig-
+ure 3, the white box in the first column and the orange box
+in the third column As shown in the highlighted part, the
+designed LD module and FFM module can solve the prob-
+lem of under-segmentation and sticking of some small glands.
+The designed BEA mechanism and DFB module in the high-
+lighted part of the green box in the second column can solve
+the problem. Difficulty in segmenting adherent glands.
+3.4. Performance Comparison Of Different Methods
+To prove the effectiveness of our proposed method, this
+method was compared with the other eight gland segmenta-
+tion models on the GlaS and CRAG datasets, and the specific
+results are shown in Table 2. The bold part represents the
+highest index. On the GlaS data set, our proposed DEA-Net
+achieved the best indicators, which was 0.5% higher than the
+second-place GAGLVT-Net’s F1, 1.1% higher than Dice, and
+9.4 smaller Hausdoff. It can be seen the advanced nature
+Fig. 3. (a) Backbone segmentation result, (b) Backbone+LD
+segmentation result, (c) Backbone+LD+FFM segmentation
+result, (d) Backbone+LD+FFM+DFB segmentation result,
+(e) DEA-Net segmentation result
+Table 2. Performance Comparison on Glas and CRAG
+Datasets Methods F1(%) Dice(%) Hausdoff
+DCAN [9] 81.4 83.9 102.9
+HC-FCN [16] 84.5 87.0 69.1
+MILD-Net [11] 87.9 87.5 73.7
+GlaS SADL [17] 88.9 87.3 76.7
+CMD-Net [18] 89.0 88.1 69.2
+MSFCN [19] 88.2 88.6 66.5
+GCSBA-Net [8] 87.4 87.5 72.2
+GAGLVT-Net [20] 88.8 88.5 70.2
+DEA-Net 89.3 89.6 60.8
+DCAN [9] 73.6 79.4 218.8
+DeepLabv3 64.8 74.5 281.4
+MILD-Net [11] 82.5 87.5 160.1
+DSE [21] 83.5 88.9 120.1
+CRAG MSFCN [19] 82.5 89.2 130.4
+TA-Net [22] 84.2 89.3 105.2
+2D RNN [23] 82.6 86.5 127.2
+ECGSSL [24] 83.6 89.3 115.2
+DEA-Net 86.0 89.9 129.4
+of the method proposed by us. On the CRAG data set where
+malignant glands are the majority, compared with other meth-
+ods, the DEA-Net we proposed reached the best level in F1
+and Dice indicators and was better than the second place TA-
+Net The F1 increased by 1.8%, and Dice increased by 0.6%,
+which proves that our proposed method has a good gener-
+alization ability in the segmentation of malignant glands.
+4. CONCLUSION
+To solve the problems of under-segmentation of malignant
+glands and difficult segmentation of tightly adherent glands in
+gland segmentation, this paper proposes a DEA-Net method
+that fuses dual encoders and boundary-enhanced attention,
+and guides encoding through the proposed local semantics
+LD and multi-scale feature fusion module FFM solve the
+problem of gland under-segmentation. For closely connected
+glands, we propose the boundary-enhanced attention mecha-
+nism BEA and the deep feature decoder DFB to better restore
+feature space information. Experimental results It shows that
+the index of our proposed method has been greatly improved
+compared with other gland segmentation methods. However,
+this article has only been tested on the gland segmentation
+data set. Future work can be done on different data sets.
+The proposed method is validated to evaluate and improve its
+generalization ability.
+
+5. REFERENCES
+[1] K. Ahmet, D. Karaboga, I. Pacal, B. Akay, A. Basturk, U.
+Nalbantoglu, S. Coskun, and O. Sahin, “Hyper-parameter op-
+timization of deep learning architectures using artificial bee
+colony (ABC) algorithm for high performance real-time auto-
+matic colorectal cancer (CRC) polyp detection,” Applied In-
+telligence, Springer Nature, pp. 15603–15620, 2022.
+[2] A.Z. qiang, X. Yang, and K.W. Ting T, Cheng, “A deep model
+with shape-preserving loss for gland instance segmentation,”
+In Medical Image Computing and Computer Assisted Inter-
+vention, Springer International, Granada, Spain, pp. 16-20,
+2018.
+[3] A. Paul, and D.P. Mukherjee, “Gland segmentation from his-
+tology images using informative morphological scale space,”
+IEEE International Conference on Image Processing (ICIP),
+IEEE, pp. 4121-4125, 2016.
+[4] A.B. Tosun, and C.G. Demir, “Graph run-length matrices for
+histopathological image segmentation,” IEEE Transactions on
+Medical Imaging,” IEEE, pp. 21-732, 2010.
+[5] O. Ronneberger, P. Fischer, and T. Brox, “U-net: Convolu-
+tional networks for biomedical image segmentation,” Med-
+ical Image Computing and Computer-Assisted Intervention,
+Springer International, Munich, Germany, pp. 234-241, 2015.
+[6] P. Rastogi, K. Khanna, and V . Singh, “Gland segmentation
+in colorectal cancer histopathological images using U-net in-
+spired convolutional network,” Neural Computing and Appli-
+cations, Springer, pp. 5383-5395, 2022.
+[7] S.T. Ding, H.Y Wang, H. Lu, M. Nappi, and S.H. Wan,
+“Two path gland segmentation algorithm of colon patholog-
+ical image based on local semantic guidance,” IEEE Journal
+of Biomedical and Health Informatics, IEEE, pp. 1701-1708,
+2022.
+[8] Z.J. Wen, R. Feng, J.X Liu, Y . Li, and S.H Ying, “Gcsba-
+net: Gabor-based and cascade squeeze bi-attention network for
+gland segmentation,” IEEE Journal of Biomedical and Health
+Informatics, IEEE, pp. 1185-1196, 2020.
+[9] H. Chen, X.j. Qi, L.Q. Yu, and P.A. Heng, “DCAN: deep
+contour-aware networks for accurate gland segmentation,”
+Proceedings of the IEEE conference on Computer Vision and
+Pattern Recognition, IEEE, Las Vegas, USA, pp. 2487-2496,
+2016.
+[10] Y . Xu, Y . Li, Y .P. Wang, M.Y . Liu, Y .B. Fan, M. Lai, I. Eric.
+“Gland instance segmentation using deep multichannel neu-
+ral networks,” IEEE Transactions on Biomedical Engineering,
+IEEE, pp. 2901-2912, 2017.
+[11] S. Graham, H. Chen, J. Gamper, Q. Dou, P.A. Heng, D. Snead,
+Y .W. Tsang, and N. Rajpoot. “MILD-Net: Minimal informa-
+tion loss dilated network for gland instance segmentation in
+colon histology images,” Medical image analysis, Elsevier, pp.
+199-211, 2019.
+[12] H. Qu, Z.N. Yan, G.M. Riedlinger, S. De, and D.N. Metaxas,
+“Improving nuclei/gland instance segmentation in histopathol-
+ogy images by full resolution neural network and spatial
+constrained loss,” In Medical Image Computing and Com-
+puter Assisted Intervention, Springer International, Shenzhen,
+China pp. 378-386, 2019.
+[13] L.C. Chen, Y .K Zhu, G. Papandreou, F. Schroff, and H. Adam,
+“Encoder-decoder with atrous separable convolution for se-
+mantic image segmentation,” In Proceedings of the European
+conference on computer vision (ECCV), Springer, Munich,
+Germany, pp. 801-818, 2018.
+[14] K. He, X.Zhang, S. Ren, and J. Sun, “Deep residual learning
+for image recognition,” In Proceedings of the IEEE conference
+on computer vision and pattern recognition, IEEE, Las Vegas,
+USA, pp. 770-778. 2016.
+[15] K. Sirinukunwattana, J. Pluim, H. Chen, X.J. Qi, P.A. Heng,
+Y . Guo, L.Y . Wang, ”Gland segmentation in colon histology
+images: The glas challenge contest, “Medical image analysis,
+Elsevier, pp. 489-502, 2017.
+[16] S. Manivannan, W.Q. Li, J.G. Zhang, E. Trucco, and J.
+McKenna, “Structure prediction for gland segmentation with
+hand-crafted and deep convolutional features,” IEEE transac-
+tions on medical imaging, IEEE, pp. 210-221, 2017.
+[17] Z.Q. Yan, X. Yang, and K.T. Cheng. “Enabling a single deep
+learning model for accurate gland instance segmentation: A
+shape-aware adversarial learning framework,” IEEE transac-
+tions on medical imaging, IEEE, pp. 2176-2189, 2020.
+[18] J. Zhang, Y .C. Zhang, S.F. Zhu, and X. Xu. “Constrained
+multi-scale dense connections for accurate biomedical im-
+age segmentation,” In 2020 IEEE international conference on
+bioinformatics and biomedicine (BIBM), IEEE, pp. 877-884,
+2020.
+[19] H. Ding, Z.P. Pan, Q. Cen, Y . Li, and S. Chen. “Multi-
+scale fully convolutional network for gland segmentation us-
+ing three-class classification,” Neurocomputing, Elsevier, pp.
+150-161, 2020.
+[20] P. Barmpoutis, W. Waddingham, J. Yuan, C. Ross, H. Kay-
+hanian, T. Stathaki, C. Alexander, and M. Jansen, “A digital
+pathology workflow for the segmentation and classification of
+gastric glands: Study of gastric atrophy and intestinal metapla-
+sia cases,” Plos one 17, Public Library of Science, pp. 232-241,
+2022.
+[21] Y .T. Xie, H. Lu, J. Zhang, C.H. Shen, and Y . Xia. “Deep
+segmentation-emendation model for gland instance segmenta-
+tion,” In Medical Image Computing and Computer Assisted
+Intervention, Springer International, Shenzhen, China, pp.
+469-477, 2019.
+[22] H.T. Wang, M. Xian, and A. Vakanski, “Ta-net: Topology-
+aware network for gland segmentation,” In Proceedings of the
+IEEE/CVF winter conference on applications of computer vi-
+sion, IEEE, Waikoloa, USA, pp. 1556-1564, 2022.
+[23] A. Chattopadhyay, A. Paul, and D.P. Mukherjee, “Detail pre-
+serving conditional random field as 2-D RNN for gland seg-
+mentation in histology images,” Pattern Recognition Letters,
+Elsevier, pp. 38-45, 2022.
+[24] Z. Zhang, C. Tian, X. Bai, Z.C. Jiao, and X.L. Tian, “Discrim-
+inative error prediction network for semi-supervised colon
+gland segmentation,” Medical image analysis, Elsevier pp.
+102458, 2022.

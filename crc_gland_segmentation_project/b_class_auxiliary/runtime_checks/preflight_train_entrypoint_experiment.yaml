@@ -1,0 +1,8 @@
+run_name: preflight_train_entrypoint_runtime_check
+stage_code: 01_data_protocol_preflight
+dataset_code: glas
+model_code: train_entrypoint_preflight_only
+runtime_split: train
+config_refs:
+  data: configs/data/glas.yaml
+  asset_manifest: reports/stage_reports/asset_manifest.json

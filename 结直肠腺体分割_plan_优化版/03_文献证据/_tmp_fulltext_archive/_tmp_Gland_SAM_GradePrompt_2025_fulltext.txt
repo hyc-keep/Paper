@@ -1,0 +1,383 @@
+GLAND SEGMENTATION USING SAM WITH CANCER GRADE AS A PROMPT
+Yijie Zhu⋆, Shan E Ahmed Raza⋆
+⋆Tissue Image Analytics Centre, Department of Computer Science, University of Warwick
+ABSTRACT
+Cancer grade is a critical clinical criterion that can be used
+to determine the degree of cancer malignancy. Revealing the
+condition of the glands, a precise gland segmentation can as-
+sist in a more effective cancer grade classification. In machine
+learning, binary classification information about glands (i.e.,
+benign and malignant) can be utilized as a prompt for gland
+segmentation and cancer grade classification. By incorporat-
+ing prior knowledge of the benign or malignant classification
+of the gland, the model can anticipate the likely appearance
+of the target, leading to better segmentation performance. We
+utilize Segment Anything Model to solve the segmentation
+task, by taking advantage of its prompt function and applying
+appropriate modifications to the model structure and train-
+ing strategies. We improve the results from fine-tuned Seg-
+ment Anything Model and produce SOTA results using this
+approach.
+Index Terms— Segment Anything Model, gland segmen-
+tation, prompt, heat map
+1. INTRODUCTION
+Colorectal cancer is one of the most common cancer types,
+with a notably high mortality rate. A large proportion of col-
+orectal cancers are classified as adenocarcinomas [1]. Col-
+orectal adenocarcinoma is distinguished by glandular forma-
+tion. Pathologists rely on the morphology of glands and the
+degree of glandular formation as factors to evaluate the de-
+gree of tumor differentiation and classify cancer grade [2].
+The segmentation of glands plays a significant role in auto-
+mated and objective grading of cancer. Accurate segmenta-
+tion aids in deriving quantitative measurements, and a more
+comprehensive evaluation of the tumor’s malignancy can be
+achieved, leading to better diagnostic accuracy. Several mod-
+els are proposed to address the challenge of gland segmenta-
+tion. Graham et al. [3] proposed MILD-Net. Original images
+are resized and concatenated with feature maps in different
+stages of the model to minimize information loss. Wen et
+al. [4] proposed GCSBA-Net to capture more comprehensive
+feature from images by using a Gobar-based encoder to ex-
+tract texture information and applying the Bi-Attention mech-
+anism to learn spatial and channel information.
+As a foundation model, Segment Anything Model (SAM)
+[5] is dedicated to the tasks of image segmentation. Primar-
+ily trained on a broad dataset, it demonstrates impressive
+zero-shot performance involving natural images. However,
+when applied to more specialized domains, such as medical
+imaging, this zero-shot performance tends to decline [6]. De-
+spite this, the strong generalization ability of SAM provides
+a promising foundation for adaption [7]. By fine-tuning or
+introducing task-specific structural modifications, SAM can
+be tailored to address a range of downstream segmentation
+tasks in medical imaging [8]. Moreover, SAM is designed to
+incorporate prompts. The model can be guided to focus on
+the specific area of interest by providing prompts, which in
+turn can enhance its performance [9].
+The main challenge of gland segmentation is the wide-
+ranging variations in the morphological features of glands of
+different grades [10]. However, when the task is limited to
+binary classification, distinguishing between benign and ma-
+lignant cases, these variations can instead assist the classifica-
+tion model in making accurate predictions. By incorporating
+previously predicted benignity or malignancy of the gland as
+prior knowledge into the segmentation model, the model can
+make an initial informed judgment, thereby improving its per-
+formance. CGS-Net proposed by Tang et al. [11] utilizes the
+segmentation encoder to simultaneously perform benign and
+malignant classification. Then each layer of the encoder ob-
+tains feature maps enriched with classification information,
+which are passed to the corresponding decoder layers.
+The paper has following contributions: 1) SAMs of dif-
+ferent scales are fine-tuned to assess their performance on
+gland segmentation tasks. 2) A new method to provide grade
+prompt is designed. The heat map generated from the clas-
+sification model using Grad-CAM++ (which contains benign
+and malignant information) is provided to the segmentation
+model which improves segmentation performance. 3) A
+prompt adapter is developed to process the prompt. 4) Struc-
+ture modifications and adjustments to training strategies are
+applied to the SAM, enabling the proposed model to better
+adapt to the gland segmentation task.
+2. METHODS
+The proposed model shown in Fig. 1 is designed to generate
+predictions for both cancer classification and gland segmen-
+tation simultaneously through two branches.
+arXiv:2501.14718v2  [eess.IV]  27 Jan 2025
+
+Fig. 1 . The classification branch determines whether the
+gland is benign or malignant and generates a heat map. The
+prompt adapter processes the heat map from the classification
+branch and sends it to the segmentation branch. The segmen-
+tation branch focuses on distinguishing the gland and contour
+areas from the background area.
+2.1. Classification Branch
+Within the classification branch, the benign or malignant sta-
+tus of glands is predicted. Vision Transformer (ViT) [12]
+is utilized to complete the classification task. ViT model is
+pre-trained on large datasets, which offers the possibility of
+transfer learning. It can be fine-tuned on specific pathological
+datasets.
+2.2. Prompt of Cancer Grade
+In the proposed model, a new method to provide grade prompt
+is utilized. When the segmentation model is informed about
+the specific type of gland in advance, it can pay attention to
+the characteristics of such gland category. The prompt allows
+the model to optimize its ability in gland segmentation.
+The prior knowledge can be sourced from the classifica-
+tion branch of the model. When the ViT model classifies an
+image, particular regions that the model deems critical are fo-
+cused on. Details and patterns that can indicate benignity or
+malignancy of the glands are largely contained in the regions.
+Grad-CAM++ [13] is a technique that can explain clas-
+sification prediction of ViT by visualizing the contribution of
+every part of an image to the result. The heat map provided by
+Grad-CAM++ sets a value for each image pixel representing
+the region’s significance. As shown in Fig. 2, the gland ar-
+eas are mostly considered important by ViT in classification.
+Given that the Grad-CAM++ heat map is a one-channel ma-
+trix and maintains the same size as the original input image,
+Fig. 2. The heat maps of the images that generated from clas-
+sification branch with Grad-CAM++ are shown.
+it can be used as a prompt.
+The mask is then relayed to the segmentation branch. The
+process can bridge the two branches and enhance the infor-
+mation available for the segmentation branch.
+2.3. Prompt Adapter
+Before the input is passed into the segmentation branch, the
+heat map is first processed by a designed adapter. This adapter
+facilitates the effective integration of the information from the
+heat map into the network. The heat map is first concate-
+nated with the original image in the adapter. This process
+helps to provide detailed information from the original image
+corresponding to the heat map. The four-channel feature is
+then reduced to one channel through two convolutional layers,
+making the resulting prompt suitable for the network require-
+ments. Batch normalization and RELU function are applied
+after the two convolutional layers. The heat map is added
+with the output from the second convolution to feed to the
+segmentation branch.
+2.4. Segmentation Branch
+SAM is selected as the foundation structure for the segmenta-
+tion branch and is modified to output both gland and contour
+predictions. A common challenge in gland segmentation is
+that the neighboring glands may be predicted to be connected.
+An accurate contour prediction can address the challenge by
+removing the overlapping parts of the glands and the contours
+from the predicted glands.
+A single image encoder is used in the branch and is re-
+sponsible for extracting features from the input image. The
+model is then divided into a gland prediction branch and a
+contour prediction branch, each with its own prompt encoder
+and mask decoder.
+For contour prediction, no prompt is input into the prompt
+encoder. For gland prediction, the heat map generated from
+the classification branch via Grad-CAM++ and processed by
+the prompt adapter is used as the prompt. The prompt helps
+
+ensure that the prediction can more thoroughly cover the re-
+gions where glands are present.
+Finally, the outputs from the two prompt encoders are sep-
+arately fed into their respective mask decoders to predict the
+gland and contour simultaneously.
+2.5. Training Process
+Transfer learning is applied to both classification and segmen-
+tation branches to provide a correct path for subsequent train-
+ing.
+For the classification branch, the ViT model is first fine-
+tuned to fit the cancer classification task before being used in
+the proposed model. The model achieved accuracy rates of
+97.1% and 98.7% on the test set A and B.
+For the segmentation branch, the parameters of a fine-
+tuned SAM, including the image encoder, prompt encoder
+and mask decoder of gland segmentation branch, are loaded
+into the proposed model. The parameters of SAM are loaded
+into the prompt encoder and mask decoder of contour seg-
+mentation branch.
+The shared image encoder, along with the prompt en-
+coder, prompt adapter, and mask decoder of the gland seg-
+mentation branch, is first trained. To avoid influencing the
+previous training results of gland segmentation, the image
+encoder is frozen in the further training. At last, the prompt
+encoder and the mask decoder of the contour segmentation
+branch are trained.
+2.6. Loss Function
+When fine-tuning SAM, mean square error (MSE) loss was
+used. The concept of weight map, originally introduced in
+U-Net [14], is applied to the gland annotation when train-
+ing both gland and contour branch of proposed model. The
+weight map of gland annotation is multiplied element-wise
+with MSE loss for each pixel. The result is summed to obtain
+the weighted MSE loss.
+2.7. Post Processing
+The predicted pixel values of the overlapping area from differ-
+ent patches are averaged to obtain a unified value, which can
+help achieve smooth transitions between patches. A sigmoid
+layer outputs the prediction result of the model. A threshold
+of 0.5 is set to produce a binary mask prediction.
+As is shown in Fig. 3, the overlapping regions between the
+contours and glands are first identified and then eliminated.
+A median filter is applied to the image to smooth the
+boundary. Small irregular dots in the background and minor
+holes in the foreground are considered noise and are removed.
+Fig. 3 . (a) Gland prediction. (b) Contour prediction. (c)
+Gland prediction is shown in blue. Contour prediction is
+shown in green. The overlapping area is shown in red. (d)
+Result after removing the overlapping area.
+3. EXPERIMENT AND RESULTS
+3.1. Data Preparation
+The open-source Gland Segmentation Challenge (GlaS) [15]
+dataset was used in this study. There are 85 images in the
+training set. There are 60 and 20 images in test sets A and
+B. A square with a size of 400 ×400 pixels was set as the in-
+put for the model. The images in GlaS dataset are all larger
+than this standard. Four partially overlapping images can be
+extracted from the four corners of one original image. Ad-
+ditionally, the extracted images are rotated by 90 degrees in
+varying multiples to increase the diversity of the data set and
+improve the robustness of the model during training. Con-
+tour annotations are produced by removing the eroded gland
+annotation from the dilated gland annotation.
+3.2. Model Settings
+For the classification branch, a pre-trained ViT is fine-tuned.
+The open-source ‘deit-base-patch16-224’ [16] is utilized. For
+the segmentation branch, pre-trained SAMs [5] are provided
+at three different scales, which are ViT-B SAM (SAM-B),
+ViT-L SAM (SAM-L), and ViT-H SAM (SAM-H).
+3.3. Evaluation Metrics
+Three metrics from the GlaS Challenge, including F1 Score,
+Object-level Dice, and Object-level Hausdorff, are used to as-
+sess the models.
+Table 1 presents the metrics of the three fine-tuned mod-
+els at different scales. As the model scale increases, the task
+performance improves, with the larger versions demonstrat-
+ing superior results.
+In addition, the grade prompt is used on these three scales
+of the SAM. It is clear that the model of each scale exhibits
+improved performance through such modifications.
+The prompted SAM-H is compared with the benchmarks
+listed in GlaS contest in Table 2, achieving the best perfor-
+mance across each metrics.
+
+Fig. 4. Original images, ground truths, and predicted results are presented in the first, second, and third rows.
+Table 1. Comparison of Metrics with Fine-tuned SAM.
+Method F1 Score ↑ Object Dice ↑ Object Hausdorff ↓
+Test A Test B Test A Test B Test A Test B
+SAM-B 0.880 0.764 0.884 0.813 61.384 121.047
+Prompted SAM-B 0.882 0.777 0.890 0.827 58.464 114.469
+SAM-L 0.925 0.810 0.914 0.846 43.380 103.227
+Prompted SAM-L 0.927 0.813 0.919 0.846 37.052 98.605
+SAM-H 0.932 0.820 0.917 0.879 42.441 77.158
+Prompted SAM-H 0.929 0.841 0.921 0.881 41.189 74.300
+3.4. Results on Whole Slide Images
+Fig. 4 shows the prompted SAM-H prediction results on the
+GlaS dataset’s test sets. It reveals that the proposed model
+performed well on the test sets, and there is a substantial sim-
+ilarity between the model prediction and the provided ground
+truth. Glands with both regular and irregular shapes are accu-
+rately predicted, and in cases where adjacent glands are very
+close to each other, they are successfully separated.
+Furthermore, columns 2, 3 and 5 represent benign can-
+cer samples, while columns 1, 4, and 6 are malignant sam-
+ples. The model exhibited consistent and stable performance
+in gland segmentation tasks, handling benign and malignant
+cancer cases with high precision.
+4. CONCLUSION
+As benign and malignant glands exhibit varying morpholog-
+ical characteristics, a deep learning model can take advan-
+tage of cancer grade information as prior knowledge. A new
+method to provide grade prompt is designed. Heat maps high-
+lighting regions generated by Grad-CAM++ serve as a prompt
+Table 2. Comparison of Metrics with GlaS [15] Benchmarks.
+Method F1 Score ↑ Object Dice ↑ Object Hausdorff ↓
+Test A Test B Test A Test B Test A Test B
+Prompted SAM-H 0.929 0.841 0.921 0.881 41.189 74.300
+CUMedVision2 0.912 0.716 0.897 0.781 45.418 160.347
+ExB1 0.891 0.703 0.882 0.786 57.413 145.575
+ExB3 0.896 0.719 0.886 0.765 57.350 159.873
+Freiburg2 0.870 0.695 0.876 0.786 57.093 148.463
+CUMedVision1 0.868 0.769 0.867 0.800 74.596 153.646
+ExB2 0.892 0.686 0.884 0.754 54.785 187.442
+Freiburg1 0.834 0.605 0.875 0.783 57.194 146.607
+to guide the segmentation model. A prompt adapter is pro-
+posed to help model adapt to the heat map prompt. By in-
+creasing the number of prompt encoders and mask decoders
+to two, the model can make predictions for gland and contour
+segmentation at the same time. Removing the overlapping
+area between glands and contours can help separate adjacent
+glands. A stepwise training approach enables the model to
+achieve improved training outcomes.
+In future, we plan to test the performance with different
+loss functions, such as Cross Entropy, Dice and AC Loss.
+Besides, Hi-gMISnet [17] achieved an F1 score of 0.932 on
+the overall test set, demonstrating the potential of generative
+models, which can be further explored. Beyond gland seg-
+mentation, the purposed method can be applied to broader
+tasks, such as cell segmentation, with experiments conducted
+on datasets like PanNuke [18].
+As a result, the proposed model successfully and effec-
+tively addressed the task of gland classification and segmenta-
+tion. Compared with the fine-tuned Segment Anything Model
+of different scales, the modified model performs better.
+
+5. COMPLIANCE WITH ETHICAL STANDARDS
+The research was conducted using publicly available GlaS
+Challenge data set [15].
+6. ACKNOWLEDGMENT
+Yijie Zhu is funded by China Scholarship Council - Univer-
+sity of Warwick Scholarship.
+7. REFERENCES
+[1] Shiekhah Mohammad Alzahrani, Huda Abdulaziz
+Al Doghaither, and Ayat Badr Al-Ghafari, “General
+insight into cancer: An overview of colorectal cancer,”
+Molecular and clinical oncology, vol. 15, no. 6, pp. 271,
+2021.
+[2] Matthew Fleming, Sreelakshmi Ravula, Sergei F
+Tatishchev, and Hanlin L Wang, “Colorectal carcinoma:
+Pathologic aspects,” Journal of gastrointestinal oncol-
+ogy, vol. 3, no. 3, pp. 153, 2012.
+[3] Simon Graham et al., “Mild-net: Minimal information
+loss dilated network for gland instance segmentation in
+colon histology images,” Medical image analysis, vol.
+52, pp. 199–211, 2019.
+[4] Zhijie Wen, Ru Feng, Jingxin Liu, Ying Li, and Shihui
+Ying, “Gcsba-net: Gabor-based and cascade squeeze bi-
+attention network for gland segmentation,” IEEE Jour-
+nal of Biomedical and Health Informatics , vol. 25, no.
+4, pp. 1185–1196, 2021.
+[5] Alexander Kirillov et al., “Segment anything,” in Pro-
+ceedings of the IEEE/CVF International Conference on
+Computer Vision (ICCV), October 2023, pp. 4015–4026.
+[6] Ruining Deng et al., “Segment anything model (sam)
+for digital pathology: Assess zero-shot segmentation on
+whole slide imaging,”arXiv preprint arXiv:2304.04155,
+2023.
+[7] Jun Ma et al., “Segment anything in medical images,”
+Nature Communications, vol. 15, no. 1, pp. 654, 2024.
+[8] Junde Wu et al., “Medical sam adapter: Adapting seg-
+ment anything model for medical image segmentation,”
+arXiv preprint arXiv:2304.12620, 2023.
+[9] Maciej A Mazurowski et al., “Segment anything model
+for medical image analysis: an experimental study,”
+Medical Image Analysis, vol. 89, pp. 102918, 2023.
+[10] Ruqayya Awan et al., “Glandular morphometrics for
+objective grading of colorectal adenocarcinoma histol-
+ogy images,” Scientific reports, vol. 7, no. 1, pp. 16852,
+2017.
+[11] Xiaoheng Tang et al., “Cgs-net: Classification-guided
+segmentation network for improved gland segmenta-
+tion,” in 2023 IEEE 12th Data Driven Control and
+Learning Systems Conference (DDCLS) . IEEE, 2023,
+pp. 1008–1013.
+[12] Alexey Dosovitskiy et al., “An image is worth 16x16
+words: Transformers for image recognition at scale,”
+2021.
+[13] Aditya Chattopadhay, Anirban Sarkar, Prantik
+Howlader, and Vineeth N Balasubramanian, “Grad-
+cam++: Generalized gradient-based visual explanations
+for deep convolutional networks,” in 2018 IEEE winter
+conference on applications of computer vision (WACV).
+IEEE, 2018, pp. 839–847.
+[14] Olaf Ronneberger, Philipp Fischer, and Thomas Brox,
+“U-net: Convolutional networks for biomedical image
+segmentation,” 2015.
+[15] Korsuk Sirinukunwattana et al., “Gland segmentation
+in colon histology images: The glas challenge contest,”
+Medical image analysis, vol. 35, pp. 489–502, 2017.
+[16] Hugo Touvron et al., “Training data-efficient image
+transformers & distillation through attention,” in Inter-
+national conference on machine learning. PMLR, 2021,
+pp. 10347–10357.
+[17] Tushar Talukder Showrav and Md Kamrul Hasan, “Hi-
+gmisnet: generalized medical image segmentation us-
+ing dwt based multilayer fusion and dual mode atten-
+tion into high resolution pgan,” Physics in Medicine &
+Biology, vol. 69, no. 11, pp. 115019, 2024.
+[18] Jevgenij Gamper, Navid Alemi Koohbanani, Ksenija
+Benet, Ali Khuram, and Nasir Rajpoot, “Pannuke: an
+open pan-cancer histology dataset for nuclei instance
+segmentation and classification,” in Digital Pathology:
+15th European Congress, ECDP 2019, Warwick, UK,
+April 10–13, 2019, Proceedings 15. Springer, 2019, pp.
+11–19.

@@ -1,0 +1,781 @@
+{
+  "generated_on": "2026-06-14",
+  "total": 61,
+  "rows": [
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\01_经典基线与对比方法\\Attention_U-Net_2018.pdf",
+      "file_name": "Attention_U-Net_2018.pdf",
+      "file_year": 2018,
+      "candidate_years": [
+        2017,
+        2018
+      ],
+      "arxiv_year": 2018,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\01_经典基线与对比方法\\Deep_Residual_Learning_for_Image_Recognition_2016.pdf",
+      "file_name": "Deep_Residual_Learning_for_Image_Recognition_2016.pdf",
+      "file_year": 2016,
+      "candidate_years": [
+        2015
+      ],
+      "arxiv_year": 2015,
+      "status": "suspect_arxiv_mismatch"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\01_经典基线与对比方法\\DeepLabV3+_Encoder-Decoder_with_Atrous_Separable_Convolution_2018.pdf",
+      "file_name": "DeepLabV3+_Encoder-Decoder_with_Atrous_Separable_Convolution_2018.pdf",
+      "file_year": 2018,
+      "candidate_years": [
+        2012,
+        2018
+      ],
+      "arxiv_year": 2018,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\01_经典基线与对比方法\\Feature_Pyramid_Networks_for_Object_Detection_FPN_2017.pdf",
+      "file_name": "Feature_Pyramid_Networks_for_Object_Detection_FPN_2017.pdf",
+      "file_year": 2017,
+      "candidate_years": [
+        2016,
+        2017
+      ],
+      "arxiv_year": 2016,
+      "status": "suspect_arxiv_mismatch"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\01_经典基线与对比方法\\nnU-Net_a_self-configuring_method_for_deep_learning-based_biomedical_image_segmentation_2021.pdf",
+      "file_name": "nnU-Net_a_self-configuring_method_for_deep_learning-based_biomedical_image_segmentation_2021.pdf",
+      "file_year": 2021,
+      "candidate_years": [],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\01_经典基线与对比方法\\SegFormer_Simple_and_Efficient_Design_for_Semantic_Segmentation_with_Transformers_2021.pdf",
+      "file_name": "SegFormer_Simple_and_Efficient_Design_for_Semantic_Segmentation_with_Transformers_2021.pdf",
+      "file_year": 2021,
+      "candidate_years": [
+        2021
+      ],
+      "arxiv_year": 2021,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\01_经典基线与对比方法\\Swin-Unet_Unet-like_Pure_Transformer_for_Medical_Image_Segmentation_2022.pdf",
+      "file_name": "Swin-Unet_Unet-like_Pure_Transformer_for_Medical_Image_Segmentation_2022.pdf",
+      "file_year": 2022,
+      "candidate_years": [
+        2021
+      ],
+      "arxiv_year": 2021,
+      "status": "suspect_arxiv_mismatch"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\01_经典基线与对比方法\\TransUNet_Transformers_Make_Strong_Encoders_for_Medical_Image_Segmentation_2021.pdf",
+      "file_name": "TransUNet_Transformers_Make_Strong_Encoders_for_Medical_Image_Segmentation_2021.pdf",
+      "file_year": 2021,
+      "candidate_years": [
+        2021
+      ],
+      "arxiv_year": 2021,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\01_经典基线与对比方法\\U-Net_2015.pdf",
+      "file_name": "U-Net_2015.pdf",
+      "file_year": 2015,
+      "candidate_years": [
+        2012,
+        2015
+      ],
+      "arxiv_year": 2015,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\01_经典基线与对比方法\\UNet++_2018.pdf",
+      "file_name": "UNet++_2018.pdf",
+      "file_year": 2018,
+      "candidate_years": [
+        2018
+      ],
+      "arxiv_year": 2018,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\02_边界_形状_损失支撑\\Boundary_Difference_Over_Union_Loss_For_Medical_Image_Segmentation_2023.pdf",
+      "file_name": "Boundary_Difference_Over_Union_Loss_For_Medical_Image_Segmentation_2023.pdf",
+      "file_year": 2023,
+      "candidate_years": [
+        2023
+      ],
+      "arxiv_year": 2023,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\02_边界_形状_损失支撑\\Boundary_loss_for_highly_unbalanced_segmentation_2019.pdf",
+      "file_name": "Boundary_loss_for_highly_unbalanced_segmentation_2019.pdf",
+      "file_year": 2019,
+      "candidate_years": [
+        2020
+      ],
+      "arxiv_year": 2018,
+      "status": "suspect_arxiv_mismatch"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\02_边界_形状_损失支撑\\clDice_A_Novel_Topology-Preserving_Loss_Function_for_Tubular_Structure_2021.pdf",
+      "file_name": "clDice_A_Novel_Topology-Preserving_Loss_Function_for_Tubular_Structure_2021.pdf",
+      "file_year": 2021,
+      "candidate_years": [],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\02_边界_形状_损失支撑\\Distance_Map_Loss_Penalty_Term_for_Semantic_Segmentation_2019.pdf",
+      "file_name": "Distance_Map_Loss_Penalty_Term_for_Semantic_Segmentation_2019.pdf",
+      "file_year": 2019,
+      "candidate_years": [
+        1908,
+        2015,
+        2016,
+        2018,
+        2019
+      ],
+      "arxiv_year": 2019,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\02_边界_形状_损失支撑\\Efficient_Segmentation_Learning_Downsampling_Near_Semantic_Boundaries_2019.pdf",
+      "file_name": "Efficient_Segmentation_Learning_Downsampling_Near_Semantic_Boundaries_2019.pdf",
+      "file_year": 2019,
+      "candidate_years": [
+        1907,
+        2019
+      ],
+      "arxiv_year": 2019,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\02_边界_形状_损失支撑\\Gated-SCNN_Gated_Shape_CNNs_for_Semantic_Segmentation_2019.pdf",
+      "file_name": "Gated-SCNN_Gated_Shape_CNNs_for_Semantic_Segmentation_2019.pdf",
+      "file_year": 2019,
+      "candidate_years": [
+        1907,
+        2019
+      ],
+      "arxiv_year": 2019,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\02_边界_形状_损失支撑\\Shape-Aware_Organ_Segmentation_by_Predicting_Signed_Distance_Maps_2020.pdf",
+      "file_name": "Shape-Aware_Organ_Segmentation_by_Predicting_Signed_Distance_Maps_2020.pdf",
+      "file_year": 2020,
+      "candidate_years": [
+        1912,
+        1988,
+        2005,
+        2007,
+        2009,
+        2011,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020
+      ],
+      "arxiv_year": 2019,
+      "status": "suspect_arxiv_mismatch"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\03_大核_感受野_形态建模\\Deformable_Convolutional_Networks_2017.pdf",
+      "file_name": "Deformable_Convolutional_Networks_2017.pdf",
+      "file_year": 2017,
+      "candidate_years": [
+        2017
+      ],
+      "arxiv_year": 2017,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\03_大核_感受野_形态建模\\Large_Kernel_Matters_GCN_2017.pdf",
+      "file_name": "Large_Kernel_Matters_GCN_2017.pdf",
+      "file_year": 2017,
+      "candidate_years": [
+        2012,
+        2017
+      ],
+      "arxiv_year": 2017,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\03_大核_感受野_形态建模\\Scaling_Up_Your_Kernels_to_31x31_Revisiting_Large_Kernel_Design_in_CNNs_2022.pdf",
+      "file_name": "Scaling_Up_Your_Kernels_to_31x31_Revisiting_Large_Kernel_Design_in_CNNs_2022.pdf",
+      "file_year": 2022,
+      "candidate_years": [
+        1925,
+        1936,
+        2021,
+        2022
+      ],
+      "arxiv_year": 2022,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\03_大核_感受野_形态建模\\UniRepLKNet_A_Universal_Perception_Large-Kernel_ConvNet_CVPR_2024.pdf",
+      "file_name": "UniRepLKNet_A_Universal_Perception_Large-Kernel_ConvNet_CVPR_2024.pdf",
+      "file_year": 2024,
+      "candidate_years": [],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\03_大核_感受野_形态建模\\Visual_Attention_Network_VAN_2023.pdf",
+      "file_name": "Visual_Attention_Network_VAN_2023.pdf",
+      "file_year": 2023,
+      "candidate_years": [
+        2005,
+        2015,
+        2022
+      ],
+      "arxiv_year": 2022,
+      "status": "suspect_arxiv_mismatch"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\03_大核_感受野_形态建模\\Wavelet_Convolutions_for_Large_Receptive_Fields_2024.pdf",
+      "file_name": "Wavelet_Convolutions_for_Large_Receptive_Fields_2024.pdf",
+      "file_year": 2024,
+      "candidate_years": [
+        2024
+      ],
+      "arxiv_year": 2024,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\04_腺体与病理近期相关工作\\Enhanced_colorectal_gland_segmentation_through_multi-scale_attention_and_contextual_feature_fusion_2026.pdf",
+      "file_name": "Enhanced_colorectal_gland_segmentation_through_multi-scale_attention_and_contextual_feature_fusion_2026.pdf",
+      "file_year": 2026,
+      "candidate_years": [
+        2026
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\04_腺体与病理近期相关工作\\Learning_Disentangled_Stain_and_Structural_Representations_2025.pdf",
+      "file_name": "Learning_Disentangled_Stain_and_Structural_Representations_2025.pdf",
+      "file_year": 2025,
+      "candidate_years": [
+        2017,
+        2019,
+        2020,
+        2025
+      ],
+      "arxiv_year": 2025,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\04_腺体与病理近期相关工作\\Segmentation_of_glandular_epithelium_in_colorectal_tumours_to_automatically_compartmentalise_IHC_biomarker_quantification_A_deep_learning_approach_2018.pdf",
+      "file_name": "Segmentation_of_glandular_epithelium_in_colorectal_tumours_to_automatically_compartmentalise_IHC_biomarker_quantification_A_deep_learning_approach_2018.pdf",
+      "file_year": 2018,
+      "candidate_years": [
+        2007,
+        2008,
+        2010,
+        2011,
+        2013,
+        2015,
+        2016,
+        2017,
+        2018
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\05_腺体任务经典论文\\A_Structure-Based_Approach_for_Colon_Gland_Segmentation_in_Digital_Pathology_2016.pdf",
+      "file_name": "A_Structure-Based_Approach_for_Colon_Gland_Segmentation_in_Digital_Pathology_2016.pdf",
+      "file_year": 2016,
+      "candidate_years": [],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\05_腺体任务经典论文\\AttentionBoost_Learning_What_to_Attend_for_Gland_Segmentation_2020.pdf",
+      "file_name": "AttentionBoost_Learning_What_to_Attend_for_Gland_Segmentation_2020.pdf",
+      "file_year": 2020,
+      "candidate_years": [],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\05_腺体任务经典论文\\Automatic_Mucous_Glands_Segmentation_in_Histological_Images_2019.pdf",
+      "file_name": "Automatic_Mucous_Glands_Segmentation_in_Histological_Images_2019.pdf",
+      "file_year": 2019,
+      "candidate_years": [
+        2004,
+        2005,
+        2010,
+        2011,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\05_腺体任务经典论文\\Automatic_Segmentation_of_Colon_Glands_Using_Object-Graphs_2010.pdf",
+      "file_name": "Automatic_Segmentation_of_Colon_Glands_Using_Object-Graphs_2010.pdf",
+      "file_year": 2010,
+      "candidate_years": [
+        1979,
+        1982,
+        1983,
+        1995,
+        1996,
+        1997,
+        1998,
+        1999,
+        2000,
+        2001,
+        2002,
+        2003,
+        2005,
+        2007,
+        2008,
+        2009,
+        2010
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\05_腺体任务经典论文\\DCAN_Deep_Contour-Aware_Networks_for_Accurate_Gland_Segmentation_2016.pdf",
+      "file_name": "DCAN_Deep_Contour-Aware_Networks_for_Accurate_Gland_Segmentation_2016.pdf",
+      "file_year": 2016,
+      "candidate_years": [
+        2015,
+        2016
+      ],
+      "arxiv_year": 2016,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\05_腺体任务经典论文\\Gland_Instance_Segmentation_Using_Deep_Multichannel_Neural_Networks_2017.pdf",
+      "file_name": "Gland_Instance_Segmentation_Using_Deep_Multichannel_Neural_Networks_2017.pdf",
+      "file_year": 2017,
+      "candidate_years": [
+        2015,
+        2016,
+        2017,
+        2033
+      ],
+      "arxiv_year": 2016,
+      "status": "suspect_arxiv_mismatch"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\05_腺体任务经典论文\\Gland_Segmentation_Using_SAM_with_Cancer_Grade_as_a_Prompt_2025.pdf",
+      "file_name": "Gland_Segmentation_Using_SAM_with_Cancer_Grade_as_a_Prompt_2025.pdf",
+      "file_year": 2025,
+      "candidate_years": [
+        2025
+      ],
+      "arxiv_year": 2025,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\05_腺体任务经典论文\\Gland_Segmentation_via_Dual_Encoders_and_Boundary-Enhanced_Attention_2024.pdf",
+      "file_name": "Gland_Segmentation_via_Dual_Encoders_and_Boundary-Enhanced_Attention_2024.pdf",
+      "file_year": 2024,
+      "candidate_years": [
+        2002,
+        2014,
+        2019,
+        2020,
+        2023,
+        2024
+      ],
+      "arxiv_year": 2024,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\05_腺体任务经典论文\\GlaS_Challenge_Contest_2017.pdf",
+      "file_name": "GlaS_Challenge_Contest_2017.pdf",
+      "file_year": 2017,
+      "candidate_years": [
+        1996,
+        2000,
+        2004,
+        2006,
+        2008,
+        2009,
+        2010,
+        2014,
+        2015,
+        2016
+      ],
+      "arxiv_year": 2016,
+      "status": "suspect_arxiv_mismatch"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\05_腺体任务经典论文\\MILD-Net_Minimal_Information_Loss_Dilated_Network_2018.pdf",
+      "file_name": "MILD-Net_Minimal_Information_Loss_Dilated_Network_2018.pdf",
+      "file_year": 2018,
+      "candidate_years": [
+        1963,
+        2000,
+        2009,
+        2012,
+        2013,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019
+      ],
+      "arxiv_year": 2018,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\05_腺体任务经典论文\\SCAU-Net_Spatial-Channel_Attention_U-Net_for_Gland_Segmentation_2020.pdf",
+      "file_name": "SCAU-Net_Spatial-Channel_Attention_U-Net_for_Gland_Segmentation_2020.pdf",
+      "file_year": 2020,
+      "candidate_years": [
+        1990,
+        1991,
+        2001,
+        2005,
+        2010,
+        2012,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\05_腺体任务经典论文\\Semantic_Segmentation_of_Colon_Glands_with_Deep_Convolutional_Neural_Networks_and_Total_Variation_Segmentation_2015.pdf",
+      "file_name": "Semantic_Segmentation_of_Colon_Glands_with_Deep_Convolutional_Neural_Networks_and_Total_Variation_Segmentation_2015.pdf",
+      "file_year": 2015,
+      "candidate_years": [
+        2015,
+        2017
+      ],
+      "arxiv_year": 2015,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\05_腺体任务经典论文\\Structure-Preserving_Instance_Segmentation_via_Skeleton-Aware_Distance_Transform_MICCAI_2023.pdf",
+      "file_name": "Structure-Preserving_Instance_Segmentation_via_Skeleton-Aware_Distance_Transform_MICCAI_2023.pdf",
+      "file_year": 2023,
+      "candidate_years": [
+        2023
+      ],
+      "arxiv_year": 2023,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\05_腺体任务经典论文\\SwinE-Net_Hybrid_Deep_Learning_Polyp_Segmentation_2022.pdf",
+      "file_name": "SwinE-Net_Hybrid_Deep_Learning_Polyp_Segmentation_2022.pdf",
+      "file_year": 2022,
+      "candidate_years": [
+        2006,
+        2010,
+        2014,
+        2015,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2026
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\05_腺体任务经典论文\\TA-Net_Topology-Aware_Network_for_Gland_Segmentation_2022.pdf",
+      "file_name": "TA-Net_Topology-Aware_Network_for_Gland_Segmentation_2022.pdf",
+      "file_year": 2022,
+      "candidate_years": [
+        2021
+      ],
+      "arxiv_year": 2021,
+      "status": "suspect_arxiv_mismatch"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\06_半监督_拓扑_扩展工作\\Multiple_Morphological_Constraints-Based_Complex_Gland_Segmentation_in_Colorectal_Cancer_Pathology_Image_Analysis_2020.pdf",
+      "file_name": "Multiple_Morphological_Constraints-Based_Complex_Gland_Segmentation_in_Colorectal_Cancer_Pathology_Image_Analysis_2020.pdf",
+      "file_year": 2020,
+      "candidate_years": [
+        2020
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\06_半监督_拓扑_扩展工作\\One_Model_is_All_You_Need_Multi-Task_Learning_Enables_Simultaneous_Histology_Image_Segmentation_and_Classification_2022.pdf",
+      "file_name": "One_Model_is_All_You_Need_Multi-Task_Learning_Enables_Simultaneous_Histology_Image_Segmentation_and_Classification_2022.pdf",
+      "file_year": 2022,
+      "candidate_years": [
+        2022
+      ],
+      "arxiv_year": 2022,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\06_半监督_拓扑_扩展工作\\Pairwise_Relation_Learning_for_Semi-supervised_Gland_Segmentation_2020.pdf",
+      "file_name": "Pairwise_Relation_Learning_for_Semi-supervised_Gland_Segmentation_2020.pdf",
+      "file_year": 2020,
+      "candidate_years": [
+        2008,
+        2020
+      ],
+      "arxiv_year": 2020,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\06_半监督_拓扑_扩展工作\\To_Pretrain_or_Not_to_Pretrain_A_Case_Study_of_Domain-Specific_Pretraining_for_Histopathology_Segmentation_2023.pdf",
+      "file_name": "To_Pretrain_or_Not_to_Pretrain_A_Case_Study_of_Domain-Specific_Pretraining_for_Histopathology_Segmentation_2023.pdf",
+      "file_year": 2023,
+      "candidate_years": [
+        2023
+      ],
+      "arxiv_year": 2023,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\07_综述与写作支撑\\A_Database_of_Human_Segmented_Natural_Images_and_its_Application_to_Evaluating_Segmentation_Algorithms_2001.pdf",
+      "file_name": "A_Database_of_Human_Segmented_Natural_Images_and_its_Application_to_Evaluating_Segmentation_Algorithms_2001.pdf",
+      "file_year": 2001,
+      "candidate_years": [
+        2001
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\07_综述与写作支撑\\A_Survey_of_Loss_Functions_for_Semantic_Segmentation_2020.pdf",
+      "file_name": "A_Survey_of_Loss_Functions_for_Semantic_Segmentation_2020.pdf",
+      "file_year": 2020,
+      "candidate_years": [
+        2006,
+        2012,
+        2016,
+        2020
+      ],
+      "arxiv_year": 2020,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\07_综述与写作支撑\\Contour_Detection_and_Hierarchical_Image_Segmentation_2011.pdf",
+      "file_name": "Contour_Detection_and_Hierarchical_Image_Segmentation_2011.pdf",
+      "file_year": 2011,
+      "candidate_years": [
+        1965,
+        1968,
+        1970,
+        1980,
+        1986,
+        1990,
+        2002,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008,
+        2009
+      ],
+      "arxiv_year": null,
+      "status": "suspect_first2pages_mismatch"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\07_综述与写作支撑\\Current_Trends_of_Artificial_Intelligence_for_Colorectal_Cancer_Pathology_Image_Analysis_A_Systematic_Review_2020.pdf",
+      "file_name": "Current_Trends_of_Artificial_Intelligence_for_Colorectal_Cancer_Pathology_Image_Analysis_A_Systematic_Review_2020.pdf",
+      "file_year": 2020,
+      "candidate_years": [
+        2000,
+        2002,
+        2014,
+        2018,
+        2019,
+        2020,
+        2025,
+        2071
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\07_综述与写作支撑\\Deep_Learning_on_Histopathological_Images_for_Colorectal_Cancer_Diagnosis_A_Systematic_Review_2022.pdf",
+      "file_name": "Deep_Learning_on_Histopathological_Images_for_Colorectal_Cancer_Diagnosis_A_Systematic_Review_2022.pdf",
+      "file_year": 2022,
+      "candidate_years": [
+        2015,
+        2022,
+        2035,
+        2040
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\07_综述与写作支撑\\Learning_to_Detect_Natural_Image_Boundaries_Using_Brightness_and_Texture_2002.pdf",
+      "file_name": "Learning_to_Detect_Natural_Image_Boundaries_Using_Brightness_and_Texture_2002.pdf",
+      "file_year": 2002,
+      "candidate_years": [],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\07_综述与写作支撑\\Metrics_Reloaded_Recommendations_for_Image_Analysis_Validation_2024.pdf",
+      "file_name": "Metrics_Reloaded_Recommendations_for_Image_Analysis_Validation_2024.pdf",
+      "file_year": 2024,
+      "candidate_years": [
+        2024
+      ],
+      "arxiv_year": 2022,
+      "status": "suspect_arxiv_mismatch"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\07_综述与写作支撑\\On_Efficient_Real-Time_Semantic_Segmentation_A_Survey_2022.pdf",
+      "file_name": "On_Efficient_Real-Time_Semantic_Segmentation_A_Survey_2022.pdf",
+      "file_year": 2022,
+      "candidate_years": [
+        2010,
+        2015,
+        2021
+      ],
+      "arxiv_year": null,
+      "status": "suspect_first2pages_mismatch"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\07_综述与写作支撑\\Performance_metrics_for_active_contour_models_in_image_segmentation_2011.pdf",
+      "file_name": "Performance_metrics_for_active_contour_models_in_image_segmentation_2011.pdf",
+      "file_year": 2011,
+      "candidate_years": [
+        1950,
+        1986,
+        1989,
+        1990,
+        1992,
+        1995,
+        1996,
+        1997,
+        1998,
+        1999,
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2008,
+        2009,
+        2010,
+        2011
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\07_综述与写作支撑\\Semantic_Segmentation_Using_Vision_Transformers_A_Survey_2023.pdf",
+      "file_name": "Semantic_Segmentation_Using_Vision_Transformers_A_Survey_2023.pdf",
+      "file_year": 2023,
+      "candidate_years": [
+        2023,
+        2040
+      ],
+      "arxiv_year": 2023,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\07_综述与写作支撑\\Yet_Another_Survey_on_Image_Segmentation_Region_and_Boundary_Information_Integration_2002.pdf",
+      "file_name": "Yet_Another_Survey_on_Image_Segmentation_Region_and_Boundary_Information_Integration_2002.pdf",
+      "file_year": 2002,
+      "candidate_years": [
+        2002
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\07_综述与写作支撑\\论文大全_索引版_2024.pdf",
+      "file_name": "论文大全_索引版_2024.pdf",
+      "file_year": 2024,
+      "candidate_years": [
+        1909,
+        1910,
+        1911,
+        1912,
+        1932,
+        1981,
+        2003,
+        2019,
+        2020,
+        2037
+      ],
+      "arxiv_year": null,
+      "status": "suspect_first2pages_mismatch"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\08_病理意义_形态学与下游应用\\Automatic_Tumor_Grading_on_Colorectal_Cancer_Whole-Slide_Images_2022.pdf",
+      "file_name": "Automatic_Tumor_Grading_on_Colorectal_Cancer_Whole-Slide_Images_2022.pdf",
+      "file_year": 2022,
+      "candidate_years": [
+        1911,
+        2006,
+        2008,
+        2009,
+        2021,
+        2022
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\08_病理意义_形态学与下游应用\\Classification_and_Histological_Characteristics_of_Colorectal_Cancer_2024.pdf",
+      "file_name": "Classification_and_Histological_Characteristics_of_Colorectal_Cancer_2024.pdf",
+      "file_year": 2024,
+      "candidate_years": [
+        2022,
+        2024,
+        2026
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\08_病理意义_形态学与下游应用\\Glandular_Morphometrics_for_Objective_Grading_of_Colorectal_Adenocarcinoma_Histology_Images_2017.pdf",
+      "file_name": "Glandular_Morphometrics_for_Objective_Grading_of_Colorectal_Adenocarcinoma_Histology_Images_2017.pdf",
+      "file_year": 2017,
+      "candidate_years": [
+        2012,
+        2017
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    },
+    {
+      "file_path": "D:\\12_Medical_Image_Segmentation\\图像分类学习\\结直肠腺体分割_pdf库\\08_病理意义_形态学与下游应用\\Segmentation_and_Grade_Prediction_of_Colon_Cancer_Digital_Pathology_Images_Across_Multiple_Institutions_2019.pdf",
+      "file_name": "Segmentation_and_Grade_Prediction_of_Colon_Cancer_Digital_Pathology_Images_Across_Multiple_Institutions_2019.pdf",
+      "file_year": 2019,
+      "candidate_years": [
+        1910,
+        2019
+      ],
+      "arxiv_year": null,
+      "status": "ok"
+    }
+  ]
+}

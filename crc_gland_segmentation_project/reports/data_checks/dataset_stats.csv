@@ -1,0 +1,8 @@
+dataset,split,sample_count,readable_pair_count,empty_mask_count,mean_foreground_ratio
+glas,train,68,68,0,0.522581
+glas,val,17,17,0,0.422844
+glas,testA,60,60,0,0.493940
+glas,testB,20,20,0,0.565639
+crag,train,153,153,0,0.478433
+crag,val,20,20,0,0.471867
+crag,test,40,40,0,0.417762

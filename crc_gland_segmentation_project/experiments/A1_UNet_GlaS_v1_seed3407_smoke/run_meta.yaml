@@ -1,0 +1,42 @@
+run_name: A1_UNet_GlaS_v1_seed3407_smoke
+stage_code: A1
+dataset_code: glas
+model_name: unet
+model_version: unet_v1
+config_version: v1
+data_proto_version: 01_data_protocol_v1
+train_proto_version: train_proto_v1
+aug_version: light_aug_v1
+aug_profile_name: light_aug_v1
+eval_aug_enable: false
+eval_proto_version: eval_proto_v1
+loss_name: bce_dice
+loss_version: seg_loss_v1
+postprocess_version: none_in_v1
+optimizer: AdamW
+lr: 0.001
+weight_decay: 0.0001
+scheduler: ReduceLROnPlateau
+scheduler_monitor: val_objdice
+epoch_max: 120
+early_stop_patience: 20
+batch_size: 2
+amp: true
+train_seed: 3407
+best_selector: val_objdice_max
+threshold_value: 0.5
+threshold_source: val17
+result_tag: reproduced
+aggregation: single_seed
+smoke_check: true
+config_refs:
+  data: configs/data/glas.yaml
+  model: configs/model/unet_v1.yaml
+  train: configs/train/unet_flow_v1.yaml
+  eval: configs/eval/eval_proto_v1.yaml
+stop_reason: smoke_check_complete
+best_epoch: 1
+best_metric_value: 0.26280593599215546
+amp_active: false
+epoch_count: 1
+device: cpu

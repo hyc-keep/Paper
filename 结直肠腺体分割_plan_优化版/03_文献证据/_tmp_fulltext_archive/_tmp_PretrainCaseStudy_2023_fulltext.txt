@@ -1,0 +1,421 @@
+To Pretrain or not to Pretrain? A Case Study of
+Domain-Specific Pretraining for Semantic
+Segmentation in Histopathology
+Tushar Kataria1,2,4, Beatrice Knudsen3, and Shireen Elhabian1,2,4
+1 Kahlert School of Computing, University Of Utah
+2 Scientific Computing and Imaging Institute, University of Utah
+3 Department of Pathology, University of Utah
+4 corresponding author
+{tushar.kataria,shireen}@sci.utah.edu, beatrice.knudsen@path.utah.edu
+Abstract. Annotating medical imaging datasets is costly, so fine-tuning
+(or transfer learning) is the most effective method for digital pathol-
+ogy vision applications such as disease classification and semantic seg-
+mentation. However, due to texture bias in models trained on real-
+world images, transfer learning for histopathology applications might
+result in underperforming models, which necessitates the need for us-
+ing unlabeled histopathology data and self-supervised methods to dis-
+cover domain-specific characteristics. Here, we tested the premise that
+histopathology-specific pretrained models provide better initializations
+for pathology vision tasks, i.e., gland and cell segmentation. In this study,
+we compare the performance of gland and cell segmentation tasks with
+histopathology domain-specific and non-domain-specific (real-world im-
+ages) pretrained weights. Moreover, we investigate the dataset size at
+which domain-specific pretraining produces significant gains in perfor-
+mance. In addition, we investigated whether domain-specific initializa-
+tion improves the effectiveness of out-of-distribution testing on distinct
+datasets but the same task. The results indicate that performance gain
+using domain-specific pretrained weights depends on both the task and
+the size of the training dataset. In instances with limited dataset sizes,
+a significant improvement in gland segmentation performance was also
+observed, whereas models trained on cell segmentation datasets exhibit
+no improvement. Github Code Repository.
+Keywords: Domain Specific pretraining· Gland and Cell Segmentation
+· Transfer Learning.
+1 Introduction
+Deep learning models typically require a substantial amount of data to effectively
+learn generalized latent space representations [4]. However, acquiring large medi-
+cal image datasets is more challenging compared to real-world image datasets for
+threeprimaryreasons.Firstly,theannotationprocessformedicalimagesinvolves
+arXiv:2307.03275v2  [cs.CV]  21 Aug 2023
+
+2 T. Kataria et al.
+domain-specificknowledgefrompathologistsandradiologiststomanuallyoutline
+anatomical structures. This is challenging given the global scarcity of pathology
+and radiology experts [19,12,23]; Secondly, the image annotation interfaces are
+inefficient in generating labor-intensive workflows. Thirdly, inter-observer dis-
+agreement among medical professionals necessitates the involvement of multiple
+experts to repeat each annotation task [5,7,21]. Lastly, in addition to the annota-
+tion challenges there are biases in medical data. Biases in histopathology images
+arise from variations in tissue quality, staining protocols leading to difference in
+color and texture [11], scanning protocols and slide scanners [11,17,14].
+These biases are often site-specific and can cause major distribution shifts
+between different data sets, which in turn reduces the generalization of deep
+learning models [11,17].
+Other forms of distribution shifts for histopathology in cancer cohorts in-
+clude discrepancies between cancer and normal tissue histology, the proportion
+of histologic cancer subtypes, grades and stages, and variations in clinical, demo-
+graphic, and race-related variables [25,15]. These variables generate data imbal-
+ances that can degrade the performance of deep learning models during testing.
+Fig.1. Do different weight initialization matter?The study is designed from
+the perspective of an AI user who can choose between multiple pretrained models
+(domain or non-domain, supervised or self-supervised) options for a given task. The
+best pretrained model is the one that has the highest accuracy on the task and is least
+affected by distribution shifts. This study provides a framework to choose amongst
+pretrained models and select the most advantageous for the task.
+In medical image vision tasks, fine-tuning pretrained models (also known
+as transfer learning) has become a common approach [6,18]. These tasks are
+important for automated diagnosis, cancer grading and predictions of patients
+outcomes across all cancer types.
+Using supervised or self-supervised methods, deep learning models exhibit
+strongcapabilitiestolearneffectivelatentrepresentations[3].However,theymay
+sufferfromdomain-specifictexturebias[10],whichcanimpedetheirperformance
+[22]. Previous research indicates that if sufficient data is available for training,
+a model trained de-novo (i.e., from scratch) may outperform a fine-tuned model
+
+To pretrain or Not to pretrain? Domain-Specific pretraining histopathology 3
+[18,22]. This suggests a potential benefit of domain-specific pretraining [29,13]
+over transfer learning from ImageNet [9].
+Because large, annotated data sets are difficult to obtain for pretraining on
+histopathology images, self-supervised (SSL) and annotation free methods pro-
+vide an alternative strategy for pretraining models to learn valid representa-
+tion in the latent space [2,28,1]. Models can then be further fine-tuned with
+a few annotations to produce acceptable results on test datasets. However, no
+studies systematically evaluated the impact of domain-specific pretaining for
+histopathology models that are tasked to learn cell and gland segmentation.
+The closest matching work to this study is an investigation of pretraining on
+classification and instance segmentation tasks [13].
+As gland and cell segmentation differ from instance segmentation and clas-
+sification, the effect of pretraining on the analysis of out-of-distribution (OOD)
+datasets also remains unknown. The contributions of this paper are as follows:-
+– Comparison of de-novo trained models with pretrained models on the Ima-
+geNetdatasetusingclasssupervision[9]andself-supervision[28]forsemantic
+segmentation tasks in histopathology.
+– Finetuning pretrained domain-specific (histopathology) models [13] for gland
+and cell segmentation. These comparisons will indicate whether domain-
+specific pretraining aids cell and gland segmentation.
+– Determining the effect of compute resources and data quantity on model
+performance improvements.
+– Investigating whether domain-specific training leads to a better generaliza-
+tion of models to data distribution shifts.
+2 Different Pretrained Weights Used
+To investigate whether domain-specific pretraining leads to generalization in
+gland and cell segmentation tasks, the study aims to address the following re-
+search questions:
+− Is domain pretraining, which involves initializing the weights trained with
+domain-specific images(histopathology), more effective for transfer learning
+compared to pretrained weights from ImageNet data?
+− Do self-supervised outperform supervised weight initializations?
+− Does domain-specific pretraining enhance the quality of features and improve
+the model’s performance on datasets with distribution shifts?
+All initializations are compared against random initialization (i.e., training
+from scratch), which serves as the baseline to identify initializations (mentioned
+below) that outperform random. The flow diagram of the study is shown in
+Figure 1.
+Models are trained with 3 different types of initializations: (1)pretrained
+weights using class supervision on ImageNet data: default weights are
+provided in Pytorch forImageNetV1 and ImageNetV2. The top-1 accuracies in
+
+4 T. Kataria et al.
+the initialization amount to 76.13 and 80.85, respectively. These weights are ob-
+tained by training a ResNet50 [9] model with class supervision. For two other
+initialization, weights are obtained using a self-supervised technique called Bar-
+low Twins [28]. (2)Pretrained weights with ImageNet data using SSL
+(SSLImage): Self-supervised weights were obtained after training on data from
+ImageNet without using labels. (3)Histopathology Domain-Specific pre-
+training using SSL (SSLPathology):This model is released as part of the
+study in [13] for domain-specific pretraining on histopathology data. The model
+was pretrained using more than three million histopathology image patches sam-
+pled from various cancers at different magnifications. More details about the
+pretraining method and the dataset can be found in [13].
+2.1 Dataset Details
+We have experimented with gland and cell segmentation tasks on these five
+histopathology datasets:
+Gland Segmentation Datasets:Colon cancer datasets, GlaS and CRAG
+[26,8],possessgroundtruthglandsegmentationannotationsfornormalandcolon
+cancer glands. The GlaS dataset has 88 training & 80 testing images of size less
+700x600 pixels, whereas the CRAG dataset has 160 training & 40 testing images
+of size 1512x1512 pixels.
+Cell Segmentation Datasets: Three cell segmentation datasets are used
+for experimentation KUMAR [16], CPM17 [27] and TNBC [20] possess ground
+truth annotations of nuclear outlines.
+Table 1. Cell Segmentation Dataset Details.Sample examples of the dataset are
+shown in supplementary Figure 9.
+Datasets Train ImgsTest Imgs Img Size No. of Annotated Nuclei
+KUMAR [16] 16 14 1000x1000 21623
+CPM17 [27] 31 31 500x500 7570
+TNBC [20] 34 16 512x512 4022
+2.2 Implementation Details
+A U-Net [24] model is used withResnet50 [9] backbone for semantic segmenta-
+tion application(gland & cell both). The decoder is always the same for all mod-
+els. Details of implementation can be found in the associated github5. Models are
+trained using PyTorch and a data split of 80-20 for training and validation. The
+best model possessing a minimum loss on validation data is further evaluated on
+the test dataset. Testing data is only used for inference.
+During training the patch size is 256x256, sampled randomly in the whole
+image. At inference, predictions are averaged over a window size of 128 pixels.
+5 GitHub Repository
+
+To pretrain or Not to pretrain? Domain-Specific pretraining histopathology 5
+The learning rate is fixed to 0.0001 and the number of epochs for all experi-
+ments is set to 4000 for gland segmentation and 2000 for cell segmentation. The
+models are trained five times and average metrics are reported, this ensures that
+variations due to stochasticity caused by the dataset loader are factored out.
+Data augmentation includes horizontal and vertical flips, random rotation, and
+translation. All models are trained on NVIDIA V100 GPUs.
+Evaluation Metrics:Dice and Jaccard scores (also known as the intersec-
+tion over union) serve as metrics for segmentation tasks [26,24].
+3 Results
+Gland Segmentation Results:The line plots (standard deviation marked as
+shading) of performance measures for different initialization are shown in Fig-
+ure 2-A and 6-A. We trained models with different backbone initializations on
+an increasing amount of data. The following observations emerged from these
+experiments:- (a) Increasing the quantity of data improves performance for all
+initializations and decreases variation. (b) For different training dataset sizes,
+models with pretrained weight initializations outperform those with random
+initializations, but the performance gap between models trained with random
+initialization and pretrained weights decreases as the quantity of data increases.
+(c) For small datasets, finetuning domain-specific pretrained weights has a sig-
+nificant performance advantage over other initializations. However, as dataset
+size increases, the effect diminishes6.
+Variations in performance due to different amounts of training epochs for
+all datasets are shown in Figure 2-B and 6-B. For very small datasets(10% and
+30% graph), finetuning domain-specific pretrained weights outperforms all other
+initializations at all epochs. However, for larger datasets(100% data), ImageNet
+supervised weights also outperform at lower epochs. This show that domain-
+specific pretraining is not dependent on computational power but rather on
+dataset diversity. If a dataset is not diverse or small in size, then domain-specific
+pretrained weights are beneficial, but other initialization can be better for higher
+diversity and epochs. Qualitative results are shown in supplementary Figure 8,
+domain-specific fine-tuned models have more accurate gland outlines and fewer
+false positive pixels than other models.
+Cell Segmentation Results :The performance of various initializations
+is depicted in Figure 3. Even though some of the observations are similar to
+those of previous experiments, novel observations emerge from cell segmentation
+results:- (a) Model performances with KUMAR [16] data are an exception where
+random initialization is outperforming or competitive with other initializations.
+(b) Domain-specific pretraining is performing similar to or worse than ImageNet
+initialization for most cases. Altogether our results demonstrate that fine-tuning
+domain-specific pretrained weights does not improve the performance of the U-
+Net/ResNet model for cell segmentation tasks. Qualitative results are shown in
+supplementary Figure 9.
+6 All images are best viewed on a digital device following magnification.
+
+6 T. Kataria et al.
+Fig.2.Gland Segmentation Results for Different Initializations on GlaS[26].
+(A) Dice and Jaccard Score for different percentage of training data used. Solid line
+shows the mean performance metrics, where as color shading shows the variance. We
+can clearly observe that increasing data increases model performance, but with more
+data domain specific pretraining doesn’t have a significant effect on performance. (B)
+Average dice score variations with different amounts of training time, i.e., number of
+epochs. We clearly see a difference in performance for different initialization for low
+dataset size and lesser epochs. Results on CRAG dataset are shown in Supplementary
+Figure 6.
+Fig.3. Cell Segmentation Results. Different initialization has similar patterns,
+i.e., with increasing data variation in performance decreases and mean performance
+increases. But for cell segmentation domain specific pretraining doesn’t seem to be
+better than image-net pretrained weights for different data sizes.
+UMAP Results: We sampled 300 random patches from the test sets of
+GlaS and CRAG to generate projections for encoders and decoders shown in
+Figure 4. Feature values were extracted from the first encoder layer in U-Net,
+the deepest encoder layer, and the last decoder layer.
+In the network’s first layer, the projections of features from various initial-
+izations form clouds that overlap. We interpret this observation to conclude that
+the initial layers of deep neural networks capture low-level statistics and that all
+initializations capture comparable attributes. As encoding depth increases, the
+
+To pretrain or Not to pretrain? Domain-Specific pretraining histopathology 7
+representations become more distinct and the overlap decreases, indicating that
+networks pretrained in different ways may be learning different representations
+of the same data. This is counterintuitive, as we would expect that each of the
+pretrained models generates similar high-level representations when performing
+identical tasks and using the same dataset. However, the distribution of features
+in the UMAP projection of latent layer representations appears to have topo-
+logical similarity across initializations which indicates that features for different
+initialization may be related via a rigid transformation in latent space. A sim-
+ilar conclusion is valid for the decoder UMAP. Together, these results suggest
+that distinct initializations, despite being clustered at different locations in the
+UMAP, might learn similar relational feature characteristics between samples in
+the dataset.
+Fig.4.UMAP for different Gland Segmentation models for GlaS and CRAG
+datasets. We generate UMAP with nearest neighbor=25, distance=0.1, and met-
+ric=cosine. Comparing the latent representation of the initial encoder to that of the
+deepest encoder, there is substantially less overlap between initializations, but the dis-
+tribution of points is topologically similar.
+3.1 Out Of Distribution Testing Results
+For OOD testing, we use the fine-tuned segmentation models (source dataset,
+Dataset 1) with different initialization for out-of-distribution testing on other
+datasets (target dataset, Dataset 2) without fine-tuning on the second dataset.
+This analysis reveals the distribution bias various initializations learned during
+the training (fine-tuning) process.
+
+8 T. Kataria et al.
+Gland Segmentation ResultsThe results for OOD testing for the gland
+segmentation task are shown in Figure 5. At a low amount of data, the domain-
+specific, finetuned models perform best and using random initializations results
+in the greatest relative performance drop compared to all other initializations.
+Fig.5. Average dice score for OOD testing.Y-axis shows the dataset used for
+training of the model. X-axis is the performance on the corresponding test sets without
+any fine-tuning. A model trained on CRAG datasets transfers effectively to GlaS, but
+not vice versa. Domain-specific pretrained models are generally better at out-of-domain
+performance.
+Cell Segmentation Results: The results of OOD testing for different
+datasets are shown in supplementary Figure 7 and lead to the following observa-
+tions: (a) pretrained models are better than models with random initialization at
+the same task on unseen datasets from KUMAR [16] and CPM17 [27]). In con-
+trast,modelswithrandominitializationandtrainedonTNBC[20]outperformor
+perform the same as the pretrained initialized model. (b) A drop in performance
+exists on TNBC data for models trained on KUMAR [16] and CPM17 [27] but
+not for models trained on TNBC [20] or KUMAR [16] and applied to CPM17.
+(c) Domain-specific pretrained models when tested on OODdata demonstrate a
+lesser drop in performance compared to other pretraining approaches.
+4 Conclusion and Future Work
+In this study, we demonstrate that a using domain-specific pretrained backbone
+can be beneficial for gland segmentation when data are limited or of low di-
+versity data for the task at hand. However, the performance gap for fine-tuned
+domain-specific pretrained weights compared to random initialization decreased
+as the amount of training data increased. The results of cell segmentation in-
+dicate that domain-specific pretrained weights may not be advantageous for all
+types of tasks. The results of UMAP projections indicate that the initial layers
+of domain-specific and non-domain-specific models learn similar features, but
+
+To pretrain or Not to pretrain? Domain-Specific pretraining histopathology 9
+that the deeper encoders are distinct. Although the topology of latent feature
+representations is similar for the different initialization, models may be learn-
+ing similar high-level characteristics within the latent feature spaces. Lastly,
+during out-of-distribution testing, models initialized with domain-specific pre-
+trained weights suffered the same performance degradation as other initializa-
+tions. Therefore, domain-specific pretrained weight initialization may not be
+effective at learning site-independent features. Our final conclusion from this
+study is that fine-tuning domain-specific pretrained weights may be beneficial
+for specific tasks and datasets, but benefits are not universal. Domain-specific
+pretrained weights suffer from the same issues as weights on image-net. Lastly,
+we would like to make the reader aware that this study did not cover medical
+vision tasks such as multi-class semantic segmentation and cell detection. We
+also did not utilize models pretrained using vision-language models. Both these
+comparisons are left for future work.
+Acknowledgments
+We thank the Department of Pathology and the Kahlert School of Computing
+at the University of Utah for their support of this project.
+References
+1. Caron, M., Misra, I., Mairal, J., Goyal, P., Bojanowski, P., Joulin, A.: Unsupervised
+learning of visual features by contrasting cluster assignments. Advances in neural
+information processing systems33, 9912–9924 (2020)
+2. Chen, T., Kornblith, S., Norouzi, M., Hinton, G.: A simple framework for con-
+trastive learning of visual representations. In: International conference on machine
+learning. pp. 1597–1607. PMLR (2020)
+3. Chen, T., Kornblith, S., Swersky, K., Norouzi, M., Hinton, G.E.: Big self-supervised
+models are strong semi-supervised learners. Advances in neural information pro-
+cessing systems33, 22243–22255 (2020)
+4. Deng, J., Dong, W., Socher, R., Li, L.J., Li, K., Fei-Fei, L.: Imagenet: A large-
+scale hierarchical image database. In: 2009 IEEE conference on computer vision
+and pattern recognition. pp. 248–255. Ieee (2009)
+5. Eaden, J., Abrams, K., McKay, H., Denley, H., Mayberry, J.: Inter-observer vari-
+ation between general and specialist gastrointestinal pathologists when grading
+dysplasia in ulcerative colitis. The Journal of Pathology: A Journal of the Patho-
+logical Society of Great Britain and Ireland194(2), 152–157 (2001)
+6. Erhan, D., Courville, A., Bengio, Y., Vincent, P.: Why does unsupervised pre-
+training help deep learning? In: Proceedings of the thirteenth international con-
+ference on artificial intelligence and statistics. pp. 201–208. JMLR Workshop and
+Conference Proceedings (2010)
+7. Farmer,M.,Petras,R.E.,Hunt,L.E.,Janosky,J.E.,Galandiuk,S.:Theimportance
+ofdiagnosticaccuracyincolonicinflammatoryboweldisease.TheAmericanjournal
+of gastroenterology95(11), 3184–3188 (2000)
+8. Graham, S., Chen, H., Gamper, J., Dou, Q., Heng, P.A., Snead, D., Tsang, Y.W.,
+Rajpoot, N.: Mild-net: Minimal information loss dilated network for gland instance
+segmentation in colon histology images. Medical image analysis52, 199–211 (2019)
+
+10 T. Kataria et al.
+9. He,K.,Zhang,X.,Ren,S.,Sun,J.:Deepresiduallearningforimagerecognition.In:
+Proceedings of the IEEE conference on computer vision and pattern recognition.
+pp. 770–778 (2016)
+10. Hermann, K., Chen, T., Kornblith, S.: The origins and prevalence of texture bias in
+convolutionalneuralnetworks.AdvancesinNeuralInformationProcessingSystems
+33, 19000–19015 (2020)
+11. Howard, F.M., Dolezal, J., Kochanny, S., Schulte, J., Chen, H., Heij, L., Huo,
+D., Nanda, R., Olopade, O.I., Kather, J.N., et al.: The impact of site-specific
+digital histology signatures on deep learning model accuracy and bias. Nature
+communications 12(1), 4423 (2021)
+12. Jajosky, R.P., Jajosky, A.N., Kleven, D.T., Singh, G.: Fewer seniors from united
+states allopathic medical schools are filling pathology residency positions in the
+main residency match, 2008-2017. Human Pathology73, 26–32 (2018)
+13. Kang, M., Song, H., Park, S., Yoo, D., Pereira, S.: Benchmarking self-supervised
+learning on diverse pathology datasets. In: Proceedings of the IEEE/CVF Confer-
+ence on Computer Vision and Pattern Recognition. pp. 3344–3354 (2023)
+14. Kataria, T., Knudsen, B., Elhabian, S.: Unsupervised domain adaptation
+for semantic segmentation via feature-space density matching. arXiv preprint
+arXiv:2305.05789 (2023)
+15. Kataria, T., Rajamani, S., Ayubi, A.B., Bronner, M., Jedrzkiewicz, J., Knudsen,
+B., Elhabian, S.: Automating ground truth annotations for gland segmentation
+through immunohistochemistry (2023)
+16. Kumar, N., Verma, R., Sharma, S., Bhargava, S., Vahadane, A., Sethi, A.: A
+dataset and a technique for generalized nuclear segmentation for computational
+pathology. IEEE transactions on medical imaging36(7), 1550–1560 (2017)
+17. Liu, Q., Dou, Q., Yu, L., Heng, P.A.: Ms-net: multi-site network for improving
+prostate segmentation with heterogeneous mri data. IEEE transactions on medical
+imaging 39(9), 2713–2724 (2020)
+18. Mensink, T., Uijlings, J., Kuznetsova, A., Gygli, M., Ferrari, V.: Factors of in-
+fluence for transfer learning across diverse appearance domains and task types.
+IEEE Transactions on Pattern Analysis and Machine Intelligence44(12), 9298–
+9314 (2021)
+19. Metter, D.M., Colgan, T.J., Leung, S.T., Timmons, C.F., Park, J.Y.: Trends in the
+us and canadian pathologist workforces from 2007 to 2017. JAMA network open
+2(5), e194337–e194337 (2019)
+20. Naylor, P., Laé, M., Reyal, F., Walter, T.: Segmentation of nuclei in histopathology
+images by deep regression of the distance map. IEEE transactions on medical
+imaging 38(2), 448–459 (2018)
+21. Nir, G., Hor, S., Karimi, D., Fazli, L., Skinnider, B.F., Tavassoli, P., Turbin, D.,
+Villamil, C.F., Wang, G., Wilson, R.S., et al.: Automatic grading of prostate cancer
+in digitized histopathology images: Learning from multiple experts. Medical image
+analysis 50, 167–180 (2018)
+22. Raghu, M., Zhang, C., Kleinberg, J., Bengio, S.: Transfusion: Understanding trans-
+ferlearningformedicalimaging.Advancesinneuralinformationprocessingsystems
+32 (2019)
+23. Robboy, S.J., Gross, D., Park, J.Y., Kittrie, E., Crawford, J.M., Johnson, R.L.,
+Cohen, M.B., Karcher, D.S., Hoffman, R.D., Smith, A.T., et al.: Reevaluation of
+the us pathologist workforce size. JAMA network open3(7), e2010648–e2010648
+(2020)
+
+To pretrain or Not to pretrain? Domain-Specific pretraining histopathology 11
+24. Ronneberger, O., Fischer, P., Brox, T.: U-net: Convolutional networks for biomed-
+ical image segmentation. In: Medical Image Computing and Computer-Assisted
+Intervention–MICCAI 2015: 18th International Conference, Munich, Germany, Oc-
+tober 5-9, 2015, Proceedings, Part III 18. pp. 234–241. Springer (2015)
+25. Shi, L., Li, X., Hu, W., Chen, H., Chen, J., Fan, Z., Gao, M., Jing, Y., Lu, G.,
+Ma, D., et al.: Ebhi-seg: A novel enteroscope biopsy histopathological hematoxylin
+and eosin image dataset for image segmentation tasks. Frontiers in Medicine10,
+1114673 (2023)
+26. Sirinukunwattana, K., Pluim, J.P., Chen, H., Qi, X., Heng, P.A., Guo, Y.B., Wang,
+L.Y., Matuszewski,B.J., Bruni,E., Sanchez, U.,et al.:Gland segmentationincolon
+histology images: The glas challenge contest. Medical image analysis35, 489–502
+(2017)
+27. Vu, Q.D., Graham, S., Kurc, T., To, M.N.N., Shaban, M., Qaiser, T., Koohbanani,
+N.A., Khurram, S.A., Kalpathy-Cramer, J., Zhao, T., et al.: Methods for segmen-
+tation and classification of digital microscopy tissue images. Frontiers in bioengi-
+neering and biotechnology p. 53 (2019)
+28. Zbontar, J., Jing, L., Misra, I., LeCun, Y., Deny, S.: Barlow twins: Self-supervised
+learning via redundancy reduction. In: International Conference on Machine Learn-
+ing. pp. 12310–12320. PMLR (2021)
+29. Zhang, S., Xu, Y., Usuyama, N., Bagga, J., Tinn, R., Preston, S., Rao, R., Wei, M.,
+Valluri, N., Wong, C., et al.: Large-scale domain-specific pretraining for biomedical
+vision-language processing. arXiv preprint arXiv:2303.00915 (2023)
+
+12 T. Kataria et al.
+5 Supplementary
+Fig.6. Gland Segmentation Results for Different Initializations on
+CRAG[8]. (A) Dice and Jaccard Score for different percentage of training data used.
+(B) Average dice score variations with different amounts of training time, i.e., number
+of epochs.
+Fig.7. Average dice score for OOD testing.Y-axis shows the dataset used for
+training the model. X-axis is the performance on the test set of the datasets without
+any fine-tuning.
+
+To pretrain or Not to pretrain? Domain-Specific pretraining histopathology 13
+Fig.8. Qualitative results for Gland Segmentation Experiments.We can ob-
+serve that pretrained models have better qualitative results than Random Initializa-
+tions. Domain Specific pretraining models perform better for gland segmentation tasks.
+These models are better at recognizing the outlines of the gland compared to other
+initializations.
+Fig.9.Qualitative results for Cell Segmentation Experiments.We can observe
+that pretrained models have better qualitative results than Random Initializations. But
+all of the pretrained models make similar mistakes in the outlines of cells, touching cells
+and distinguishing between cell and background.

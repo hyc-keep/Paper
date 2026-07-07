@@ -1,0 +1,1797 @@
+One Model is All You Need: Multi-Task Learning Enables Simultaneous
+Histology Image Segmentation and Classification
+Simon Graham1,3, Quoc Dang Vu1, Mostafa Jahanifar1, Shan E Ahmed Raza1,
+Fayyaz Minhas1, David Snead2,3 and Nasir Rajpoot1,2,3
+1Department of Computer Science, University of Warwick, UK
+2Department of Pathology, University Hospitals Coventry and Warwickshire NHS Trust, UK
+3Histofy Ltd, UK
+simon.graham@warwick.ac.uk
+Abstract
+The recent surge in performance for image analysis of
+digitised pathology slides can largely be attributed to the
+advances in deep learning. Deep models can be used
+to initially localise various structures in the tissue and
+hence facilitate the extraction of interpretable features for
+biomarker discovery. However, these models are typically
+trained for a single task and therefore scale poorly as we
+wish to adapt the model for an increasing number of dif-
+ferent tasks. Also, supervised deep learning models are
+very data hungry and therefore rely on large amounts of
+training data to perform well. In this paper, we present a
+multi-task learning approach for segmentation and classi-
+fication of nuclei, glands, lumina and different tissue re-
+gions that leverages data from multiple independent data
+sources. While ensuring that our tasks are aligned by the
+same tissue type and resolution, we enable meaningful si-
+multaneous prediction with a single network. As a result of
+feature sharing, we also show that the learned representa-
+tion can be used to improve the performance of additional
+tasks via transfer learning, including nuclear classification
+and signet ring cell detection. As part of this work, we train
+our developed Cerberus model on a huge amount of data,
+consisting of over 600K objects for segmentation and 440K
+patches for classification. We use our approach to process
+599 colorectal whole-slide images from TCGA, where we
+localise 377 million, 900K and 2.1 million nuclei, glands
+and lumina, respectively and make the results available to
+the community for downstream analysis.
+1. Introduction
+In recent years, there has been a progressive shift to-
+wards the digitisation of histopathology slides, enabling the
+development of computer vision (CV) techniques for au-
+tomated tissue analysis. In particular, with the rapidly in-
+creasing amount of pathology image data and computing
+power, deep learning has revolutionised the field of com-
+putational pathology (CPath). A large proportion of deep
+CV models used in CPath are convolutional neural networks
+(CNNs) and have proven to be successful when applied to
+a plethora of tasks, including cancer detection [4, 59], can-
+cer grading [5, 50] and survival analysis [6, 51]. However,
+black box CNNs may have a poor level of interpretability
+when used directly in slide classification, as they are typi-
+cally non-linear and are governed by millions of parameters.
+To help overcome the above challenge, deep learning
+can be leveraged as an initial step to localise regions of
+interest in the tissue before extracting human-interpretable
+and biologically meaningful features for downstream slide
+analysis. This fosters the development of more explain-
+able pipelines for CPath, which is particularly important for
+boosting the confidence of pathologists in their diagnoses.
+Explainable models increase model transparency by provid-
+ing an output that is easy to understand and therefore may be
+utilised as a tool to help facilitate the decision of the pathol-
+ogist. Furthermore, using human-interpretable features [14]
+in explainable pipelines can help reveal new biomarkers for
+complex tasks, such as survival analysis and image-based
+detection of clinically actionable genetic alterations [32].
+Previous works on the localisation of various regions and
+constructs in the tissue typically involve the use of a devoted
+CNN for a particular task. For example, Diao et al. [14]
+trained a network to detect and classify nuclei and an addi-
+tional network for the segmentation of different tissue types
+before feature extraction. This strategy is often needed be-
+cause conventional training pipelines require target objects
+to be labelled across the entire dataset. Optimising net-
+works separately also ensures that training procedures do
+arXiv:2203.00077v2  [eess.IV]  14 Nov 2022
+
+not need to be tuned over multiple tasks. However, using
+one model per task may not be scalable as we wish to lo-
+calise an increasing number of tissue constructs. Instead,
+utilising a single model that can perform multiple tasks si-
+multaneously is preferable because it reduces the computa-
+tional overhead, can benefit from shared features between
+tasks and also saves the time needed for training separate
+models.
+Multi-Task Learning (MTL) [7, 64] has previously been
+explored in CPath, but with a key focus on obtaining a gen-
+eralisable encoder [19] for transfer learning [43] or image
+compression [57]. Here, each task may include image re-
+gions from different tissue types, with varying resolution
+and potentially with different staining. Therefore, such
+models can not be used to perform simultaneous prediction
+for a single input image, due to inconsistency between as-
+sumed inputs for each task. Instead, it may be beneficial
+to utilise an MTL approach with aligned tasks, thereby en-
+abling simultaneous prediction with a single model. Not
+only does this enable a meaningful simultaneous predic-
+tion, but using aligned tasks also helps ease optimisation
+by reducing the potential for conflicting gradients to exist
+between tasks. Therefore, this holds potential for achiev-
+ing a strong performance across all considered tasks, which
+was previously not possible with other MTL approaches in
+CPath [19].
+To perform well, deep learning approaches require an
+abundance of labelled data, which is a current bottleneck in
+the development of CPath models because the collection of
+annotations requires significant pathologist input [61, 58].
+Without large and diverse datasets, any developed model
+may struggle to generalise to unseen examples, limiting po-
+tential usage in a clinical setting. MTL may help to over-
+come this challenge by utilising a shared encoder, enabling
+features to be learned over multiple tasks [12]. Yet, it is
+desirable for each task to have access to a large amount of
+annotated data from multiple sources to ensure strong per-
+formance.
+In this paper, we propose a multi-task learning approach
+for simultaneous segmentation and classification of nuclei,
+glands, lumina and different tissue regions. With the use
+of a novel sampling strategy, the proposed Cerberus model
+leverages data from multiple independent sources during
+training, enabling a competitive performance compared to
+single-task alternatives while only requiring a single net-
+work. Therefore, our approach is the first MTL method in
+CPath that can sustain a strong performance at the output
+of the network across all considered tasks. We demonstrate
+that Cerberus learns a strong feature representation that can
+help improve the performance of additional tasks via trans-
+fer learning, including nuclear classification and signet ring
+cell detection. To ensure that Cerberus has sufficient la-
+belled examples from multiple different data sources, we
+create a large and diverse colorectal dataset containing over
+600 thousand object boundaries for segmentation and 440
+thousand patches for classification. In addition, we pro-
+cess all colorectal slides from The Cancer Genome Atlas
+(TCGA) and make the results accessible. We hope that do-
+ing this will remove a major barrier for the development of
+explainable approaches for CPath.
+The main contributions of this work are listed as follows:
+• We present a multi-task network, named Cerberus, that
+is capable of performing simultaneous prediction with
+comparable performance to single-task learning meth-
+ods.
+• We show that Cerberus learns a strong feature repre-
+sentation that can be leveraged during transfer learning
+to boost the performance of additional tasks.
+• We use our method to process all colorectal slides from
+TCGA, resulting in 377 million, 900 thousand and
+2.1 million nuclei, glands and lumina respectively and
+make the results available.
+2. Related Work
+2.1. Multi-task learning vs multi-label learning
+MTL for computer vision enables multiple independent
+datasets to be leveraged during training time, which offers
+advantages like improved data efficiency, reduced overfit-
+ting through shared representations and fast learning by
+leveraging auxiliary information [12]. There are various
+ways in which MTL can be implemented, including weight
+sharing [7, 43] and architecture adaptations [55, 42]. For
+deep learning, MTL is typically done via hard or soft pa-
+rameter sharing of hidden layers [48]. Hard parameter shar-
+ing is the most common strategy used for MTL, where hid-
+den layers are shared between tasks before using several
+task-specific output layers. In soft parameter sharing, each
+task has its own model, where the associated parameters are
+constrained [16, 62] so that they are similar for each task.
+Therefore, using hard parameter sharing may be preferable
+because using separate models may not be feasible when
+the number of tasks is large.
+It is important to distinguish MTL from Multi-Label
+Learning (MLL) [63], where each data point is associated
+with multiple labels. If each label is treated as a separate
+task, MLL can be viewed as a special case of MTL where
+different tasks always share the same data [64]. For clarity,
+we show the differences between these two learning strate-
+gies in Figure 1.
+Cerberus model code and results on the TCGA dataset can be
+found here: https://github.com/TissueImageAnalytics/
+cerberus
+
+Dataset 1 Task 1…
+Multi-Task Learning (MTL)Multi-Label Learning (MLL)
+Dataset 2 Task 2
+Dataset n Task n
+Dataset 
+Label 1…Label2
+Labeln
+…
+Figure 1: Multi-Task Learning (MTL) vs Multi-Label
+Learning (MLL): MTL is a training paradigm where a
+model is trained over different predictive tasks. Here, labels
+are task-dependent. MLL requires labels to be provided for
+every input sample.
+2.2. Multi-label learning for CPath
+As mentioned above, it is possible to predict multiple
+tasks at the output of the network using MLL. For ex-
+ample, Shephard et al. [52] performed nuclear segmen-
+tation and classification along with segmentation of intra-
+epithelial layers in oral tissue. Similarly, Fraz et al. [17]
+performed simultaneous segmentation of blood vessels and
+nerves. However, because the two above-mentioned ap-
+proaches use MLL, they expect every input image to have
+associated labels for all tasks. This limits the data that can
+be used because it is common for available datasets in CPath
+to only consider a single object [53, 18] or label [33]. Also,
+tasks require different levels of annotation effort (eg. nuclei
+take longer to annotate than glands) and therefore exhaus-
+tively labelling data across tasks may not be feasible. As
+a result of the challenges above and to enable the effective
+utilisation of multiple independent datasets, in this paper we
+focus on MTL, rather than MLL.
+2.3. Multi-task learning for CPath
+Several recent CPath models utilise MTL to obtain a rep-
+resentative set of features for transfer learning. For exam-
+ple, Mormont et al. [43] considered 22 classification tasks
+within a simple MTL framework, where the learned weights
+are used to better initialise single task networks for transfer
+learning. Similarly, Tellez et al. [57] used MTL to optimise
+4 tasks simultaneously and used the learned weights to en-
+code a low-dimensional feature representation that gener-
+alised well to new tasks. Gamper et al. [20] used MTL in
+combination with multiple instance captioning to learn rep-
+resentations from histopathology textbooks. Here, it was
+again shown that using MTL provided a strong feature en-
+coder for transfer learning. Despite the demonstrated bene-
+fit of using MTL for transfer learning, subsequent training
+may still require a single model per task, which comes at an
+extra computational cost and demands additional training
+time.
+Instead, it may also be desirable to perform well for all
+considered MTL tasks at the output of the network. In
+this way, MTL provides a mechanism to learn from mul-
+tiple independent datasets and enables simultaneous predic-
+tions to be made. However, this is only recommended if
+all considered tasks are aligned. For example, in work by
+Mormont et al. [43] one task uses images stained via im-
+munohistochemistry (IHC) for identification of tumour and
+stroma regions in colorectal tissue, while another task uses
+Haematoxylin & Eosin (H&E) stained bone marrow tissue
+for cell classification. Therefore, unexpected results may
+be obtained at the output of the cell classification branch if
+presented with IHC stained data. This is because different
+input data assumptions exist for each task. In fact, none
+of the above-mentioned studies use MTL for the primary
+purpose of simultaneous prediction. With the use of differ-
+ent input assumptions, there may be task entanglement and
+consequently gradient conflicts [40, 49] during network op-
+timisation. This is a major reason why recent MTL methods
+in CPath can not match single-task performance at the net-
+work output [19].
+2.4. Supervised learning datasets for CPath
+MTL can help improve data efficiency because tasks
+with limited examples can benefit from the data provided
+by other tasks. Despite this, it is desirable to ensure that
+a sufficient number of examples from a variety of different
+sources are available per task, to increase the likelihood of
+strong generalisation.
+Over recent years, there has been a growing effort in gen-
+erating labelled datasets for CPath [26, 37, 60, 1, 44, 18, 24].
+Due to differences in the tissue type, resolution and stain,
+there may exist significant variation between these datasets.
+For example, Amgad et al. [2] generated a dataset of an-
+notated regions in H&E stained breast tissue at 20 × mag-
+nification, whereas [11] created a dataset of lymphocyte
+counts in tissue with IHC staining at 40 × magnification.
+This variation makes it difficult to aggregate datasets that
+enable simultaneous prediction, where it is necessary for
+task-level datasets to have the same input assumptions. As
+well as this, manual annotation makes it difficult to gener-
+ate large-scale datasets for segmentation tasks in computa-
+tional pathology. Iterative labelling strategies [56, 24, 30],
+which use a human-in-the-loop mechanism, have recently
+been used in the literature and can help significantly de-
+crease the time required for annotation, while still ensuring
+a high level of accuracy.
+If we assume that all data irrespective of the task should
+be H&E stained, from colorectal tissue and at 20× objective
+magnification, then there exists a large amount of available
+data. Graham et al. [24] generated the largest dataset for
+
+CerberusData Pool
+Nuclear Segmentation
+Lumen Segmentation
+Gland Segmentation
+Task Sampler
+Nuclear Segmentation
+Gland Segmentation
+Lumen Segmentation
+Tissue Type Classification
+a) MTL Training
+Tissue Classification
+Mixed Batch
+Fixed Batch
+b) MTL with Related Tasks Enables Simultaneous PredictionPretrained Cerberus
+NuclearSegmentationGlandSegmentationLumenSegmentationTissue TypeClassification
+Shared MTL EncoderTask-Specific Decoders
+Independent & Related DatasetsEncoder benefits from training with multiple tasks
+c) MTL Boosts Patch Classification Performanced) MTL Provides Better Pretrained Weights for Object Detection
+Signet Ring Cell Detection
+Pretrained Cerberus EncoderPretrained Cerberus Encoder
+Classification of NucleiAdditional Layers Additional Layers
+Pretrained Cerberuse) MTL Provides Strong Feature Representation for Object Subtyping Using Cerberus for Transfer LearningTraining Cerberus using MTL
+Additional Layers
+Nuclear Segmentation and ClassificationGlandSegmentationLumen SegmentationTissue TypeClassification
+Input
+Input
+Figure 2: MTL training strategy (a), where patches are extracted from each task-level dataset by the task sampler and are
+fed into Cerberus. The sampler either chooses a fixed or mixed batch, where input samples are drawn from the same task
+or a mixture of tasks, respectively. Training with Cerberus (b) enables meaningful predictions to be made simultaneously.
+Using the trained Cerberus encoder can also help improve the performance of other tasks, such as patch classification (c),
+object detection (d) and object subtyping (e). For (c) and (d), only the pretrained Cerberus encoder is leveraged and additional
+classification or detection layers are added. For (e), the entire Cerberus architecture is used and extended by adding additional
+task-dependent decoders.
+nuclear instance segmentation and classification in CPath,
+consisting of 495,179 labelled nuclei from multiple sources.
+As part of the GlaS challenge, Sirinukunwattana et al. [53]
+curated a dataset of 1,530 annotated gland boundaries orig-
+inating from University Hospitals Coventry and Warwick-
+shire (UHCW). This gland segmentation data was extended
+by Graham et al. [22] into the CRAG dataset, with an ad-
+ditional 3,054 annotated glands from UHCW. As well as
+segmentation data in colorectal tissue, there exists avail-
+able patch-based classification data that enables the devel-
+opment of further supervised learning methods. For exam-
+ple, Kather et al. [33] and Javed et al. [31] both created
+
+large datasets for tissue type classification consisting of 100
+thousand and 280 thousand patches, respectively. As a re-
+sult of the number of existing available datasets, we use
+H&E stained images from colorectal tissue in all experi-
+ments within this paper.
+3. Methods
+In this section, we describe our proposed MTL-based
+Cerberus model that enables the simultaneous prediction of
+aligned tasks in CPath. We report how the learned feature
+representation can be used to help improve the performance
+of additional tasks with transfer learning. We then describe
+the data generation strategy to enable the collection of large
+datasets for segmentation tasks in CPath. This strategy is
+used to significantly increase the amount of data used in ex-
+periments performed in Section 4.3.
+3.1. The Cerberus model architecture
+Cerberus is a fully convolutional neural network with a
+shared encoder Φ and T independent decoders Ψt, which
+make a prediction for each task t. Utilising a shared en-
+coder ensures that a general representation is learned, where
+each task can benefit from features learned from other tasks.
+This can be especially useful when certain tasks do not have
+access to a large amount of data.
+We use a ResNet34 encoder [28] for ease of use of
+weights after training with MTL in downstream applica-
+tions. For segmentation tasks, we use a U-Net [47] style
+decoder that incrementally upsamples the features by a fac-
+tor of 2. After each upsampling operation, we incorporate
+features from the encoder with skip connections, followed
+by 2 convolutions (3 ×3 kernel) with batch normalisation
+[29]. This is repeated until the features have the same spa-
+tial dimensions as the input. For patch classification tasks,
+we use global average pooling to reduce the features at the
+output of the encoder to a k dimensional vector, which is
+then followed by 2 fully connected (FC) layers. In partic-
+ular, we set k to 256 and use Dropout [54] between each
+FC layer, with a dropout rate of 0.3. An overview of the
+architecture can be seen in Figure 2a.
+3.2. Cerberus training
+Our overall MTL training strategy for Cerberus incorpo-
+rates data from multiple independent sources and makes a
+simultaneous prediction at the output of the network. This
+training pipeline consists of the following steps: ( i) sam-
+pling patches from each task, ( ii) feeding patches through
+a convolutional neural network with a shared encoder and
+(iii) task-level loss aggregation.
+3.2.1 Task sampler
+Our overall dataset D consists of T task-dependent datasets
+Dt, which must be sampled appropriately during batch ag-
+gregation. This is because the network parameters are up-
+dated according to the data that is present in a particular
+batch. Careful consideration may be needed when there ex-
+ist significant differences in the number of samples within
+each dataset Dt or if certain tasks are more challenging than
+others. More information on optimisation will be provided
+in Section 3.2.2.
+When aggregating a batch, we need to ensure that all
+patches are the same size, so that they can be processed by
+the network. However, images for different tasks may have
+different spatial dimensions. It is possible to perform resiz-
+ing or cropping to ensure that patches across all tasks have
+the same dimensions, but this may have an unwanted effect
+on the image quality or spatial context. Therefore, we group
+tasks into super tasks, which can contain multiple sub-tasks
+with the same input dimensions. If considering multiple su-
+per tasks, then one must be first randomly selected before
+batch aggregation. In our case, segmentation tasks (input
+dimensions 448×448) and tissue type classification (input
+dimensions 144×144) are treated as different super tasks,
+which are selected with probabilities of 0.7 and 0.3 respec-
+tively.
+In this work, we investigate the effect of using two dif-
+ferent batch aggregation methods: mixed batch and fixed
+batch sampling. A mixed batch contains patches from mul-
+tiple tasks, whereas a fixed batch contains data from a single
+task. For each patch within a mixed batch, we first select a
+task-level dataset Dt from the entire multi-task dataset D
+with a probability of pt. Once a task is selected, a patch
+is randomly chosen from the corresponding dataset. This
+two-step process is repeated n times, where n is the num-
+ber of samples in the batch. Rather than selecting a random
+task for each sample in a batch, for a fixed batch we sample
+a task dataset Dt once per batch and then select n random
+samples from that given dataset. In all experiments, we set
+pt = 1
+T .
+In Figure 2a, we show a simple example of the output of
+our task sampler, with a batch size of 3. Here, each coloured
+border denotes a separate task.
+3.2.2 Dynamic training and loss aggregation
+Previous work has shown that optimisation of MTL models
+can be difficult, especially when tasks are in conflict with
+each other [39]. In CPath, this may involve using images
+from different tissue types or with different pixel resolu-
+tion. This challenge can be exacerbated when each task has
+a different associated loss function, which makes balanc-
+ing each task-level loss and consequently overall network
+optimisation quite challenging. To help ease the training
+
+of our model, we ensure that all considered tasks have the
+same input data assumptions and use a cross-entropy-based
+loss function to optimise the model. Cross-entropy loss is
+widely used for both segmentation and classification tasks
+and therefore is an appropriate choice if we want to use
+a similar loss function across different tasks. Note, when
+considering an instance segmentation task, we use weighted
+cross-entropy, as used in the original U-Net model [47].
+When training the network, we use dynamic weight
+freezing that is dependent on how batches are aggregated
+by the task sampler. After passing a batch through the net-
+work, the weights in the encoder Φ are always updated irre-
+spective of how the batch is sampled, whereas the weights
+of decoder Ψt are only updated when at least one example
+from task t is present.
+Hereby we define the loss function when we jointly train
+Cerberus:
+L =
+X
+t∈[1,T ]
+X
+ρ∈Dt
+Lt({Φ, Ψt}, xρ, yρ) (1)
+In this equation, ρ ∈ Dt denotes a sample patchρ which be-
+longs to the dataset Dt of the task t. Meanwhile, xρ and yρ
+are predictions generated by the decoder Ψt and the ground
+truth for the sample ρ respectively. In practice, the loss of
+each task t is computed by masking samples from other
+tasks with zeros. In other words, we multiply the result-
+ing loss of all samples with a mask to set their subsequent
+gradient calculation to zero.
+3.3. Cerberus for transfer learning
+As a result of training Cerberus on a large amount of
+data, we can leverage the encoder to improve the perfor-
+mance of additional tasks with transfer learning. For exam-
+ple, the Cerberus feature representation can be used to en-
+hance the performance of classification tasks or the model
+parameters can be used as pretrained weights for better
+model initialisation. The learned representation may also
+be used to extend the trained model and enable the subtyp-
+ing of initially localised objects. To highlight the advantage
+of utilising Cerberus for transfer learning, we experiment
+with 3 different applications. First, we see whether the fea-
+ture representation learned by Cerberus can improve both
+patch classification and object subtyping and then we see
+whether Cerberus can provide better pretrained weights for
+object detection.
+An overview of each of the tasks mentioned above is
+provided in Figure 2c-e. These are treated as single-task
+problems and therefore a simple batch aggregation strategy
+is used, rather than utilising our MTL task sampler, as de-
+scribed in Section 3.2.1.
+3.3.1 Patch classification
+To test the strength of the features learned by Cerberus,
+we use them for the task of subtyping small patches cen-
+tred at individual objects, such as nuclei. In particular, we
+utilise the trained Cerberus encoder Φ and add several out-
+put layers to predict the corresponding category. For this
+purpose, we aggregate features from several positions in
+the encoder before applying global average pooling and two
+fully connected layers to obtain the prediction. We account
+for features at different scales within the encoder in order
+to demonstrate the feature strength at multiple points within
+the network. We also freeze the encoder weights and train
+the output layers in isolation to capture the contribution of
+the feature representation.
+3.3.2 Object subtyping
+To give further merit to the Cerberus feature representation,
+we show how it can be leveraged to sub-categorise each of
+the initially considered binary segmentation tasks. For this,
+we add an additional decoder ΨT +1 to Cerberus, dedicated
+to the task of subtyping a particular output, such as the nu-
+clei. Then, we train ΨT +1 in isolation, while freezing both
+Φ and the decoders Ψt ∀ t ∈ [1, T]. We treat this task as a
+pixel-based classification problem and therefore utilise the
+same decoder architecture used by the other segmentation
+tasks. After training the additional subtyping branch, Cer-
+berus can predict all tasks simultaneously.
+Training the subtyping branch in isolation means that we
+do not have to cater for balancing the different components
+of the loss function between each task. Therefore, we use a
+combination of cross-entropy and Dice loss, which can also
+help counter class imbalance in the data [26]. Also, we only
+calculate the loss within foreground pixels by performing a
+masking operation on the loss function. We do this because
+the foreground pixels have already been localised by the as-
+sociated binary segmentation branch and therefore differen-
+tiating between foreground and background is not needed.
+Concretely, the loss at the output of the subtyping branch
+ΨT +1 for input X is defined as:
+LT +1(X) = Lα(X) + Lβ(X), (2)
+where Lα and Lβ refer to the masked cross-entropy and
+Dice losses respectively. Specifically, Lα(X) and Lβ(X)
+are defined as follows:
+Lα(X) = −
+X
+k∈K
+1
+|νk|
+X
+i∈νk
+yi,k(X) · logˆyi,k(X) (3)
+Lβ(X) =
+X
+k∈K
+1 − 2 · P
+i∈νk
+(yi,k(X) + ˆyi,k(X)) + ϵP
+i∈νk
+yi,k(X) + P
+i∈νk
+ˆyi,k(X) + ϵ .
+(4)
+
+Here, K is the number of classes, y denotes the prediction
+and ˆy is the ground truth. Therefore, yi,k(X) corresponds
+to the prediction for input image X for class k and pixel i.
+νk denotes the set of foreground pixels belonging to class
+k and ϵ is a smoothing parameter used in the Dice loss to
+avoid division by zero.
+3.3.3 Object detection
+Instead of adding additional decoders so that Cerberus per-
+forms an increasing number of tasks, we may want to utilise
+the weights in the trained Cerberus encoder for improved
+weight initialisation in a separate network. It is a common
+strategy to initialise networks with weights obtained from
+sampling from the normal distribution [21, 27] or from ini-
+tially training on large datasets, such as ImageNet. How-
+ever, we demonstrate that utilising weights obtained from
+training Cerberus can provide better initialisation for cer-
+tain tasks in CPath, leading to improved performance. To
+showcase this, we train RetinaNet [38], with our pretrained
+Cerberus encoder as the backbone, for the task of object de-
+tection. RetinaNet is a region proposal network (RPN) [46]
+that performs object detection by predicting the bounding
+boxes within an input image. RPNs are designed to effi-
+ciently predict region proposals with a wide range of scales
+and aspect ratios, which are then further processed to pre-
+dict the location of object bounding boxes. For this experi-
+ment, our goal is to understand whether Cerberus can pro-
+vide better initial weights, rather than isolating the contri-
+bution of the feature representation. Therefore, all weights
+in the network are optimised together.
+3.4. Collecting large datasets for segmentation
+Manually annotating datasets for deep segmentation
+models is a very time-consuming procedure. Many deep
+learning models can provide an accurate segmentation, es-
+pecially in trivial areas with a distinct morphology. There-
+fore, it may be a waste of effort to still rely on manual an-
+notation in areas where deep learning models can perform
+well. Therefore, to enable the collection of a large amount
+of accurately labelled data we employ a pathologist-in-the-
+loop annotation collection pipeline, which is a simplified
+version of the strategy implemented by Graham et al. [24].
+Our method consists of three main steps: ( i) initial seg-
+mentation model training with manually annotated data, (ii)
+pathologist-in-the-loop refinement and retraining, (iii) final
+manual refinement.
+First, we train an initial deep segmentation model on
+manually annotated data. This may be on existing avail-
+able data if we are annotating objects with known publicly
+available datasets such as glands [53, 22]. Otherwise, if an-
+notating an object with no available dataset in a given tissue
+type, then a manually annotated dataset needs to be created.
+Segmentation
+CNN (re)training and inference
+CNN
+Pathologist-in-the-loop
+Add to training dataset
+ Select difficult examples
+Manual refinement
+Segmentation
+CNN (re)training and inference
+Pathologist-in-the-loop
+Extract challenging regionsAdd to training set
+Manual refinement
+(a) (b)
+(c)
+Figure 3: Annotating datasets at scale for segmentation:
+a) first train an initial segmentation model with available
+data, b) process unlabelled data and extract difficult regions
+where the model does not perform well and c) difficult re-
+gions are then refined and added to the training set before
+retraining the model. This sequence of steps is repeated
+until the data is accurately annotated. Difficult regions are
+shown with red borders in (b), otherwise they are shown
+with green borders.
+After training the initial segmentation model, we process
+all data that we wish to annotate with the algorithm. With
+the input of a pathologist, we then extract image regions
+of size 1,000×1,000 where the algorithm does not perform
+well and refine the results. These images, along with the
+corresponding refined annotations, are then added to the ini-
+tial training set before re-training the model. This extract-
+refine-retrain step is repeated until there is no noticeable
+improvement with the addition of further data. As a final
+step, we perform manual refinement of all data, which is
+then verified by a qualified pathologist. Segmented glands
+and lumina were presented for pathologist review when the
+data scientists were not sure about the visual quality of seg-
+mentation or noticed regions (glands or lumina) that could
+be potential false negatives. As a result, the number of ac-
+tual glands/lumina reviewed and/or annotated by the pathol-
+ogist was much less than the total number of glands/lumina.
+We provide an overview of our iterative labelling strategy in
+Figure 3 and a summary of the number of annotated objects
+in Table 1.
+4. Experiments and results
+4.1. The datasets
+In our MTL experiments, we utilise four task-level
+datasets. Specifically, we utilise a gland, lumen, nuclei and
+tissue type classification dataset, where each one contains
+
+c) Nuclear Segmentation & Classification
+a) Gland Segmentationb) Lumen Segmentation
+d) Tissue Type Classification
+EpithelialLymphocytePlasmaNeutrophilEosinophilConnective
+TCGAGlaSCRAGDigestPathTCGAGlaSCRAGDigestPath
+TCGA DigestPathCoNSePPanNukeCRAGGlaS
+BackgroundAdiposeAbnormal EpitheliumNormal EpitheliumInflammatoryStromaMuscleDebrisMucous
+Data SourcesKather100KKather5KCRC-TP2
+438,362 Patches
+495,179Nuclei
+56,358Lumen51,157 Glands
+Figure 4: Overview of the datasets used for a) gland segmentation, b) lumen segmentation, c) nuclear segmentation &
+classification and d) tissue type classification. We also show the origin of the image regions used for each task.
+image regions taken from H&E stained colon tissue sam-
+ples at 20× objective magnification (around 0.5µm/pixel).
+Gland dataset: GlaS [53] and CRAG [22] are two of
+the most widely used available datasets for gland instance
+segmentation in colon histology images, containing a total
+of 1,602 and 3,209 annotated glandular boundaries, respec-
+tively. Despite GlaS and CRAG proving instrumental in
+the development of the recent automated gland segmenta-
+tion models [8, 22], both datasets are from a single cen-
+tre (UHCW) and therefore models trained on these may
+not generalise well to external data. Therefore, in addi-
+tion, we annotate glands from two further datasets using
+our iterative pathologist-in-the-loop annotation method de-
+scribed in Section 3.4. Specifically, we label 46,346 addi-
+tional glands within images extracted from the DigestPath
+[13] and TCGA datasets, respectively.
+Lumen dataset: There has been recent work on the col-
+lection of large annotated datasets for gland segmentation
+within colon tissue, but there are not many works on lu-
+men segmentation, which can be beneficial for diagnosing
+certain conditions such as cribriform architecture and ser-
+rated polyps. To combat this, we annotate lumina within
+images taken from the GlaS, CRAG, DigestPath and TCGA
+datasets using our iterative labelling approach and accord-
+ingly use the data in associated experiments. For this, we
+manually label 6,863 lumen regions in GlaS and CRAG im-
+ages as our initial annotated dataset and then use our iter-
+ative scheme to generate 49,495 lumen boundaries in the
+DigestPath and TCGA datasets.
+Nuclei dataset: We use the Lizard dataset [24, 25],
+which is the largest known instance segmentation and clas-
+sification dataset in CPath containing nearly half a mil-
+lion labelled nuclei. Each nucleus is labelled according to
+the cell that it belongs to. Specifically, the labels used in
+the dataset are epithelial, lymphocyte, plasma, neutrophil,
+eosinophil and connective tissue. Here, the connective tis-
+
+Gland Lumen Nuclei
+Existing Data 4,811 - 495,179
+Generated Data 46,346 56,358 -
+Total 51,157 56,358 495,179
+Table 1: Overview of the number of annotated objects used
+for segmentation tasks in this paper.
+sue is a broader category that includes endothelial cells,
+fibroblasts and muscle cells. When creating the dataset,
+image regions are extracted from the following 6 sources:
+CRAG [22], GlaS [53], CoNSeP [26], PanNuke [18], Di-
+gestPath [13] and TCGA. Therefore, Lizard is a diverse
+dataset and models trained on it may likely generalise to
+unseen examples.
+Tissue type dataset: We utilise 3 datasets for tissue type
+classification in colorectal images, that we refer to as CRC-
+TP2, Kather5K [34] and Kather100K [33], which contain
+100,000, 5,000 and 333,362 patches respectively. Here,
+CRC-TP2 contains image patches from UHCW, whereas
+Kather5K and Kather100K contain patches from the pathol-
+ogy archive at the University Medical Center Mannheim.
+CRC-TP2 is an extension of the dataset by Javed et al.
+[31], where we add an extra 53,362 patches from an internal
+colon biopsy dataset [61]. Overall, the tissue types present
+in the dataset are background, adipose (fat), abnormal ep-
+ithelium, normal epithelium, inflammatory, stroma, muscle,
+debris and mucous. Example image patches for each class
+can be seen in Figure 4.
+Data split: For segmentation tasks, we use TCGA data
+as an external test set and split the remaining data into 3
+folds for cross-validation. For tissue type classification, we
+do not use an external test set but similarly split the data into
+3 folds. When creating each split, we separate the data on
+a patient level to ensure that test data remains completely
+unseen. Then, for a given fold we assign each split as either
+a training, validation or testing subset. We also make sure
+that no patient overlap occurs between the subsets. For ex-
+ample, if a patch from fold 1 of the nuclei dataset belongs
+to a given patient, then that patient should not exist in any
+of the other datasets in folds 2 or 3.
+4.2. Evaluation metrics
+Segmentation: We utilise the Dice score [15] and
+Panoptic Quality (P Q) [36] to measure the binary segmen-
+tation performance. Here, the Dice score measures how
+well a model can separate foreground pixels from the back-
+ground and is defined as:
+Dice = 2 × (|Y |∩| ˆY |)
+|Y |+| ˆY |
+, (5)
+where Y and ˆY are the prediction and ground truth maps
+respectively. However, the Dice score does not indi-
+cate whether neighbouring objects are correctly separated.
+Therefore, we also use P Qto provide a measure for the
+quality of instance segmentation. P Qmatches predicted
+objects with ground truth objects based on whether their
+intersection-over-union (IoU ) exceeds 0.5. This matching
+criterion is used to separate objects into true positives (T P),
+false positives (F P) and false negatives ( F N). Then, P Q
+is defined as:
+P Q= |T P|
+|T P|+ 1
+2 |F P|+ 1
+2 |F N|| {z }
+Detection Quality(DQ)
+×
+P
+(y, ˆy)∈T PIoU (y, ˆy)
+|T P|| {z }
+Segmentation Quality(SQ)
+, (6)
+where ˆy denotes a ground truth instance and y denotes a
+predicted instance. We calculate P Qindividually for each
+image and then average the results to get the overall statistic.
+When assessing multi-class instance segmentation, we
+calculate P Qindependently for each class and then report
+the average score. In previous work [18, 24],mP Qwas de-
+fined by calculating P Qfor each image and for each class
+before the overall results were averaged. However, the re-
+sult of a particular image was not considered in the class
+average if that class was not present in the ground truth.
+To help avoid skipping images, we also reportmP Q+ [25],
+which aggregates the statistics overall images before taking
+the class average.
+Classification: To assess the classification performance,
+we utilise mean average precision ( mAP ) and mean F1
+(mF1). For both metrics, either average precision ( AP ) or
+F1 is calculated and the average over the classes is reported
+to give mAP and mF1. AP and F1 are defined as:
+P rn = T Pn
+T Pn + F Pn
+Ren = T Pn
+T Pn + F Nn
+(7)
+AP =
+X
+n
+(Ren − Ren−1)P rn (8)
+F n
+1 = P rn ∗ Ren
+P rn + Ren
+(9)
+Upon using a threshold n to convert a probability to a bi-
+nary label, the predictions and ground truth are split into
+true positive ( T P), false positive ( F P) and false negative
+(F N) sets. The number of items in each of these sets is
+then utilised to calculate the precision (P r) and recall (Re)
+values. Depending on the use case, n may have a different
+meaning. For AP , n denotes the n-th threshold level that is
+associated with a specific threshold value. Forn−1, this ex-
+tends to be the previous threshold level that is smaller than
+n. However, for F1, we set the prediction label to be the
+one with the highest probability, rather than using a specific
+threshold value.
+
+Cross Validation External Test
+Model Binary PQ mPQ mPQ + Binary PQ mPQ mPQ +
+U-Net 0.564 ± 0.020 0.275 ± 0.014 0.324 ± 0.018 0.493 ± 0.051 0.235 ± 0.018 0.258 ± 0.034
+HoVer-Net 0.583 ± 0.014 0.295 ± 0.018 0.409 ± 0.027 0.514 ± 0.026 0.285 ± 0.018 0.335 ± 0.017
+Cerberus 0.588 ± 0.008 0.323 ± 0.020 0.396 ± 0.022 0.560 ± 0.028 0.308 ± 0.015 0.353 ± 0.009
+Cerberus+ 0.612 ± 0.010 0.358 ± 0.011 0.425 ± 0.019 0.568 ± 0.009 0.332 ± 0.011 0.388 ± 0.003
+Table 2: Simultaneous nuclear segmentation and classification results of our proposed approach compared to recent state-of-
+the-art methods. Cerberus predicts the eroded instance target, whereas Cerberus+ also predicts the object boundary.
+Gland Lumen
+Model Cross Val External Test Cross Val External Test
+U-Net 0.622 ± 0.030 0.459 ± 0.024 0.501 ± 0.008 0.240 ± 0.109
+MILD-Net 0.647 ± 0.046 0.526 ± 0.027 0.522 ± 0.034 0.353 ± 0.088
+Rota-Net 0.662 ± 0.048 0.573 ± 0.034 0.569 ± 0.042 0.436 ± 0.054
+Cerberus 0.677 ± 0.028 0.640 ± 0.012 0.589 ± 0.006 0.525 ± 0.027
+Cerberus+ 0.674 ± 0.021 0.650 ± 0.004 0.590 ± 0.018 0.530 ± 0.005
+Table 3: Gland and lumen segmentation results of our proposed approach compared to recent top-performing methods.
+Cerberus predicts the eroded instance target, whereas Cerberus+ also predicts the object boundary.
+4.3. Results
+4.3.1 Cerberus vs state-of-the-art approaches
+First, we compare the segmentation performance of Cer-
+berus with recent state-of-the-art approaches in CPath and
+provide the results in Tables 2 and 3. Here, we only con-
+sider MTL with mixed batch sampling, due to its superior
+performance as shown in Table 4. For this, we assess the
+binary segmentation performance of nuclei, glands and lu-
+mina using P Qand then quantify the multi-class segmen-
+tation performance of nuclei using both mP Qand mP Q+.
+For nuclei, we compare the performance of our proposed
+approach with U-Net [47] and HoVer-Net [26]. HoVer-Net
+is a recent top-performing method for combined nuclear in-
+stance segmentation and classification [60, 18] and there-
+fore serves as a strong benchmark. To enable full com-
+parison amongst all models for nuclear segmentation and
+classification, we add extra layers to the output of U-Net
+for nuclear subtyping. For both gland and lumen segmen-
+tation, we compare the performance of Cerberus with U-
+Net, MILD-Net [22] and Rota-Net [23]. MILD-Net and
+Rota-Net are competitive methods for both of these tasks
+and therefore serve as strong baselines. Here, Rota-Net
+segments the glands and lumina simultaneously, like in the
+original publication. All Cerberus and U-Net models use
+a simple 2-class eroded instance target, whereas MILD-Net
+and Rota-Net also incorporate the object boundary as an ad-
+ditional class. HoVer-Net uses a more complex instance
+segmentation target, consisting of horizontal and vertical
+distance maps. Therefore, if Cerberus can outperform com-
+peting methods using a simple instance segmentation target,
+then this holds great promise for achieving even better re-
+sults when adding more complex targets. As an extra exper-
+iment, we see whether we can further boost the performance
+of Cerberus by also incorporating the object boundary. We
+denote this as Cerberus + in Tables 2 and 3. For all U-Net
+models, we use batch normalisation, which was not used in
+the original publication [47].
+In Table 2, we see that Cerberus outperforms both U-
+Net and HoVer-Net on nearly all measures for both binary
+and multi-class nuclear instance segmentation. This perfor-
+mance is further improved when using the object boundary
+as an additional target of the network and leads to signifi-
+cantly better performance for all measures compared to both
+U-Net and HoVer-Net. It may be worth noting that we re-
+port slightly different results than the HoVer-Net results re-
+ported by Graham et al. [24] because we ensure that the
+exact same input patches are used for a fair comparison. It
+is interesting to see that the boost in performance is more
+pronounced for the external test set, suggesting that MTL
+can help with generalisation. For gland and lumen seg-
+mentation, we observe from Table 3 that Cerberus exceeds
+the performance of U-Net, MILD-Net and Rota-Net on all
+measures. Again, this is especially prominent on the exter-
+nal test set. Despite the increase in performance not being
+large, we see a slight increase in performance when con-
+sidering the object boundary, especially on the completely
+unseen data source. Therefore, this justifies predicting the
+object boundary for instance segmentation in all segmenta-
+tion tasks considered by our network.
+4.3.2 Multi-task learning vs single-task learning for
+segmentation
+We perform extensive experiments to fully understand the
+contribution of multi-task learning for segmentation. For
+
+Nuclei Gland Lumen
+Task Sampler Dice PQ Dice PQ Dice PQ
+U-Net
+STL Fixed 0.767 ± 0.013 0.566 ± 0.021 0.891 ± 0.013 0.622 ± 0.030 0.659 ± 0.014 0.501 ± 0.008
+MTL Fixed 0.759 ± 0.004 0.560 ± 0.006 0.894 ± 0.006 0.636 ± 0.025 0.688 ± 0.017 0.536 ± 0.022
+MTL Mixed 0.762 ± 0.007 0.558 ± 0.011 0.897 ± 0.011 0.628 ± 0.015 0.697 ± 0.003 0.543 ± 0.011
+ResNet-34
+STL Fixed 0.772 ± 0.002 0.581 ± 0.006 0.902 ± 0.007 0.669 ± 0.014 0.666 ± 0.060 0.508 ± 0.091
+MTL Fixed 0.769 ± 0.007 0.572 ± 0.009 0.903 ± 0.001 0.677 ± 0.022 0.726 ± 0.015 0.585 ± 0.013
+MTL Mixed 0.770 ± 0.003 0.574 ± 0.005 0.905 ± 0.005 0.674 ± 0.016 0.721 ± 0.018 0.590 ± 0.014
+IN-MTL Mixed 0.779 ± 0.004 0.588 ± 0.009 0.907 ± 0.002 0.683 ± 0.013 0.733 ± 0.019 0.592 ± 0.019
+IN-MTL+PC Mixed 0.778 ± 0.006 0.589 ± 0.008 0.909 ± 0.008 0.677 ± 0.028 0.735 ± 0.007 0.589 ± 0.006
+(a) Cross validation results.
+Nuclei Gland Lumen
+Task Sampler Dice PQ Dice PQ Dice PQ
+U-Net
+STL Fixed 0.713 ± 0.067 0.499 ± 0.058 0.741 ± 0.012 0.459 ± 0.024 0.281 ± 0.089 0.240 ± 0.109
+MTL Fixed 0.708 ± 0.061 0.486 ± 0.058 0.770 ± 0.100 0.471 ± 0.077 0.420 ± 0.051 0.376 ± 0.063
+MTL Mixed 0.738 ± 0.017 0.505 ± 0.017 0.824 ± 0.061 0.492 ± 0.039 0.446 ± 0.063 0.377 ± 0.059
+ResNet-34
+STL Fixed 0.758 ± 0.021 0.554 ± 0.030 0.820 ± 0.104 0.566 ± 0.082 0.388 ± 0.016 0.313 ± 0.041
+MTL Fixed 0.739 ± 0.032 0.527 ± 0.042 0.864 ± 0.031 0.602 ± 0.020 0.594 ± 0.046 0.470 ± 0.010
+MTL Mixed 0.742 ± 0.027 0.531 ± 0.038 0.881 ± 0.013 0.617 ± 0.004 0.622 ± 0.053 0.492 ± 0.013
+IN-MTL Mixed 0.773 ± 0.031 0.560 ± 0.037 0.875 ± 0.072 0.619 ± 0.064 0.637 ± 0.057 0.516 ± 0.056
+IN-MTL+PC Mixed 0.774 ± 0.024 0.560 ± 0.028 0.908 ± 0.010 0.640 ± 0.012 0.666 ± 0.014 0.525 ± 0.027
+(b) External test results.
+Table 4: Comparison of results obtained for binary segmentation using MTL and STL. Sampler indicates how patches are
+aggregated into batches. A Fixed batch contains patches from a single task and aMixed batch contains patches from multiple
+tasks (Section 3.2.1). IN refers to ImageNet pretrained models and PC denotes patch classification. When using MTL with
+PC, a batch contains either only patches for segmentation or PC (Section 3.2.1).
+Task mAP mF 1
+IN-STL 0.949 ± 0.002 0.885 ± 0.001
+IN-MTL+PC 0.948 ± 0.006 0.883 ± 0.007
+Table 5: Comparison of performance with models trained
+using multi-task and single-task learning for tissue type
+classification.
+this experiment, we only consider the binary output for seg-
+mentation tasks and consider the eroded map as the instance
+target for simplicity. We report results for further subtyping
+of the segmentation output in Section 4.3.3. In particular,
+we compare single-task learning (STL) methods, where a
+devoted network is trained individually per task, with multi-
+task networks, where tasks are optimised simultaneously.
+We also experiment with two different sampling strategies
+for MTL: (i) sampling a single task per batch and ( ii) sam-
+pling a mixture of tasks per batch, referred to as fixed and
+mixed batches, respectively in 3.2.1. We investigate the
+above strategies using encoder-decoder based model archi-
+tectures with hard parameter sharing. Specifically, we ex-
+periment with both a basic U-Net style encoder [47] with
+batch normalisation and a ResNet34 encoder [28]. We as-
+sess the performance of multiple models to remove any
+bias from the model architecture and instead solely focus
+on the contribution of the training scheme. After gaining
+insight into the effect of MTL for segmentation tasks, we
+investigate whether ImageNet pretrained weights and utilis-
+ing patch classification as an auxiliary task can further in-
+crease the segmentation performance. As described in Sec-
+tion 3.2.1, a batch must contain a single super task, which
+needs to be initially selected if considering both segmenta-
+tion and patch classification.
+Our major aim is that we want the performance of net-
+works trained using MTL to be at least as good as those
+trained using STL. This would reduce the computational re-
+quirements during training and inference because just a sin-
+gle network could be used to perform tasks simultaneously.
+We can see from Table 4 that in fact we achieve superior per-
+formance for most tasks considered during our experiments.
+In particular, we observe that both U-Net and ResNet34 al-
+ternatives benefit from MTL, especially for gland and lu-
+men segmentation. This observation is more pronounced
+on the external test set, suggesting that the features learned
+during MTL can help with generalisation. The greatest im-
+provement from training with MTL is observed for lumen
+segmentation, especially on the external test set. This can
+potentially be attributed to learning complementary infor-
+
+mation regarding the location of glandular boundaries. De-
+spite not observing an obvious increase in performance for
+nuclear segmentation, results are comparable, suggesting
+that we do not require a separate network to perform this
+task. We suspect that this may be because we are already
+using a very large dataset for nuclear segmentation and so
+the addition of complementary tasks may not be particularly
+advantageous.
+Although we achieve similar performance during cross-
+validation, it can be seen that utilising a mixed batch leads
+to significantly better performance on the external test set.
+Therefore, for the remainder of the experiments in this pa-
+per, we only consider MTL with mixed batch sampling. We
+also hypothesise that mixed batch sampling will scale bet-
+ter when using a large number of tasks because for a given
+batch, there is a greater probability of at least one sample
+being present for a particular task. However, this assump-
+tion only holds if the batch size is greater than the number
+of tasks. Further investigation into the relationship between
+batch types (mixed/fixed) and batch size may be required in
+future work to fully understand what kind of batches work
+best for MTL.
+For all tasks, we observe that using a ResNet encoder
+results in a significantly better performance compared to
+using a conventional U-Net approach. We also observe
+that initialising the ResNet encoder with ImageNet weights,
+rather than randomly, gives a further boost in the perfor-
+mance. From Table 4 we can see that with the addition
+of patch classification, results are comparable for cross-
+validation, but have improved on the external test set. This
+suggests that utilising the additional data from the patch
+classification task leads to the shared encoder learning more
+representative features, and hence leads to better perfor-
+mance on external data. Of course, as an additional ben-
+efit, the network can predict the tissue type at the output
+of the network, which can potentially lead to more pow-
+erful downstream pipelines. It must be noted that results
+using ImageNet-pretrained MTL models were obtained to
+assess potential performance gains over MTL. Therefore,
+they should not be compared directly with STL models.
+We report the patch classification performance in Table 5,
+where we observe that the multi-task and single-task mod-
+els achieve similar performance. Therefore, performance is
+not compromised when considering multiple tasks along-
+side patch classification. For this experiment, we compare
+our approach with STL pretrained with ImageNet to provide
+a fair comparison.
+4.3.3 Cerberus feature representation for patch-based
+nuclear classification
+After training Cerberus, our next experiment involves un-
+derstanding whether the learned features can be used to im-
+prove the performance of patch-level nuclear classification.
+We first assess whether the representation captured from
+training Cerberus is superior to that obtained from train-
+ing on ImageNet in a supervised setting. Using ImageNet-
+trained networks is a common strategy to obtain a deep
+representation in the field of computer vision and therefore
+serves as a good benchmark for this experiment. Then, we
+compare single-task and self-supervised learning alterna-
+tives with histology-specific data. In particular, contrastive
+learning is a self-supervised approach that has shown great
+promise, without requiring labelled data. Therefore, we
+compare Cerberus features with those obtained using a re-
+cent contrastive learning method called SimCLR [9] on our
+combined gland, lumen and nuclei datasets. However, this
+may not fully unlock the potential of self-supervised meth-
+ods that are only bounded by the amount of available image
+data. Therefore, we also add results using SimCLR trained
+with over 2 million H&E colon input patches at 20 × ob-
+jective magnification and denote it as SimCLR +. For this,
+in addition to the data that was used for MTL, we sampled
+many image patches from the PAIP challenge 1 and TCGA
+datasets. As an additional benchmark, we also utilise a
+model provided by Ciga et al. [10] that was optimised by
+training SimCLR on 57 histology datasets.
+In Table 6, we show results for nuclear classification us-
+ing different feature representations. Each representation
+is obtained by passing images through a pretrained ResNet
+encoder, where weights were initially obtained using one
+of the strategies described above. Features are passed to
+several trainable output layers to predict the nuclear cate-
+gory. We aggregate features from several positions of the
+encoder before applying global average pooling and two
+fully connected layers to obtain the final prediction. For
+most entries in Table 6 above the dashed line, we utilise
+a ResNet34 model for feature extraction. However, Ciga
+et al. [10] do not have this model available and instead
+provides a ResNet18 alternative. Therefore, to enable a
+like-for-like comparison, we also retrain Cerberus with a
+ResNet18 backbone and compare the corresponding results.
+We extract a dataset of patches of size 32 ×32 pixels
+centred at each nucleus within our nuclear segmentation
+dataset and use the same splits that were initially used for
+feature extraction to ensure that all test data remains com-
+pletely unseen. We observe from Table 6 that all features
+obtained using single or multi-task learning achieve a bet-
+ter performance than ImageNet-derived features for nuclear
+subtyping. They are also superior to those features obtained
+from training with SimCLR on our gland, lumen and nuclei
+datasets. Using MTL trained on segmentation tasks leads
+to stronger features as compared to single-task approaches
+for gland and lumen segmentation. However, using features
+1The PAIP dataset is available to download here: https://
+paip2020.grand-challenge.org/
+
+Cross Validation External Test
+Features Mode mAP mF 1 mAP mF 1
+IN Patch 0.535 ± 0.018 0.491 ± 0.026 0.385 ± 0.013 0.355 ± 0.020
+SimCLR Patch 0.508 ± 0.005 0.464 ± 0.014 0.432 ± 0.029 0.403 ± 0.026
+SimCLR+ Patch 0.592 ± 0.012 0.557 ± 0.012 0.488 ± 0.023 0.442 ± 0.009
+STL Nuclei Patch 0.635 ± 0.033 0.588 ± 0.029 0.572 ± 0.022 0.538 ± 0.020
+STL Gland Patch 0.542 ± 0.027 0.499 ± 0.041 0.495 ± 0.042 0.456 ± 0.056
+STL Lumen Patch 0.520 ± 0.022 0.478 ± 0.038 0.452 ± 0.059 0.418 ± 0.073
+MTL Patch 0.587 ± 0.032 0.543 ± 0.039 0.558 ± 0.005 0.506 ± 0.010
+IN-MTL Patch 0.607 ± 0.033 0.562 ± 0.038 0.540 ± 0.035 0.492 ± 0.041
+IN-MTL+PC Patch 0.651 ± 0.067 0.601 ± 0.049 0.573 ± 0.013 0.540 ± 0.019
+IN-MTL+PC∗ Patch 0.628 ± 0.030 0.577 ± 0.038 0.586 ± 0.024 0.518 ± 0.034
+Ciga et al. [10] Patch 0.615 ± 0.004 0.566 ± 0.019 0.540 ± 0.035 0.492 ± 0.041
+Table 6: Comparison of different deep features for nuclear classification. All models consider a patch of size 32×32 extracted
+at the centre of each nucleus. We only consider MTL with mixed batch sampling due to its superior performance in Table
+4. For all models, we freeze the ResNet weights and only train the classification layers. Models above the dashed line use a
+ResNet34 backbone, whereas models below the dashed line use ResNet18 to enable cross-comparison with Ciga et al. [10],
+which uses SimCLR. The difference between this and SimCLR/SimCLR + reported on rows 2 and 3 is the data used for
+training. Here, SimCLR uses the same data used during MTL and SimCLR + uses over 2 million colon H&E image patches
+from many datasets.
+Cross Validation External Test
+Features Mode Loss mAP mF 1 mAP mF 1
+IN-MTL+PC Pixel A CE 0.493 ± 0.021 0.477 ± 0.013 0.447 ± 0.025 0.432 ± 0.012
+IN-MTL+PC Pixel A CE & Dice 0.537 ± 0.017 0.545 ± 0.015 0.494 ± 0.030 0.497 ± 0.012
+IN-MTL+PC Pixel A Masked CE & Dice 0.576 ± 0.012 0.566 ± 0.008 0.529 ± 0.032 0.509 ± 0.020
+IN-MTL+PC Pixel B Masked CE & Dice 0.678 ± 0.035 0.710 ± 0.030 0.634 ± 0.013 0.669 ± 0.003
+Table 7: Results for nuclear classification with different loss strategies by making a prediction per pixel. Pixel A performs
+nuclear classification by adding an extra classification layer at the output of the nuclear segmentation branch, whereas PixelB
+uses a devoted upsampling branch.
+from MTL does not surpass the performance of single task
+nuclear segmentation features. This may be unsurprising
+because the features learned for nuclear segmentation are
+most probably directly related to this particular task of nu-
+clear subtyping. However, when adding patch classification
+as an auxiliary task during MTL, we achieve the best overall
+performance. MTL with auxiliary patch classification (us-
+ing a ResNet18 encoder) also obtains superior features for
+nuclear classification as compared to the model supplied by
+Ciga et al. [10].
+4.3.4 Cerberus feature representation for object sub-
+typing
+Cerberus is trained for binary segmentation and multi-class
+patch classification. However, it may be desirable to further
+subtype the segmentation output. For example, the output
+of the gland segmentation branch could be further split into
+benign and malignant glands, whereas the nuclear segmen-
+tation output could be split into different types of nuclei.
+As described in Section 3.3.2, this can be done by adding a
+dedicated decoder to Cerberus, which performs pixel-wise
+classification within objects for a particular task. Major-
+ity voting can then be used to assign a single category to
+each object. When utilising this strategy, the original Cer-
+berus weights are frozen and only the additional decoder is
+trained. Therefore, the original model parameters remain
+unchanged and so performance is not compromised. Be-
+cause the weights are frozen, it is essential for the encoder
+to have initially learned a strong feature representation to
+perform well on this task. In Section 3.3.2, we also describe
+our proposed loss function that focuses only on foreground
+pixels and aims to combat class imbalance.
+For this experiment, we explore whether the strategy
+described above can be used to improve the performance
+achieved in Table 6. The added benefit of extending Cer-
+berus in this way is that it enables subtyping to be done
+jointly with other tasks and therefore a single network can
+be used. On the other hand, if our patch classification
+pipeline for nuclear classification was used, then an addi-
+tional network would be needed. To give justification for
+our chosen subtyping network architecture and loss func-
+
+GlandSurface Epithelium
+Figure 5: Signet ring cell detection visual results using the pretrained Cerberus encoder.
+Figure 6: Signet ring cell detection performance with dif-
+ferent numbers of input samples. We compare Cerberus
+features with STL (trained on nuclei) and ImageNet-based
+features. F ROC: free-response receiver operating charac-
+teristic.
+tion, we provide an ablation study in Table 7.
+Rather than having an entirely separate branch for sub-
+typing, we initially split from the binary nuclear segmenta-
+tion branch after the final upsampling operation to leverage
+already existing features and save on computational cost.
+Using this strategy, we experiment with 3 different loss con-
+figurations. We first use cross-entropy (CE) and then com-
+bine CE with Dice loss to see whether this can help counter
+the class imbalance present in the dataset. We calculate the
+loss for all pixels, which is not needed if we already per-
+form object localisation in the segmentation branch. There-
+fore, we also experiment with a masked loss that computes
+the loss only in foreground pixels. After analysing the best
+loss configuration, we then see whether utilising the devoted
+upsampling branch can further boost the performance.
+In Table 7, we observe that adding Dice loss to CE loss
+leads to an improvement in performance for all measures.
+There is also a further boost in the performance when using
+masked loss, which helps the network to learn discrimina-
+tive features within the nuclei, rather than learning to sepa-
+rate foreground from background. However, it is evident
+from Table 6 that the performance is still inferior to the
+patch-classification counterpart that uses the same features.
+When adding the devoted upsampling branch, we observe a
+significant increase in performance, that even surpasses all
+patch-based alternatives. Therefore, it is clear that the use
+of a full branch for subtyping is required to ensure a strong
+performance.
+
+4.3.5 Cerberus pretrained weights for object detection
+To understand whether our trained multi-task model leads to
+better weight initialisation for new tasks, we assess whether
+utilising the Cerberus pretrained weights can help boost
+the performance of signet ring cell detection. For this, we
+utilise data provided as part of the DigestPath challenge,
+but perform additional labelling due to incomplete annota-
+tions. Here, the images with signet ring cell annotations are
+independent to DigestPath images used during MTL. We
+also want to understand whether leveraging Cerberus for
+enhanced weight initialisation can lead to improved data ef-
+ficiency on novel tasks. For this, we train multiple signet
+ring cell detection models with increasing numbers of ran-
+dom input samples and assess the impact on performance.
+Specifically, we train RetinaNet [38] with a ResNet back-
+bone to predict the bounding box around each signet ring
+cell. Here, the backbone is initialised with parameters ei-
+ther obtained from training on ImageNet, from using STL
+on nuclei histology data (STL-Nuclei from Table 4) or from
+training Cerberus. As opposed to our nuclei subtyping ex-
+periment, we train all model weights after initialisation.
+Results from training with the different weight initialisa-
+tion strategies are displayed in Figure 6, where the perfor-
+mance is measured in terms of area under the free-response
+receiver characteristic (F ROC) curve. We choose this met-
+ric as it was used as part of the DigestPath challenge to eval-
+uate different submissions. We repeat each experiment 4
+times and therefore the plot shows the mean result along
+with the calculated confidence intervals. It is important to
+note that the x-axis in the plot is in log-scale. We can see
+that leveraging the Cerberus encoder leads to an improve-
+ment in results over ImageNet and STL pretrained weights,
+irrespective of the number of input samples. When we are
+presented with a small number of samples, then using our
+Cerberus encoder as a pretraining mechanism can lead to
+greater data efficiency. We make this clear by drawing a
+horizontal dashed line on the plot denoting a score of 0.4. It
+can be seen that much fewer samples are needed to achieve
+this score when using Cerberus pretrained weights. This
+holds potential for other tasks when not provided with a
+large amount of data. We display example visual results
+in Figure 5.
+4.3.6 Processing the TCGA colorectal database
+A major bottleneck in the development of explainable mod-
+els for CPath is the localisation of various regions in the tis-
+sue. This enables the subsequent extraction of interpretable
+features which can then be used in downstream predictive
+pipelines for tasks such as biomarker discovery and survival
+analysis. Therefore, to accelerate research in CPath, we pro-
+cess all formalin-fixed paraffin-embedded colorectal WSIs
+from TCGA with Cerberus and make the results publicly
+available. We provide results for gland, lumen and nuclear
+segmentation, as well as patch-level tissue type classifica-
+tion. We also utilise our subtyping strategy (Section 3.3.2)
+and predict the category for each nucleus, which can enable
+effective modelling of the tumour micro-environment.
+In total, we localise377 million different types of nuclei,
+900 thousand glands and 2.1 million lumina2, making it by
+far the largest available resource of its kind in CPath. In Fig-
+ure 7, we display some example results obtained from pro-
+cessing sample TCGA WSIs with the proposed approach.
+4.4. Implementation and training details
+We implemented our framework with PyTorch [45] ver-
+sion 1.9 and utilised 3 NVIDIA V100 GPUs, each with 32
+GB RAM. During training, we applied the following ran-
+dom data augmentations: flip, rotation, Gaussian blur, me-
+dian blur and colour perturbation. For segmentation tasks,
+networks were fed input patches of size 448 ×448 pixels,
+whereas for patch classification tasks the input patch size
+was 144×144. We trained all networks with a batch size of
+9 samples per GPU (a total of 27 samples with 3 GPUs).
+All models were trained for 90,000 steps using Adam op-
+timisation [35] with an initial learning rate of 10 −3, which
+was reduced to 10−4 after 70,000 steps. All networks were
+trained with an RGB input, normalised between 0 and 1.
+5. Discussion and conclusions
+Localisation of structures of interest in WSIs enables the
+extraction of interpretable features for pipelines in CPath.
+For this, typically a deep neural network is used per re-
+gion/structure that we wish to localise. However, this may
+not scale well as we consider an increasing number of tis-
+sue constructs. Therefore, in this paper, we propose a multi-
+task learning model, named Cerberus, that performs simul-
+taneous prediction of multiple tasks at the output of the
+network, without compromising on performance. In fact,
+we show that Cerberus achieves superior performance com-
+pared to single-task alternatives for segmentation and the
+learned feature representation can be leveraged to improve
+the performance of additional tasks via transfer learning.
+Most MTL models are developed to learn a generalis-
+able representation that is achieved by training on various
+independent datasets. Thereby, the collective knowledge
+learned can lead to more general features compared to when
+networks are trained on small datasets on a specific task.
+Despite their capability in learning a strong feature repre-
+sentation, datasets used in standard MTL pipelines are not
+necessarily aligned. For example, in CPath the datasets may
+have different staining, pixel resolution or belong to differ-
+ent tissue types. This means that, despite the network be-
+2This dataset is available to download at: https://github.com/
+TissueImageAnalytics/cerberus.
+
+TCGA Colorectal Dataset
+Cerberus
+Dataset of Tissue Components
+Survival AnalysisExplainable AINew BiomarkersCommunity Research
+377 million nuclei900k glands2.1 million lumen
+599 WSIs
+Tissue type classificationNuclei,gland&lumensegmentation
+B
+A
+BA
+Figure 7: Overview of the pipeline for processing colorectal TCGA WSIs with Cerberus. In total, we process 599 WSIs and
+obtain 377 million different nuclei, 900 thousand glands and 2.1 million lumina. We release the processed dataset to enable
+research in the CPath community. We provide zoomed-in image regions of the corresponding boxes denoted by A and B.
+ing able to make a simultaneous prediction for single im-
+age input, the outputs may not make sense. This is because
+each task may have its own input data assumptions. On the
+other hand, Cerberus ensures that each independent task-
+level dataset has the same input assumptions and therefore
+a meaningful simultaneous prediction can be made for all
+output branches of the network. Not only this but aligning
+the input helps ease network optimisation. In this paper,
+we use H&E stained colon tissue at 20 × objective magni-
+fication (around 0.5 µm/pixel), but the method is not nec-
+essarily limited to this data configuration. Despite the fact
+that MTL is usually primarily used to gain a generalisable
+feature representation, our main focus is enabling a strong
+performance for simultaneous prediction by leveraging the
+collective knowledge from multiple available datasets. To
+the best of our knowledge, this is the first approach in CPath
+that utilises MTL with the main focus of predicting tasks si-
+multaneously with a single network.
+We have shown that Cerberus learns a strong feature
+representation that can be used for transfer learning. We
+demonstrated that the learned representation can be used to
+increase the performance of patch classification tasks, such
+as nuclear subtyping and can be used to accurately subtype
+objects initially segmented by the network. In addition, we
+show that Cerberus can be used for improved weight initial-
+isation for tasks such as signet ring cell detection and can
+even lead to better data efficiency. Even though we show-
+cased the merit of utilising Cerberus for transfer learning,
+there are still plenty of other applications that have not been
+explored. Therefore, even though Cerberus helped improve
+the performance of the 3 transferred tasks considered in this
+paper, we can’t conclusively say that it always leads to an
+increase in performance when applied to novel tasks. In
+particular, it would be interesting to see whether the feature
+representation learned by Cerberus can be used with other
+tissue types.
+For the purpose of this paper, we focussed on nuclear,
+gland and lumen segmentation as well as tissue type classi-
+fication. Of course, it would be interesting to integrate ad-
+ditional tasks into our multi-task network, which can lead
+to a greater number of interpretable features that we can ex-
+tract from the model output and may potentially increase the
+strength of the learned feature representation. For example,
+it would be interesting to consider instance segmentation
+
+of nerves and blood vessels as tasks within our framework,
+which would enable us to extract features relating to per-
+ineural invasion, lymphovascular invasion and tumour an-
+giogenesis. It would also be interesting to instead use se-
+mantic segmentation of different tissue types, rather than
+relying on patch classification. This would enable more
+precise localisation of different regions, which can lead to
+more accurate quantification of features. As discussed pre-
+viously, typical MTL pipelines in CPath do not achieve a
+good performance across tasks at the output of the network.
+However, we believe that if we ensure that the input data
+is aligned by the same tissue type, stain type and magni-
+fication, we can sustain a good level of performance when
+adding further tasks, beyond those experimented with in this
+paper.
+During the design of our experiments, we decided which
+tasks to use for MTL and which to use for assessment of the
+learned feature representation. In theory, there is no reason
+why a different number of upstream and additional tasks
+could not be chosen for training and transfer learning of the
+Cerberus model. For example, we could have used signet
+ring cell detection during MTL and nuclear segmentation
+to help assess the strength of the learned features. Also,
+we could have added signet ring cell detection as an ex-
+tra branch during MTL. However, our chosen experimental
+setup allowed us to train on a large amount of data and en-
+abled appropriate assessment of both multi-task output per-
+formance and the learned feature representation.
+It would be natural to assume that due to the considera-
+tion of multiple tasks, the size of Cerberus would be very
+large. This is because each task has its own independent de-
+coder. However, due to the use of relatively lightweight de-
+coders (each containing 1.3 million parameters), the model
+only contains 27.1 million parameters when considering the
+tasks of gland segmentation, lumen segmentation, nuclear
+segmentation, nuclear classification and tissue type classifi-
+cation. This is approximately 2 times fewer than the num-
+ber of parameters in MILD-Net and 3 times fewer than the
+number in HoVer-Net. Therefore, despite us using high-end
+GPUs in our experiments, this is not a requirement to fit
+the model into memory. When using an NVIDIA GeForce
+1080 Ti GPU with a batch size of 25, the inference time for
+a TCGA WSI (dimensions of 28,451 ×56,782 at a resolu-
+tion of 0.5µm/pixel) was 11.7 minutes3. This will be much
+quicker than using separate networks for each task.
+In this paper, we demonstrated how we can accurately
+subtype objects initially localised by our network. Specifi-
+cally, we subcategorised segmented nuclei by adding an ex-
+tra decoder devoted to the task of pixel classification. This
+can help with better quantification of important phenom-
+3A link to the WSI that we processed can be found here:
+https://portal.gdc.cancer.gov/files/
+3b88b579-a27a-4ac4-8533-48dded7d11c7
+ena in the tumour microenvironment, which can potentially
+help reveal new biomarkers for downstream diagnostic and
+prognostic tasks. In future work, we will investigate other
+segmentation tasks considered within this paper. For ex-
+ample, our proposed subtyping approach could be used to
+determine whether glands are at the surface epithelium or
+not. We show example visual results for this in Figure A1.
+As part of this work, we processed 599 colorectal WSIs
+from the TCGA database with our proposed model. As a
+result, we localised a large number of nuclei and other tis-
+sue constructs, which enables the extraction of interpretable
+features for downstream CPath pipelines. We hope that
+releasing this dataset will accelerate research for the de-
+velopment of explainable models using interpretable fea-
+tures because the time-consuming localisation step is no
+longer required. After further inspection of the results on
+TCGA, we found that the model found lumen segmentation
+in cancerous glands particularly challenging. This may be
+because of the limited available context when working at
+20× magnification. We chose to work at this single res-
+olution because it was reasonable for all tasks considered
+by the model. However, the multi-scale analysis may yield
+improved performance on the task of lumen segmentation.
+The model sometimes also struggled to distinguish between
+muscle and stroma tissue for patch classification. This may
+be due to the very small patch size that was used, with lim-
+ited context. Instead, using a semantic segmentation branch
+that uses a larger patch as input, as described earlier in this
+section, would help provide additional context and therefore
+improve results.
+It has been described numerous times that localisation
+of histological primitives enables the extraction of inter-
+pretable tissue-based biomarkers, such as those shown to be
+predictive of clinical outcome in the literature [3, 41]. How-
+ever, this is only the case if the segmentation performance
+is good enough. For example, if we generate morphological
+features from poorly segmented objects, then this will lead
+to low-quality features, which has negative implications on
+generated explanations. Therefore, it is imperative to per-
+form a large-scale assessment of the quality of the localisa-
+tion across multiple slides and centres. Only then can we
+be confident that the features that we extract are clinically
+meaningful.
+In future work, we would like to utilise the segmenta-
+tion and classification outputs of Cerberus to extract inter-
+pretable features for explainable machine learning pipelines
+in CPath. For example, some features that we are able to
+extract from the output of Cerberus include gland, lumen
+and nuclear morphology; the number of inflammatory cells
+infiltrating into glands; intra-gland epithelial nuclei organi-
+sation and quantification of cells in the stroma. In this work,
+we have processed the formalin-fixed paraffin-embedded
+colorectal TCGA database, which has associated clinical
+
+data, including whether there exist any genetic alterations.
+In particular, an application of interest, especially in colon
+tissue, would be to understand which clinically meaning-
+ful features are associated with the microsatellite instability
+status. Another interesting application would be to perform
+survival analysis on the colorectal TCGA dataset using fea-
+tures, like the ones we described above.
+Acknowledgements
+SG, MJ, DS, SR, FM and NR are part of the PathLAKE
+digital pathology consortium, which is funded by the Data
+to Early Diagnosis and Precision Medicine strand of the
+governments Industrial Strategy Challenge Fund, managed
+and delivered by UK Research and Innovation (UKRI). NR
+was also supported by the UK Medical Research Council
+(grant award MR/P015476/1) and the Alan Turing Institute.
+References
+[1] M. Amgad, L. A. Atteya, H. Hussein, K. H. Mohammed,
+E. Hafiz, M. A. Elsebaie, A. M. Alhusseiny, M. A. Al-
+Moslemany, A. M. Elmatboly, P. A. Pappalardo, et al. Nu-
+cls: A scalable crowdsourcing, deep learning approach and
+dataset for nucleus classification, localization and segmenta-
+tion. arXiv preprint arXiv:2102.09099, 2021. 3
+[2] M. Amgad, H. Elfandy, H. Hussein, L. A. Atteya, M. A. Else-
+baie, L. S. Abo Elnasr, R. A. Sakr, H. S. Salem, A. F. Ismail,
+A. M. Saad, et al. Structured crowdsourcing enables convo-
+lutional segmentation of histology images. Bioinformatics,
+35(18):3461–3467, 2019. 3
+[3] R. Awan, K. Sirinukunwattana, D. Epstein, S. Jefferyes,
+U. Qidwai, Z. Aftab, I. Mujeeb, D. Snead, and N. Rajpoot.
+Glandular morphometrics for objective grading of colorectal
+adenocarcinoma histology images. Scientific reports, 7(1):1–
+12, 2017. 17
+[4] B. E. Bejnordi, M. Veta, P. J. Van Diest, B. Van Gin-
+neken, N. Karssemeijer, G. Litjens, J. A. Van Der Laak,
+M. Hermsen, Q. F. Manson, M. Balkenhol, et al. Diagnos-
+tic assessment of deep learning algorithms for detection of
+lymph node metastases in women with breast cancer. Jama,
+318(22):2199–2210, 2017. 1
+[5] W. Bulten, H. Pinckaers, H. van Boven, R. Vink, T. de Bel,
+B. van Ginneken, J. van der Laak, C. Hulsbergen-van de Kaa,
+and G. Litjens. Automated deep-learning system for gleason
+grading of prostate cancer using biopsies: a diagnostic study.
+The Lancet Oncology, 21(2):233–241, 2020. 1
+[6] D. Bychkov, N. Linder, R. Turkki, S. Nordling, P. E. Ko-
+vanen, C. Verrill, M. Walliander, M. Lundin, C. Haglund,
+and J. Lundin. Deep learning based tissue analysis predicts
+outcome in colorectal cancer. Scientific reports, 8(1):1–11,
+2018. 1
+[7] R. Caruana. Multitask learning. Machine learning ,
+28(1):41–75, 1997. 2
+[8] H. Chen, X. Qi, L. Yu, Q. Dou, J. Qin, and P.-A. Heng.
+Dcan: Deep contour-aware networks for object instance seg-
+mentation from histology images. Medical image analysis,
+36:135–146, 2017. 8
+[9] T. Chen, S. Kornblith, M. Norouzi, and G. Hinton. A sim-
+ple framework for contrastive learning of visual represen-
+tations. In International conference on machine learning ,
+pages 1597–1607. PMLR, 2020. 12
+[10] O. Ciga, T. Xu, and A. L. Martel. Self supervised contrastive
+learning for digital histopathology. Machine Learning with
+Applications, 7:100198, 2022. 12, 13, 22
+[11] F. Ciompi, Y . Jiao, and J. van der Laak. Lymphocyte assess-
+ment hackathon (lysto), Oct. 2019. 3
+[12] M. Crawshaw. Multi-task learning with deep neural net-
+works: A survey. arXiv preprint arXiv:2009.09796 , 2020.
+2
+[13] Q. Da, X. Huang, Z. Li, Y . Zuo, C. Zhang, J. Liu, W. Chen,
+J. Li, D. Xu, Z. Hu, et al. Digestpath: a benchmark dataset
+with challenge review for the pathological detection and seg-
+mentation of digestive-system. Medical Image Analysis ,
+page 102485, 2022. 8, 9
+[14] J. A. Diao, J. K. Wang, W. F. Chui, V . Mountain, S. C. Gul-
+lapally, R. Srinivasan, R. N. Mitchell, B. Glass, S. Hoffman,
+S. K. Rao, et al. Human-interpretable image features derived
+from densely mapped cancer pathology slides predict diverse
+molecular phenotypes. Nature communications, 12(1):1–15,
+2021. 1
+[15] L. R. Dice. Measures of the amount of ecologic association
+between species. Ecology, 26(3):297–302, 1945. 9
+[16] L. Duong, T. Cohn, S. Bird, and P. Cook. Low resource de-
+pendency parsing: Cross-lingual parameter sharing in a neu-
+ral network parser. In Proceedings of the 53rd annual meet-
+ing of the Association for Computational Linguistics and the
+7th international joint conference on natural language pro-
+cessing (volume 2: short papers), pages 845–850, 2015. 2
+[17] M. Fraz, S. A. Khurram, S. Graham, M. Shaban, M. Hassan,
+A. Loya, and N. M. Rajpoot. Fabnet: Feature attention-based
+network for simultaneous segmentation of microvessels and
+nerves in routine histology images of oral cancer. Neural
+Computing and Applications, 32(14):9915–9928, 2020. 3
+[18] J. Gamper, N. A. Koohbanani, K. Benes, S. Graham, M. Ja-
+hanifar, S. A. Khurram, A. Azam, K. Hewitt, and N. Ra-
+jpoot. Pannuke dataset extension, insights and baselines.
+arXiv preprint arXiv:2003.10778, 2020. 3, 9, 10
+[19] J. Gamper, N. A. Kooohbanani, and N. Rajpoot. Multi-task
+learning in histo-pathology for widely generalizable model.
+arXiv preprint arXiv:2005.08645, 2020. 2, 3
+[20] J. Gamper and N. Rajpoot. Multiple instance captioning:
+Learning representations from histopathology textbooks and
+articles. In Proceedings of the IEEE/CVF Conference on
+Computer Vision and Pattern Recognition , pages 16549–
+16559, 2021. 3
+[21] X. Glorot and Y . Bengio. Understanding the difficulty of
+training deep feedforward neural networks. In Proceedings
+of the thirteenth international conference on artificial intel-
+ligence and statistics, pages 249–256. JMLR Workshop and
+Conference Proceedings, 2010. 7
+[22] S. Graham, H. Chen, J. Gamper, Q. Dou, P.-A. Heng,
+D. Snead, Y . W. Tsang, and N. Rajpoot. Mild-net: Minimal
+
+information loss dilated network for gland instance segmen-
+tation in colon histology images. Medical image analysis ,
+52:199–211, 2019. 4, 7, 8, 9, 10
+[23] S. Graham, D. Epstein, and N. Rajpoot. Rota-net: Rotation
+equivariant network for simultaneous gland and lumen seg-
+mentation in colon histology images. In European Congress
+on Digital Pathology, pages 109–116. Springer, 2019. 10
+[24] S. Graham, M. Jahanifar, A. Azam, M. Nimir, Y .-W. Tsang,
+K. Dodd, E. Hero, H. Sahota, A. Tank, K. Benes, et al.
+Lizard: A large-scale dataset for colonic nuclear instance
+segmentation and classification. In Proceedings of the
+IEEE/CVF International Conference on Computer Vision ,
+pages 684–693, 2021. 3, 7, 8, 9, 10
+[25] S. Graham, M. Jahanifar, Q. D. Vu, G. Hadjigeorghiou,
+T. Leech, D. Snead, S. E. A. Raza, F. Minhas, and N. Ra-
+jpoot. Conic: Colon nuclei identification and counting chal-
+lenge 2022. arXiv preprint arXiv:2111.14485, 2021. 8, 9
+[26] S. Graham, Q. D. Vu, S. E. A. Raza, A. Azam, Y . W. Tsang,
+J. T. Kwak, and N. Rajpoot. Hover-net: Simultaneous seg-
+mentation and classification of nuclei in multi-tissue histol-
+ogy images. Medical Image Analysis, 58:101563, 2019. 3,
+6, 9, 10
+[27] K. He, X. Zhang, S. Ren, and J. Sun. Delving deep into
+rectifiers: Surpassing human-level performance on imagenet
+classification. In Proceedings of the IEEE international con-
+ference on computer vision, pages 1026–1034, 2015. 7
+[28] K. He, X. Zhang, S. Ren, and J. Sun. Deep residual learn-
+ing for image recognition. In Proceedings of the IEEE con-
+ference on computer vision and pattern recognition , pages
+770–778, 2016. 5, 11
+[29] S. Ioffe and C. Szegedy. Batch normalization: Accelerating
+deep network training by reducing internal covariate shift. In
+International conference on machine learning , pages 448–
+456. PMLR, 2015. 5
+[30] M. I. Jaber, B. Song, L. Beziaeva, C. W. Szeto, P. Spilman,
+P. Yang, and P. Soon-Shiong. A deep learning-based iterative
+digital pathology annotation tool. bioRxiv, 2021. 3
+[31] S. Javed, A. Mahmood, M. M. Fraz, N. A. Koohbanani,
+K. Benes, Y .-W. Tsang, K. Hewitt, D. Epstein, D. Snead, and
+N. Rajpoot. Cellular community detection for tissue pheno-
+typing in colorectal cancer histology images. Medical image
+analysis, 63:101696, 2020. 4, 9
+[32] J. N. Kather, L. R. Heij, H. I. Grabsch, C. Loeffler, A. Echle,
+H. S. Muti, J. Krause, J. M. Niehues, K. A. Sommer,
+P. Bankhead, et al. Pan-cancer image-based detection of
+clinically actionable genetic alterations. Nature Cancer ,
+1(8):789–799, 2020. 1
+[33] J. N. Kather, J. Krisam, P. Charoentong, T. Luedde, E. Her-
+pel, C.-A. Weis, T. Gaiser, A. Marx, N. A. Valous, D. Ferber,
+et al. Predicting survival from colorectal cancer histology
+slides using deep learning: A retrospective multicenter study.
+PLoS medicine, 16(1):e1002730, 2019. 3, 4, 9
+[34] J. N. Kather, C.-A. Weis, F. Bianconi, S. M. Melchers, L. R.
+Schad, T. Gaiser, A. Marx, and F. G. Z ¨ollner. Multi-class
+texture analysis in colorectal cancer histology. Scientific re-
+ports, 6(1):1–11, 2016. 9
+[35] D. P. Kingma and J. Ba. Adam: A method for stochastic
+optimization. arXiv preprint arXiv:1412.6980, 2014. 15
+[36] A. Kirillov, K. He, R. Girshick, C. Rother, and P. Doll ´ar.
+Panoptic segmentation. In Proceedings of the IEEE/CVF
+Conference on Computer Vision and Pattern Recognition ,
+pages 9404–9413, 2019. 9
+[37] N. Kumar, R. Verma, D. Anand, Y . Zhou, O. F. Onder,
+E. Tsougenis, H. Chen, P.-A. Heng, J. Li, Z. Hu, et al. A
+multi-organ nucleus segmentation challenge. IEEE transac-
+tions on medical imaging, 39(5):1380–1391, 2019. 3
+[38] T.-Y . Lin, P. Goyal, R. Girshick, K. He, and P. Doll´ar. Focal
+loss for dense object detection. In Proceedings of the IEEE
+international conference on computer vision , pages 2980–
+2988, 2017. 7, 15
+[39] X. Lin, H.-L. Zhen, Z. Li, Q.-F. Zhang, and S. Kwong. Pareto
+multi-task learning. Advances in neural information process-
+ing systems, 32:12060–12070, 2019. 5
+[40] B. Liu, X. Liu, X. Jin, P. Stone, and Q. Liu. Conflict-averse
+gradient descent for multi-task learning. Advances in Neural
+Information Processing Systems, 34:18878–18890, 2021. 3
+[41] C. Lu, D. Romo-Bucheli, X. Wang, A. Janowczyk, S. Gane-
+san, H. Gilmore, D. Rimm, and A. Madabhushi. Nuclear
+shape and orientation features from h&e images predict sur-
+vival in early-stage estrogen receptor-positive breast cancers.
+Laboratory investigation, 98(11):1438–1448, 2018. 17
+[42] I. Misra, A. Shrivastava, A. Gupta, and M. Hebert. Cross-
+stitch networks for multi-task learning. In Proceedings of
+the IEEE conference on computer vision and pattern recog-
+nition, pages 3994–4003, 2016. 2
+[43] R. Mormont, P. Geurts, and R. Mar ´ee. Multi-task pre-
+training of deep neural networks for digital pathology. IEEE
+journal of biomedical and health informatics , 25(2):412–
+421, 2020. 2, 3
+[44] P. Naylor, M. La ´e, F. Reyal, and T. Walter. Segmentation
+of nuclei in histopathology images by deep regression of
+the distance map. IEEE transactions on medical imaging ,
+38(2):448–459, 2018. 3
+[45] A. Paszke, S. Gross, F. Massa, A. Lerer, J. Bradbury,
+G. Chanan, T. Killeen, Z. Lin, N. Gimelshein, L. Antiga,
+et al. Pytorch: An imperative style, high-performance deep
+learning library. Advances in neural information processing
+systems, 32:8026–8037, 2019. 15
+[46] S. Ren, K. He, R. Girshick, and J. Sun. Faster r-cnn: To-
+wards real-time object detection with region proposal net-
+works. Advances in neural information processing systems ,
+28, 2015. 7
+[47] O. Ronneberger, P. Fischer, and T. Brox. U-net: Convo-
+lutional networks for biomedical image segmentation. In
+International Conference on Medical image computing and
+computer-assisted intervention , pages 234–241. Springer,
+2015. 5, 6, 10, 11
+[48] S. Ruder. An overview of multi-task learning in deep neural
+networks. arXiv preprint arXiv:1706.05098, 2017. 2
+[49] O. Sener and V . Koltun. Multi-task learning as multi-
+objective optimization. Advances in neural information pro-
+cessing systems, 31, 2018. 3
+[50] M. Shaban, R. Awan, M. M. Fraz, A. Azam, Y .-W. Tsang,
+D. Snead, and N. M. Rajpoot. Context-aware convolutional
+
+neural network for grading of colorectal cancer histology im-
+ages. IEEE transactions on medical imaging , 39(7):2395–
+2405, 2020. 1
+[51] M. Shaban, S. A. Khurram, M. M. Fraz, N. Alsubaie, I. Ma-
+sood, S. Mushtaq, M. Hassan, A. Loya, and N. M. Rajpoot.
+A novel digital score for abundance of tumour infiltrating
+lymphocytes predicts disease free survival in oral squamous
+cell carcinoma. Scientific reports, 9(1):1–13, 2019. 1
+[52] A. J. Shephard, S. Graham, S. Bashir, M. Jahanifar, H. Mah-
+mood, A. Khurram, and N. M. Rajpoot. Simultaneous nu-
+clear instance and layer segmentation in oral epithelial dys-
+plasia. In Proceedings of the IEEE/CVF International Con-
+ference on Computer Vision, pages 552–561, 2021. 3
+[53] K. Sirinukunwattana, J. P. Pluim, H. Chen, X. Qi, P.-A.
+Heng, Y . B. Guo, L. Y . Wang, B. J. Matuszewski, E. Bruni,
+U. Sanchez, et al. Gland segmentation in colon histology
+images: The glas challenge contest. Medical image analysis,
+35:489–502, 2017. 3, 4, 7, 8, 9
+[54] N. Srivastava, G. Hinton, A. Krizhevsky, I. Sutskever, and
+R. Salakhutdinov. Dropout: a simple way to prevent neural
+networks from overfitting. The journal of machine learning
+research, 15(1):1929–1958, 2014. 5
+[55] G. Strezoski, N. v. Noord, and M. Worring. Many task learn-
+ing with task routing. InProceedings of the IEEE/CVF Inter-
+national Conference on Computer Vision, pages 1375–1384,
+2019. 2
+[56] T. E. Tavolara, M. K. K. Niazi, G. Beamer, and M. N. Gur-
+can. Segmentation of mycobacterium tuberculosis bacilli
+clusters from acid-fast stained lung biopsies: a deep learn-
+ing approach. In Medical Imaging 2020: Digital Pathology,
+volume 11320, pages 92–98. SPIE, 2020. 3
+[57] D. Tellez, D. H ¨oppener, C. Verhoef, D. Gr ¨unhagen,
+P. Nierop, M. Drozdzal, J. Laak, and F. Ciompi. Extend-
+ing unsupervised neural image compression with supervised
+multitask learning. In Medical Imaging with Deep Learning,
+pages 770–783. PMLR, 2020. 2, 3
+[58] H. R. Tizhoosh and L. Pantanowitz. Artificial intelligence
+and digital pathology: challenges and opportunities. Journal
+of pathology informatics, 9, 2018. 2
+[59] B. S. Veeling, J. Linmans, J. Winkens, T. Cohen, and
+M. Welling. Rotation equivariant cnns for digital pathol-
+ogy. In International Conference on Medical image com-
+puting and computer-assisted intervention , pages 210–218.
+Springer, 2018. 1
+[60] R. Verma, N. Kumar, A. Patil, N. C. Kurian, S. Rane, and
+A. Sethi. Multi-organ nuclei segmentation and classifica-
+tion challenge 2020. IEEE Transactions on Medical Imag-
+ing, 39:1380–1391, 2020. 3, 10
+[61] N. Wahab, I. M. Miligy, K. Dodd, H. Sahota, M. Toss,
+W. Lu, M. Jahanifar, M. Bilal, S. Graham, Y . Park, et al.
+Semantic annotation for computational pathology: Multi-
+disciplinary experience and best practice recommendations.
+arXiv preprint arXiv:2106.13689, 2021. 2, 9
+[62] Y . Yang and T. M. Hospedales. Trace norm regularised deep
+multi-task learning. arXiv preprint arXiv:1606.04038, 2016.
+2
+[63] M.-L. Zhang and Z.-H. Zhou. A review on multi-label learn-
+ing algorithms. IEEE transactions on knowledge and data
+engineering, 26(8):1819–1837, 2013. 2
+[64] Y . Zhang and Q. Yang. A survey on multi-task learning.
+arXiv preprint arXiv:1707.08114, 2017. 2
+
+Appendix
+Breakdown of nuclear subtyping results
+To provide a more detailed analysis, we give theAP per
+nuclear category for subtyping tasks in Table A1. Here, we
+show the results for patch-based and pixel-based subtyping,
+as described in Sections 4.3.3 and 4.3.4 respectively. For
+patch classification, we provide all methods that were given
+in the main paper, whereas for pixel-level classification we
+only provide the results obtained by Cerberus.
+When using our multi-task features with auxiliary patch
+classification of the tissue type, we regularly outperform
+all other methods for patch-based subtyping. This perfor-
+mance is further improved when using pixel-level subtyp-
+ing. We observe that, in particular, using our pixel-based
+subtyping method had the greatest impact on the neutrophil
+and eosinophil performance. For these classes, there are
+much fewer examples and therefore our proposed loss func-
+tion may have been able to better deal with the class im-
+balance in the dataset. Nevertheless, the performance of
+epithelial cell subtyping also improved with pixel-level sub-
+typing. Despite this, the neutrophil performance is still rela-
+tively low on the external test set. In future work, we would
+like to explore why this is low and understand how we can
+further improve the performance.
+Subtyping gland segmentation output
+The subtyping method that we described in Section 3.3.2
+is not limited to nuclear classification. We use the same
+method to classify glands as either surface epithelium or
+glands located within the tissue. In fact, the surface ep-
+ithelium is not typically denoted as being glandular and
+therefore subtyping in this way is important. Also, analy-
+sis of glandular morphology should typically be performed
+at glands that have been cut in the transverse plane and not
+at the surface epithelium. Therefore, this subcategorisation
+of the gland segmentation output also enables the extraction
+of better features for subsequent analysis.
+In Figure A1 we display some example visual results,
+where we observe that our method can well differentiate
+surface epithelium from glands within the tissue.
+
+Features Mode Epithelial Lymphocyte Plasma Neutrophil Eosinophil Connective
+IN Patch 0.954 ± 0.002 0.742 ± 0.025 0.341 ± 0.033 0.157 ± 0.083 0.286 ± 0.073 0.728 ± 0.031
+SimCLR Patch 0.953 ± 0.004 0.761 ± 0.035 0.386 ± 0.018 0.146 ± 0.070 0.066 ± 0.033 0.736 ± 0.029
+SimCLR+ Patch 0.971 ± 0.002 0.778 ± 0.029 0.455 ± 0.005 0.256 ± 0.101 0.302 ± 0.090 0.791 ± 0.020
+STL-Nuclei Patch 0.963 ± 0.001 0.816 ± 0.020 0.434 ± 0.018 0.242 ± 0.129 0.542 ± 0.111 0.811 ± 0.025
+STL-Gland Patch 0.958 ± 0.005 0.743 ± 0.027 0.337 ± 0.020 0.098 ± 0.036 0.393 ± 0.130 0.724 ± 0.049
+STL-Lumen Patch 0.948 ± 0.005 0.726 ± 0.044 0.330 ± 0.024 0.103 ± 0.046 0.308 ± 0.117 0.703 ± 0.036
+MTL Patch 0.968 ± 0.001 0.793 ± 0.019 0.410 ± 0.019 0.156 ± 0.057 0.399 ± 0.137 0.793 ± 0.031
+IN-MTL Patch 0.969 ± 0.003 0.789 ± 0.023 0.427 ± 0.027 0.208 ± 0.099 0.482 ± 0.133 0.768 ± 0.050
+IN-MTL+PC Patch 0.974 ± 0.014 0.807 ± 0.049 0.463 ± 0.079 0.228 ± 0.117 0.608 ± 0.097 0.828 ± 0.058
+IN-MTL+PC∗ Patch 0.970 ± 0.002 0.812 ± 0.029 0.439 ± 0.021 0.233 ± 0.089 0.513 ± 0.129 0.798 ± 0.034
+Ciga et al. [10] Patch 0.962 ± 0.004 0.763 ± 0.017 0.403 ± 0.011 0.256 ± 0.078 0.553 ± 0.055 0.755 ± 0.035
+Cerberus Pixel 0.984 ± 0.002 0.775 ± 0.019 0.430 ± 0.017 0.358 ± 0.134 0.635 ± 0.065 0.886 ± 0.014
+(a) Cross validation results.
+Features Mode Epithelial Lymphocyte Plasma Neutrophil Eosinophil Connective
+IN Patch 0.682 ± 0.017 0.517 ± 0.026 0.275 ± 0.028 0.055 ± 0.019 0.334 ± 0.047 0.483 ± 0.053
+SimCLR Patch 0.885 ± 0.022 0.674 ± 0.026 0.401 ± 0.049 0.029 ± 0.011 0.044 ± 0.009 0.560 ± 0.096
+SimCLR+ Patch 0.917 ± 0.022 0.644 ± 0.036 0.336 ± 0.057 0.049 ± 0.023 0.351 ± 0.066 0.630 ± 0.030
+STL-Nuclei Patch 0.932 ± 0.009 0.743 ± 0.043 0.395 ± 0.045 0.060 ± 0.038 0.571 ± 0.032 0.729 ± 0.048
+STL-Gland Patch 0.912 ± 0.018 0.606 ± 0.132 0.367 ± 0.035 0.016 ± 0.006 0.450 ± 0.051 0.620 ± 0.099
+STL-Lumen Patch 0.900 ± 0.016 0.681 ± 0.065 0.326 ± 0.056 0.017 ± 0.005 0.211 ± 0.139 0.575 ± 0.095
+MTL Patch 0.939 ± 0.011 0.745 ± 0.010 0.429 ± 0.018 0.034 ± 0.010 0.496 ± 0.044 0.708 ± 0.043
+IN-MTL Patch 0.933 ± 0.016 0.657 ± 0.125 0.432 ± 0.037 0.040 ± 0.017 0.480 ± 0.037 0.698 ± 0.038
+IN-MTL+PC Patch 0.937 ± 0.018 0.714 ± 0.047 0.405 ± 0.018 0.062 ± 0.010 0.493 ± 0.030 0.726 ± 0.051
+IN-MTL+PC∗ Patch 0.939 ± 0.014 0.750 ± 0.028 0.510 ± 0.027 0.048 ± 0.015 0.559 ± 0.029 0.710 ± 0.079
+Ciga et al. [10] Patch 0.931 ± 0.008 0.713 ± 0.020 0.329 ± 0.042 0.030 ± 0.006 0.558 ± 0.061 0.682 ± 0.033
+Cerberus Pixel 0.974 ± 0.004 0.688 ± 0.036 0.447 ± 0.029 0.116 ± 0.033 0.720 ± 0.006 0.858 ± 0.014
+(b) External test results.
+Table A1: Breakdown of nuclear classification performance (average precision) for each category. Ciga et al. [10] uses
+SimCLR for model training. The difference between this and SimCLR/SimCLR + reported on rows 2 and 3 is the data used
+during optimisation. Here, SimCLR uses the same data used during MTL and SimCLR + uses over 2 million colon H&E
+image patches from many datasets.
+GlandSurface Epithelium
+Figure A1: Visual results demonstrating classification of glands as either surface epithelium or not.

@@ -1,0 +1,445 @@
+Pairwise Relation Learning for Semi-supervised
+Gland Segmentation
+Yutong Xie1⋆, Jianpeng Zhang 1∗, Zhibin Liao 2,3, Chunhua Shen2,
+Johan Verjans2,3, Yong Xia 1,4
+1 National Engineering Laboratory for Integrated Aero-Space-Ground-Ocean Big
+Data Application Technology, School of Computer Science and Engineering,
+Northwestern Polytechnical University, Xian 710072, China
+yxia@nwpu.edu.cn
+2 The University of Adelaide, Australia
+3 South Australian Health and Medical Research Institute, Adelaide, Australia
+4 Research & Development Institute of Northwestern Polytechnical University in
+Shenzhen, Shenzhen 518057, China
+Abstract. Accurate and automated gland segmentation on histology
+tissue images is an essential but challenging task in the computer-aided
+diagnosis of adenocarcinoma. Despite their prevalence, deep learning
+models always require a myriad number of densely annotated training
+images, which are diﬃcult to obtain due to extensive labor and associ-
+ated expert costs related to histology image annotations. In this paper,
+we propose the pairwise relation-based semi-supervised (PRS2) model for
+gland segmentation on histology images. This model consists of a seg-
+mentation network (S-Net) and a pairwise relation network (PR-Net).
+The S-Net is trained on labeled data for segmentation, and PR-Net is
+trained on both labeled and unlabeled data in an unsupervised way to
+enhance its image representation ability via exploiting the semantic con-
+sistency between each pair of images in the feature space. Since both
+networks share their encoders, the image representation ability learned
+by PR-Net can be transferred to S-Net to improve its segmentation per-
+formance. We also design the object-level Dice loss to address the issues
+caused by touching glands and combine it with other two loss functions
+for S-Net. We evaluated our model against ﬁve recent methods on the
+GlaS dataset and three recent methods on the CRAG dataset. Our re-
+sults not only demonstrate the eﬀectiveness of the proposed PR-Net and
+object-level Dice loss, but also indicate that our PRS2 model achieves the
+state-of-the-art gland segmentation performance on both benchmarks.
+Keywords: Gland Segmentation; Semi-supervised Learning; Pairwise
+Relation Learning
+⋆ Y. Xie and J. Zhang contributed equally to this work. The work was partially done
+while the co-ﬁrst authors were visiting The University of Adelaide.
+arXiv:2008.02699v1  [cs.CV]  6 Aug 2020
+
+2 Authors Suppressed Due to Excessive Length
+1 Introduction
+Quantitative measurement of glands on histology tissue images is an eﬀective
+means to assist pathologists in diagnosing the malignancy of adenocarcinoma [6].
+Manual annotation of glands requires specialized knowledge and intense con-
+centration, and is often time-consuming. Automated gland segmentation avoids
+many of these issues and provides pathologists an unprecedented ability to re-
+liably characterise and quantify glands. Although being increasingly studied to
+improve its accuracy, eﬃciency and objectivity [7,16,19], this task remains chal-
+lenging mainly due to (1) inadequate training data with pixel-wise dense anno-
+tations and (2) small gaps and adhesive edges between adjacent glands.
+Currently, most available gland segmentation methods are based on deep con-
+volutional neural networks (DCNNs) [2,7,13,16,18,19]. Chen etal. [2] presented
+a deep contour-aware network that harnesses multi-scale features to separate
+glands from the background and also employs the complementary information
+of contours to delineate each gland. Qu et al. [13] proposed a full resolution
+convolutional neural network to improve the gland localization and introduced a
+variance constrained cross-entropy loss to advance the shape similarity of glands.
+Yan et al. [19] developed a shape-aware adversarial learning model for simul-
+taneous gland segmentation and contour detection. Although superior to the
+performance of previous solutions, the performance of these DCNN-based gland
+segmentation methods depends heavily on a substantial number of training im-
+ages with pixel-wise labels, which are diﬃcult to obtain due to the tremendous
+eﬀorts and costs tied to the dense annotations of histology images.
+To alleviate the burden of data annotation, semi-supervised segmentation
+models have been developed to jointly use labeled and unlabeled data for co-
+training [17]. Recent semi-supervised learning (SSL) methods are usually based
+on consistency regularization [12]. Speciﬁcally, unlabeled data are exploited ac-
+cording to the smoothness assumption that certain perturbations of an input
+should not signiﬁcantly vary the prediction [4, 9, 10, 12, 20]. Nevertheless, these
+methods only measure the consistency between diﬀerent perturbations of an in-
+put image. In fact, diﬀerent images may contain the same kind of foreground
+objects (e.g., glands). The objects on two images may share consistent represen-
+tations in the feature space as long as they have the same semantic label. We
+advocate that such pairwise consistency should be explored to establish an un-
+supervised way to learn generalized feature representation from unlabeled data.
+In this paper, we propose the pairwise relation-based semi-supervised (PRS2)
+model for gland segmentation on histology tissue images. This model is composed
+of a supervised segmentation network (S-Net) and an unsupervised pairwise re-
+lation network (PR-Net). The PR-Net is trained to boost its ability to learn
+both semantic consistency and image representation via exploiting the semantic
+consistency between each pair of images in the feature space. Since the encoders
+of S-Net and PR-Net share parameters, the ability learned by PR-Net can be
+transferred to S-Net to improve its segmentation performance. Meanwhile, we
+employ the object-level Dice loss to impose additional constraints on each in-
+dividual gland, and thus addresses the issues caused by touching glands. The
+
+Pairwise Relation Learning for Semi-supervised Gland Segmentation 3
+Fig. 1. Diagram of the proposed PRS 2 model.
+object-level Dice was originally proposed in [14] as a performance metric, but
+not as a loss function. We transform it as a loss and combine this loss with the
+pixel-level cross-entropy loss and global-level Dice loss to form a multi-level loss
+for S-Net. We evaluate the proposed PRS2 model on the GlaS Challenge dataset
+and CRAG dataset and achieve superior performance over several recently pub-
+lished gland segmentation models.
+The contributions include: (1) proposing the pairwise relation interaction to
+exploit the semantic consistency between each pair of images in the feature space,
+enabling the model to learn semantic consistency and image representation in
+an unsupervised way; (2) transforming the object-level Dice evaluation metric
+as a loss and employing it to address the issues caused by touching glands;
+and (3) constructing the PRS 2 model that achieves the state-of-the-art gland
+segmentation performance on two benchmarks.
+2 Method
+The proposed PRS 2 model has two major modules: the S-Net for supervised
+gland segmentation and PR-Net for unsupervised semantic relation learning (see
+Fig. 1). Let the labeled training set with M images be denoted by X L, the
+unlabeled training set withN images be denoted byX U, and the whole training
+image set be denoted by X = X L∪X U. The pipeline of this model can be
+summarized in two steps. First, the S-Net is trained on X L for an initialization.
+Since the encoders of both networks share the same architecture and parameters,
+the encoders PR-Net is also initialized in this step. Then, both the S-Net and
+the PR-Net are jointly ﬁne-tuned on X with the parameter-sharing mechanism.
+S-Net. We use the DeepLabv3+ model [3] pretrained on PASCAL VOC 2012
+dataset [5] as S-Net. To adapt DeepLabv3+ to our task, we replace the last con-
+volutional layer, which is task speciﬁc, with a convolutional layer that contains
+
+4 Authors Suppressed Due to Excessive Length
+two output neurons to predict glands and background. The weights in this layer
+are randomly initialized, and the activation is set to the softmax function.
+We design the following multi-level segmentation lossLseg for S-Net, deﬁned
+as follows
+Lseg =Lce +LDice +LobjDice, (1)
+whereLce is the cross-entropy loss that optimizes pixel-level accuracy, LDice
+is the Dice loss that optimizes the overlap between the prediction and ground
+truth, andLobjDice is the object-level Dice loss. Combining the ﬁrst two losses is
+commonly used in many medical image segmentation applications and achieves
+remarkable success [15, 21]. However, gland segmentation requires not only to
+segment the glands from background, but also to separate each individual gland
+from others. The latter requirement is quite challenging due to the existence of
+touching glands. To address this challenge, we propose the object-level Dice loss
+as follows
+LobjDice = 1
+2
+
+
+n∑
+i=1
+|Si|∑n
+k=1|Sk|LDice(Gi,Si) +
+m∑
+j=1
+| ˜Gj|∑m
+k=1| ˜Gk|
+LDice( ˜Gj, ˜Sj)
+
+,
+(2)
+whereSi is the ith segmented gland, Gi is the ground truth gland that maxi-
+mally overlaps Si, ˜Gj is the jth ground truth gland, and ˜Sj is the segmented
+gland that maximally overlaps ˜Gj. The m and n denote the total number of
+ground truth glands and segmented glands for an input image, respectively. In
+this deﬁnition, the ﬁrst term measures how well each segmented gland overlaps
+its corresponding ground truth, whereas the second term measures how well
+each ground truth gland overlaps its corresponding segmented gland. This loss
+function considers the instance-level discrepancy between a segmentation result
+and its ground truth, and thus is able to help S-Net learn more discriminatory
+feature representations for gland segmentation.
+PR-Net. The PR-Net exploits the semantic consistency between each pair of
+images for unsupervised pairwise relation learning. It is a composition of three
+modules: (1) an image pair input layer, (2) an encoderF(·) for feature extraction,
+and (3) a pairwise relation module (PRM). The input layer accepts a pair of
+images (xA,xB), which are randomly sampled from the whole training set X,
+as input. The encoder shares the identical architecture and parameters with the
+encoder of S-Net (i.e., modiﬁed aligned Xception), whose output can be formally
+presented as follows
+fA =F(xA;Θ)∈ RC×H×W,fB =F(xB;Θ)∈ RC×H×W, (3)
+where Θ denotes the parameters of the encoder, and C,H and W denote re-
+spectively the number of channels, height, and width of the encoded feature
+representation.
+The PRM is proposed to highlight the targets of the same semantic class but
+located on two images. To this end, we ﬁrst calculate the consistency relation
+
+Pairwise Relation Learning for Semi-supervised Gland Segmentation 5
+matrix C fromfB tofA as follows
+CB→A = softmax(R(fA)T·R(fB))T∈ R(H×W )×(H×W ), (4)
+where R(·) represents a reshape function which collapses the H and W dimen-
+sions into a single dimension with H×W elements, and the softmax function
+normalizes the elements in the second dimension. The C(B→A)i,j measures the
+consistencyith ﬂattened ‘pixel’ (in the feature representation space) offB tojth
+‘pixel’ of fA, where a larger C(B→A)i,j indicates a higher semantic consistency
+between these two ‘pixels’.
+Next, we perform a matrix multiplication between R(fB) and CB→A to ob-
+tain the attention map M offA, formulated as
+MA =R−1(
+R(fB)· CB→A
+)
+∈ RC×H×W, (5)
+where R−1 is a reverse operation of R, each element in MA can be considered
+as a weighted sum offB over all positions, where the weights are determined by
+CB→A. Finally, we add MA to the feature map fA via an element-wise summa-
+tion to obtain the target-highlighted feature maps ˜fA, show as follows
+˜fA = MA +fA, (6)
+Similarly, the ˜fB can be calculated as
+˜fB = MB +fB, (7)
+Both target-highlighted feature maps ˜fA and ˜fB have the merit of consis-
+tency relation information betweenfA andfB, and thus can serve as the targets
+of PR-Net to enforce the model to increase the semantic consistency for any pair
+of image feature maps. Hence, the loss function of PR-Net can be expressed as
+LP R =LSL1
+(
+σ( ˜fA),σ (fA)
+)
+  
+LSL1(B→A)
++LSL1
+(
+σ( ˜fB),σ (fB)
+)
+  
+LSL1(A→B)
+, (8)
+whereLSL1 is the smoothL1 loss, andσ(·) is the sigmoid function. Both ˜fA and
+˜fB, served as the target signals, do not perform back-propagation in each itera-
+tion. We also randomly select a pair of images and visualize their corresponding
+channel-wise sum of σ(f) as well as σ( ˜f) in Fig. 2 to show the superiority of ˜f.
+Optimization of PRS 2 model. The total loss of the proposed PRS 2 model is
+deﬁned as the weighted sum of multi-level segmentation loss Lseg and unsuper-
+vised semantic consistency lossLP R such that
+Ltotal =Lseg +αLP R, (9)
+whereα is a weighting factor that controls the contribution of unsupervised loss.
+We adopt the Adam algorithm [11] with a batch size of 5 and 10 to train S-Net
+and PR-Net, respectively, and also set 20% of the training set as a validation set
+to monitor the performance of both networks. The initial learning rate is set to
+1e-4 in the initialization step and 5e-5 in the ﬁne-tuning step.
+
+6 Authors Suppressed Due to Excessive Length
+Fig. 2. A pair of images and the corresponding channel-wise sum of σ(f) and σ( ˜f)
+3 Experiments and Results
+Materials. We adopted the 2015 MICCAI Gland Segmentation (GlaS) chal-
+lenge dataset [14] and colorectal adenocarcinoma gland (CRAG) dataset [1, 7]
+to evaluate the proposed PRS 2 model. The GlaS dataset contains 85 training
+and 80 test images (60 in Part A; 20 in Part B). The CRAG dataset has 173
+training and 40 test images. When evaluating PRS 2 on the GlaS test set, the
+CRAG training set was considered as unlabeled training data, and vice versa.
+Evaluation Metrics. On the GlaS dataset, three metrics oﬃcially suggested by
+the GlaS Challenge [14] were calculated to assess the segmentation performance,
+including the object-level Dice (Obj-D) that represents the accuracy of delin-
+eating each individual gland, the object-level F1 score (Obj-F) that evaluates
+the accuracy of detecting each gland, and the object-level Hausdorﬀ distance
+(Obj-H) that measures the shape similarity between each segmented gland and
+its ground truth. Meanwhile, all competing segmentation models were ranked
+according to each of these three metrics, and the sum of three ranking scores is
+calculated to measure the overall performance of each model. Note that a lower
+ranking score indicates better segmentation performance.
+Implementation Details. In the training stage, we followed the suggestion
+in [16] to randomly crop patches from each training image as the input of both
+S-Net and PR-Net. The patch size was set to 416× 416 on the GlaS dataset and
+512× 512 on the CRAG dataset. When training PRS 2 model, we resized CRAG
+patches to 416× 416 if the labelled samples are from GlaS dataset, or resized
+GlaS patches to 512 × 512 if the labelled samples are from CRAG dataset. To
+further enlarge the training dataset, we employed the online data augmentation,
+which includes random rotation, shear, shift, zooming, and horizontal/vertical
+ﬂip, and color normalization. In the test stage, test time augmentations including
+cropping, horizontal/vertical ﬂip and rotation, were also utilized to improve the
+robustness of segmentation. As a result, each segmentation result is the average
+of the results obtained on the original image and its three types of augmented
+copies. Moreover, the morphological opening using a square structure element
+with a size of 10× 10 was ﬁnally performed to smooth segmentation results.
+Results on Two Datasets. On the GlaS dataset, we compared the proposed
+PRS2 model to ﬁve recently published gland segmentation models, including
+
+Pairwise Relation Learning for Semi-supervised Gland Segmentation 7
+T able 1. Gland segmentation performance of the proposed PRS 2 model and recently
+published models on both GlaS and CRAG datasets. M and R denote metric value
+and ranking score, respectively. Note that the performance on the GlaS dataset is the
+average performance on test data part A and part B
+Datasets Methods Obj-D Obj-F Obj-H Rank sumM (%) R M (%) R M R
+GlaS dataset
+DCAN 83.9 8 81.4 8 102.9 8 24
+MILD-Net 87.5 6 87.9 5 73.7 6 17
+SADL 87.3 7 88.9 3 76.7 7 17
+Rota-Net 88.4 5 87.2 6 68.4 5 16
+FullNet 88.5 4 88.9 3 63.0 4 11
+DSE 89.9 2 89.4 1 55.9 2 5
+SS 89.6 3 86.9 7 62.8 3 13
+Our PRS 2 90.6 1 89.0 2 55.1 1 4
+CRAG dataset
+DCAN 79.4 5 73.6 5 218.8 5 15
+MILD-Net 87.5 4 82.5 3 160.1 4 11
+DSE 88.9 2 83.5 2 120.1 2 6
+SS 87.6 3 81.6 4 145.0 3 10
+Our PRS 2 89.2 1 84.3 1 113.1 1 3
+the deep contour-aware network (DCAN) [2], the minimal information loss di-
+lated network (MILD-Net) [7], the shape-aware adversarial learning (SADL)
+model [19], the rotation equivariant network (Rota-Net) [8], the full resolu-
+tion convolutional neural network (FullNet) [13], and the deep segmentation-
+emendation (DSE) model [16]. On the CRAG dataset, we compared our model
+to three models, i.e., DCAN, MILD-Net, and DSE. The performance of these
+models was given in Table 1. Note that the performance of all competing models
+was adopted in the literature, and the performance on the GlaS dataset is the
+average performance on test data part A and part B. Finally, we also compared
+our model to a typical semi-supervised (SS) method on both datasets, i.e., us-
+ing a trained S-Net to generate segmentation predictions of unlabelled data and
+using a CRF-like approach to generate the proxy labels for ﬁne-tuning the S-Net.
+It shows that our model achieves the highest Obj-D, second highest Obj-
+F, and lowest Obj-H on the GlaS dataset. Comparing to the DSE model that
+performs the second best, our model improves the Obj-D by 0.7% and the Obj-H
+by 0.8. On the CRAG dataset, it reveals that our model achieves the highest Obj-
+D, highest Obj-F, and lowest Obj-H, improving the Obj-D, Obj-F and Obj-H
+from 88.9%, 83.5% and 120.1, which were achieved by the second best model, to
+89.2%, 84.3% and 113.1, respectively. The results on both datasets indicate that
+the proposed PRS 2 model is able to produce more accurate for segmentation of
+glands and its performance is relatively robust.
+4 Discusses
+Trade-oﬀ between labeled and unlabeled data. A major advantage of our
+PRS2 model is to use the unlabeled images to facilitate model training, leading
+
+8 Authors Suppressed Due to Excessive Length
+Fig. 3. Obj-D and Obj-F values achieved on two datasets by our semi-supervised PRS2
+model and fully-supervised S-Net, when 20%, 50% and 100% labeled training images
+to (1) less requirement of densely annotated training data or (2) improved seg-
+mentation performance when the labeled training dataset is small. To validate
+this, we kept the test set and unlabeled training set unchanged and randomly
+selected 20% and 50% labeled training images, respectively, to perform the seg-
+mentation experiments on both datasets again. As a control, we also used those
+selected labeled training images to train S-Net in a fully-supervised manner. The
+segmentation performance of our PRS 2 model and S-Net was shown in Fig. 3,
+from which three conclusions can be drawn. First, the segmentation performance
+of both models improves as the number of labeled training images increases. Sec-
+ond, using both labeled the unlabeled images, our model outperforms the fully-
+supervised S-Net steadily no matter how many labeled training images were
+used. More important, it is interesting that our model trained with 50% labeled
+images can achieve a comparable performance with the fully-supervised S-Net
+trained with 100% training data on both datasets. Similarly, it reveals that our
+model trained with 20% labeled images can achieve a comparable performance
+with the S-Net trained with 50% training data. It suggests that our model pro-
+vides the possibility of using unlabeled data to replace almost half of labeled
+training images while maintaining the segmentation performance.
+Multi-level segmentation loss.To demonstrate the performance gain resulted
+from the proposed multi-level segmentation loss, we also attempted to train the
+S-Net with diﬀerent loss functions, including LDice,Lce andLDice +Lce. The
+results in Table 2 reveals that (1) using the combination of Dice and cross-
+entropy loss can produce higher Obj-F than using the Dice loss or cross-entropy
+loss alone, and (2) the superior performance of our multi-level loss over the
+combination of Dice and cross-entropy loss conﬁrms the eﬀectiveness of using
+the object-level Dice loss to pose constraints to each individual gland.
+Complexity. Two parameter-sharing DCNNs in our PRS 2 model are trained
+using the open source Pytorch software packages. In our experiments, it took
+about 12 hours to train our PRS 2 model (2 hours for the initialization step and
+
+Pairwise Relation Learning for Semi-supervised Gland Segmentation 9
+T able 2. Gland segmentation performance of S-Net obtained on two datasets when
+using diﬀerent loss functions
+Loss functions GlaS dataset CRAG dataset
+Obj-D Obj-F Obj-H Obj-D Obj-F Obj-H
+LDice 86.5 86.2 75.3 84.7 78.9 174.9
+Lce 88.4 86.1 65.5 86.7 77.8 139.5
+Lce + LDice 88.7 86.0 66.5 86.3 80.3 157.3
+Lce + LDice + LobjDice(Ours) 89.4 86.5 64.1 87.1 82.1 138.6
+10 hours for the ﬁne-tuning step) and less than 1 second to segment each test
+image on a server with 4 NVIDIA GTX 2080 Ti GPUs and 128GB Memory.
+5 Conclusion
+In this paper, we propose the PRS 2 model for gland segmentation on histology
+tissue images, which consists of a supervised segmentation network with a newly
+designed loss and an unsupervised PR-Net that boosts its image representation
+ability via exploiting the semantic consistency between each pair of images in
+the feature space. Our results indicate that this model outperforms ﬁve recent
+methods on the GlaS dataset and three recent methods on the CRAG dataset.
+Our ablation study suggests the eﬀectiveness of proposed loss and PR-Net. Al-
+though our model is built upon the speciﬁc application of gland segmentation,
+the pairwise relation-based semi-supervised strategy itself is generic and can po-
+tentially be applied to other deep model-based medical image segmentation tasks
+to reduce the requirement of densely annotated training images.
+Acknowledgment
+Y Xie, J Zhang, and Y Xia were supported in part by the National Natural
+Science Foundation of China under Grants 61771397, in part by the Science
+and Technology Innovation Committee of Shenzhen Municipality, China, un-
+der Grants JCYJ20180306171334997, and in part by Innovation Foundation
+for Doctor Dissertation of Northwestern Polytechnical University under Grants
+CX202010.
+References
+1. Awan, R., Sirinukunwattana, K., Epstein, D., Jeﬀeryes, S., Qidwai, U., Aftab,
+Z., Mujeeb, I., Snead, D., Rajpoot, N.: Glandular morphometrics for objective
+grading of colorectal adenocarcinoma histology images. Scientiﬁc Reports 7(1),
+16852 (2017)
+2. Chen, H., Qi, X., Yu, L., Heng, P.A.: Dcan: deep contour-aware networks for accu-
+rate gland segmentation. In: IEEE International Conference on Computer Vision
+(ICCV). pp. 2487–2496 (2016)
+3. Chen, L.C., Zhu, Y., Papandreou, G., Schroﬀ, F., Adam, H.: Encoder-decoder
+with atrous separable convolution for semantic image segmentation. In: European
+Conference on Computer Vision (ECCV) (2018)
+
+10 Authors Suppressed Due to Excessive Length
+4. Cui, W., Liu, Y., Li, Y., Guo, M., Li, Y., Li, X., Wang, T., Zeng, X., Ye, C.: Semi-
+supervised brain lesion segmentation with an adapted mean teacher model. In:
+International Conference on Information Processing in Medical Imaging (IPMI).
+pp. 554–565. Springer (2019)
+5. Everingham, M., Van Gool, L., Williams, C.K., Winn, J., Zisserman, A.: The pascal
+visual object classes (voc) challenge. International Journal of Computer Vision
+88(2), 303–338 (2010)
+6. Gazdar, A., Maitra, A.: Adenocarcinomas. In: Brenner, S., Miller, J.H.
+(eds.) Encyclopedia of Genetics, pp. 9 – 12. Academic Press, New
+York (2001). https://doi.org/https://doi.org/10.1006/rwgn.2001.1540, http://
+www.sciencedirect.com/science/article/pii/B0122270800015408
+7. Graham, S., Chen, H., Gamper, J., Dou, Q., Heng, P.A., Snead, D., Tsang, Y.W.,
+Rajpoot, N.: Mild-net: Minimal information loss dilated network for gland instance
+segmentation in colon histology images. Medical Image Analysis52, 199–211 (2019)
+8. Graham, S., Epstein, D., Rajpoot, N.: Rota-net: Rotation equivariant network
+for simultaneous gland and lumen segmentation in colon histology images. In:
+European Congress on Digital Pathology. pp. 109–116. Springer (2019)
+9. Jeong, J., Lee, S., Kim, J., Kwak, N.: Consistency-based semi-supervised learn-
+ing for object detection. In: Advances in Neural Information Processing Systems
+(NeurIPS). pp. 10758–10767 (2019)
+10. Ke, Z., Wang, D., Yan, Q., Ren, J., Lau, R.W.: Dual student: Breaking the limits
+of the teacher in semi-supervised learning. In: IEEE International Conference on
+Computer Vision (ICCV). pp. 6728–6736 (2019)
+11. Kingma, D.P., Ba, J.: Adam: A method for stochastic optimization. In: Interna-
+tional Conference on Learning Representations (ICLR) (2015)
+12. Oliver, A., Odena, A., Raﬀel, C.A., Cubuk, E.D., Goodfellow, I.: Realistic evalua-
+tion of deep semi-supervised learning algorithms. In: Advances in Neural Informa-
+tion Processing Systems (NeurIPS). pp. 3235–3246 (2018)
+13. Qu, H., Yan, Z., Riedlinger, G.M., De, S., Metaxas, D.N.: Improving nuclei/gland
+instance segmentation in histopathology images by full resolution neural net-
+work and spatial constrained loss. In: International Conference on Medical Image
+Computing and Computer-Assisted Intervention (MICCAI). pp. 378–386. Springer
+(2019)
+14. Sirinukunwattana, K., Pluim, J.P., Chen, H., Qi, X., Heng, P.A., Guo, Y.B., Wang,
+L.Y., Matuszewski, B.J., Bruni, E., Sanchez, U., et al.: Gland segmentation in colon
+histology images: The glas challenge contest. Medical Image Analysis 35, 489–502
+(2017)
+15. Wong, K.C., Moradi, M., Tang, H., Syeda-Mahmood, T.: 3d segmentation with ex-
+ponential logarithmic loss for highly unbalanced object sizes. In: International Con-
+ference on Medical Image Computing and Computer-Assisted Intervention (MIC-
+CAI). pp. 612–619. Springer (2018)
+16. Xie, Y., Lu, H., Zhang, J., Shen, C., Xia, Y.: Deep segmentation-emendation model
+for gland instance segmentation. In: International Conference on Medical Image
+Computing and Computer-Assisted Intervention (MICCAI). pp. 469–477 (2019)
+17. Xie, Y., Zhang, J., Xia, Y.: Semi-supervised adversarial model for benign–
+malignant lung nodule classiﬁcation on chest ct. Medical Image Analysis 57, 237–
+248 (2019)
+18. Xu, Y., Li, Y., Wang, Y., Liu, M., Fan, Y., Lai, M., Eric, I., Chang, C.: Gland in-
+stance segmentation using deep multichannel neural networks. IEEE Transactions
+on Biomedical Engineering 64(12), 2901–2912 (2017)
+
+Pairwise Relation Learning for Semi-supervised Gland Segmentation 11
+19. Yan, Z., Yang, X., Cheng, K.: Enabling a single deep learning model
+for accurate gland instance segmentation: A shape-aware adversarial learn-
+ing framework. IEEE Transactions on Medical Imaging pp. 1–1 (2020).
+https://doi.org/10.1109/TMI.2020.2966594
+20. Zhai, X., Oliver, A., Kolesnikov, A., Beyer, L.: S4l: Self-supervised semi-supervised
+learning. In: IEEE International Conference on Computer Vision (ICCV). pp.
+1476–1485 (2019)
+21. Zhang, J., Xie, Y., Zhang, P., Chen, H., Xia, Y., Shen, C.: Light-weight hybrid
+convolutional network for liver tumour segmentation. In: International Joint Con-
+ference on Artiﬁcial Intelligence (IJCAI). pp. 10–16 (2019)

@@ -1,0 +1,73 @@
+run_name: A1_UNet_GlaS_v1_seed3407
+stage_code: A1
+dataset_code: glas
+model_name: unet
+model_version: unet_v1
+config_version: v1
+data_proto_version: 01_data_protocol_v1
+train_proto_version: train_proto_v1
+aug_version: light_aug_v1
+aug_profile_name: light_aug_v1
+eval_aug_enable: false
+eval_proto_version: eval_proto_v1
+loss_name: bce_dice
+loss_version: seg_loss_v1
+postprocess_version: none_in_v1
+optimizer: AdamW
+lr: 0.001
+weight_decay: 0.0001
+scheduler: ReduceLROnPlateau
+scheduler_monitor: val_objdice
+epoch_max: 120
+early_stop_patience: 20
+batch_size: 2
+amp: true
+train_seed: 3407
+best_selector: val_objdice_max
+threshold_value: 0.5
+threshold_source: val17
+result_tag: reproduced
+aggregation: single_seed
+smoke_check: true
+config_refs:
+  data: configs/data/glas.yaml
+  model: configs/model/unet_v1.yaml
+  train: configs/train/unet_flow_v1.yaml
+  eval: configs/eval/eval_proto_v1.yaml
+stop_reason: smoke_check_complete
+best_epoch: 1
+best_metric_value: 0.2769027040775563
+amp_active: false
+epoch_count: 1
+device: cpu
+best_checkpoint_path: experiments/A1_UNet_GlaS_v1_seed3407/checkpoints/best.ckpt
+best_checkpoint_epoch: 1
+boundary_metric_width: 3
+metric_list: [f1, objdice, object_hausdorff, dice, iou, hd95, boundary_f1]
+metric_crosscheck_result: pass
+metric_crosscheck_note_path: experiments/A1_UNet_GlaS_v1_seed3407/metric_crosscheck_note.md
+visual_version: visual_proto_v1
+testA_sample_count: 2
+testB_sample_count: 2
+testA_objdice: 0.08680183161763688
+testB_objdice: 0.25959866009914456
+num_visual_samples_testA: 2
+num_visual_samples_testB: 2
+asset_manifest: reports/stage_reports/asset_manifest.json
+data_stage_pass: true
+handoff_ready: true
+preflight_pass: true
+eval_cast_policy: float32_before_threshold
+connected_components_connectivity: 8
+pass_train: false
+pass_val: false
+pass_test: false
+pass_eval: false
+pass_visual: true
+pass_record: true
+stage_pass: false
+protocol_error: true
+rollback_reason: formal_run_missing_or_still_smoke; testA_sample_count_mismatch:2!=60; testB_sample_count_mismatch:2!=20; debug_close_status_not_closed:open
+freeze_status: false
+handoff_ready_for_a2: false
+next_action: stay_in_02_complete_formal_a1

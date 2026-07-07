@@ -1,0 +1,760 @@
+Boundary loss for highly unbalanced segmentation
+Hoel Kervadeca,˚, Jihene Bouchtibaa, Christian Desrosiers a, Eric Granger a,
+Jose Dolza, Ismail Ben Ayed a,b
+a ´ETS Montr´ eal, Canada
+bCRCHUM (University of Montreal Hospital Centre), Canada
+Abstract
+Widely used loss functions for CNN segmentation, e.g., Dice or cross-entropy,
+are based on integrals over the segmentation regions. Unfortunately, for highly
+unbalanced segmentations, such regional summations have values that diﬀer by
+several orders of magnitude across classes, which aﬀects training performance
+and stability. We propose a boundary loss, which takes the form of a distance
+metric on the space of contours, not regions. This can mitigate the diﬃculties
+of highly unbalanced problems because it uses integrals over the interface be-
+tween regions instead of unbalanced integrals over the regions. Furthermore,
+a boundary loss complements regional information. Inspired by graph-based
+optimization techniques for computing active-contour ﬂows, we express a non-
+symmetric L2 distance on the space of contours as a regional integral, which
+avoids completely local diﬀerential computations involving contour points. This
+yields a boundary loss expressed with the regional softmax probability outputs
+of the network, which can be easily combined with standard regional losses and
+implemented with any existing deep network architecture for N-D segmentation.
+We report comprehensive evaluations and comparisons on diﬀerent unbalanced
+problems, showing that our boundary loss can yield signiﬁcant increases in per-
+formances while improving training stability. Our code is publicly available 1.
+Keywords: Boundary loss, unbalanced data, semantic segmentation, deep
+learning, CNN
+1. Introduction
+Recent years have witnessed a substantial growth in the number of deep
+learning methods for medical image segmentation [1, 2, 3, 4]. Widely used loss
+functions for segmentation, e.g., Dice or cross-entropy, are based on regional
+integrals, which are convenient for training deep neural networks. In practice,
+these regional integrals are summations over the segmentation regions of dif-
+ferentiable functions, each directly invoking the softmax probability outputs
+˚Corresponding author: hoel@kervadec.science
+1https://github.com/LIVIAETS/surface-loss
+arXiv:1812.07032v4  [eess.IV]  17 Oct 2020
+
+(a) Ground truth
+ (b) GDL
+ (c) GDL + boundary loss
+Figure 1: A visual comparison that shows the positive eﬀect of our boundary loss on
+a validation data from the WMH dataset. Our boundary loss helped to recover small
+regions that were otherwise missed by the model trained with the generalized Dice loss
+(GDL). Best viewed in colors.
+of the network. Therefore, standard stochastic optimizers such as SGD are
+directly applicable. Unfortunately, diﬃculties occur for highly unbalanced seg-
+mentations, for instance, when the size of target foreground region is several
+orders of magnitude less than the background size. For example, in the charac-
+terization of white matter hyperintensities (WMH) of presumed vascular origin,
+the foreground composed of WMH regions may be 500 times smaller than the
+background (see the typical example in Fig. 1). In such cases, quite common in
+medical image analysis, standard regional losses contain foreground and back-
+ground terms with values that diﬀer considerably, typically by several orders of
+magnitude, potentially aﬀecting performance and training stability [5, 6].
+Segmentation approaches based on convolutional neural networks (CNN)
+are typically trained by minimizing the cross-entropy (CE), which measures
+an aﬃnity between the regions deﬁned by probability softmax outputs of the
+network and the corresponding ground-truth regions. The standard regional
+CE has well-known drawbacks in the context of highly unbalanced problems.
+It assumes identical importance distribution of all the samples and classes. To
+achieve good generalization, it requires a large training set with balanced classes.
+For unbalanced data, CE typically results in unstable training and leads to deci-
+sion boundaries biased towards the majority classes. Class-imbalanced learning
+aims to mitigate learning bias by promoting the importance of infrequent labels.
+In medical image segmentation, a common strategy is to re-balance class prior
+distributions by down-sampling frequent labels [7, 8]. Nevertheless, this strategy
+limits the information of the images used for training. Another common prac-
+tice is to assign weights to the diﬀerent classes that are inversely proportional
+to the frequency of the corresponding labels [9, 10, 11, 12, 13]. In this scenario,
+the standard cross-entropy (CE) loss is modiﬁed so as to assign more impor-
+tance to the rare labels. Although eﬀective for some unbalanced problems, such
+weighting methods may undergo serious diﬃculties when dealing with highly
+unbalanced datasets, as seen with WMH segmentation. The CE gradient com-
+puted over the few pixels of infrequent labels is typically noisy, and amplifying
+2
+
+this noise with a high class weight may lead to instability.
+The well-known Dice overlap coeﬃcient was also adopted as a regional loss
+function, typically outperforming CE in unbalanced medical image segmentation
+problems [5, 14, 15]. Sudre et al. [6] generalized the Dice loss [5] by weighting
+according to the squared inverse of class-label frequency. Despite these improve-
+ments over CE [5, 6], regional Dice losses may encounter diﬃculties when dealing
+with very small structures. In such highly unbalanced scenarios, mis-classiﬁed
+pixels may lead to large decreases of the loss, resulting in unstable optimiza-
+tion. Furthermore, Dice corresponds to the harmonic mean between precision
+and recall, implicitly using the arithmetic mean of false positives and false nega-
+tives. False positives and false negatives are, therefore, equally important when
+the true positives remain the same, making this loss mainly appropriate when
+both types of errors are equally high. The recent research in [16, 17] investi-
+gated losses based on the Tversky similarity index in order to provide a better
+trade-oﬀ between precision and recall. It introduced two parameters that con-
+trol the importance of false positives and false negatives. Other recent advances
+in class-imbalanced learning for computer vision problems have been adopted
+in medical image segmentation. For example, inspired by the concept of focal
+loss [18], Dice and Tvserky losses have been extended to integrate a focal term,
+which is parameterized by a value that controls the importance of easy and
+hard training samples [17, 15]. Furthermore, the combination of several of these
+regional losses has been further investigated [19]. The main objective of these
+losses is to balance the classes not only in terms of their relative class sizes, but
+also by the level of segmentation diﬃculty.
+More recently, Karimi et al. [20] proposed a novel loss function that at-
+tempts to directly reduce the Hausdorﬀ distance (HD). This relaxed loss based
+on the HD is shown to bring improvements when combined with the DSC loss.
+Nevertheless, its main drawback is the high computational cost of computing
+the distance transforms. Particularly, at each training epoch, the new distance
+maps have to be recomputed for all the images, which incurs in a computation-
+ally costly process. This issue is further magniﬁed in the case of 3D volumes,
+which heavily increases the computational burden.
+Contributions
+In this paper, we propose a boundary loss that takes the form of a distance
+metric on the space of contours (or shapes), not regions. We argue that a
+boundary loss can mitigate the issues related to regional losses in highly un-
+balanced segmentation problems. Rather than using unbalanced integrals over
+the regions, a boundary loss uses integrals over the boundary (interface) be-
+tween the regions. Furthermore, it provides information that is complementary
+to regional losses. It is, however, challenging to represent the boundary points
+corresponding to the regional softmax outputs of a CNN. This diﬃculty may
+explain why boundary losses have been avoided in the context of deep seg-
+mentation networks. Our boundary loss is inspired by techniques in discrete
+graph-based optimization for computing gradient ﬂows of curve evolution [21].
+Following an integral approach for computing boundary variations, we express
+3
+
+a non-symmetric L2 distance on the space of shapes (or contours) as a regional
+integral, which avoids completely local diﬀerential computations involving con-
+tour points. This yields a boundary loss expressed as the sum of linear functions
+of the regional softmax probability outputs of the network. Therefore, it can
+be easily combined with standard regional losses and implemented with any
+existing deep network architecture for N-D segmentation.
+We evaluated our boundary loss in conjunction with various region-based
+losses on two challenging and highly unbalanced segmentation problems – the
+Ischemic Stroke Lesion (ISLES) and the White Matter Hyperintensities (WMH)
+benchmark datasets. The results indicate that the proposed boundary loss yields
+a more stable learning process, and can bring signiﬁcant gains in performances,
+in terms of Dice and Hausdorﬀ scores.
+2. F ormulation
+Let I : ΩĂ R2,3Ñ R denotes a training image with spatial domain Ω, and
+g : Ω Ñ t0, 1u a binary ground-truth segmentation of the image: gppq “1 if
+pixel/voxel p belongs to the target region G Ă Ω (foreground region) and 0
+otherwise, i.e., pP ΩzG (background region)2. Let sθ : Ω Ñr 0, 1s denotes the
+softmax probability output of a deep segmentation network, and Sθ Ă Ω the
+corresponding segmentation region: Sθ“tpP Ω|sθppqě δu for some threshold
+δ. Widely used segmentation loss functions involve a regional integral for each
+segmentation region in Ω, which measures some similarity (or overlap) between
+the region deﬁned by the probability outputs of the network and the correspond-
+ing ground-truth. In the two-region case, we have an integral of the general formş
+Ωgppqfpsθppqqdp for the foreground, and of the form
+ş
+Ωp1´gppqqfp1´sθppqqdp
+for the background. For instance, the standard two-region cross-entropy loss
+corresponds to a summation of these two terms for f “´ logp¨q. Similarly, the
+generalized Dice loss (GDL) [6] involves regional integrals with f “ 1, subject
+to some normalization, and is given as follows for the two-region case:
+LGDLpθq“ 1´ 2
+wG
+ş
+pPΩgppqsθppqdp`wB
+ş
+pPΩp1´gppqqp1´sθppqqdp
+wG
+ş
+Ωrsθppq` gppqsdp`wB
+ş
+Ωr2´sθppq´ gppqsdp (1)
+where coeﬃcients wG “ 1{
+´ş
+pPΩgppqdp
+¯2
+and wB “ 1{
+`ş
+Ωp1´gppqqdp
+˘2
+are
+introduced to reduce the well-known correlation between the Dice overlap and
+region size.
+Regional integrals are widely used because they are convenient for training
+deep segmentation networks. In practice, these regional integrals are summa-
+tions of diﬀerentiable functions, each invoking directly the softmax probabil-
+ity outputs of the network, sθppq. Therefore, standard stochastic optimizers
+2We focus on two-region segmentation to simplify the presentation. However, our formu-
+lation extends to the multi-region case in a straightforward manner.
+4
+
+(a) Diﬀerential
+ (b) Integral
+Figure 2: The relationship between diﬀerential and integral approaches for evaluating
+boundary change (variation).
+such SGD are directly applicable. Unfortunately, extremely unbalanced seg-
+mentations are quite common in medical image analysis, where, e.g., the size
+of the target foreground region is several orders of magnitude smaller than the
+background size. This represents challenging cases because the foreground and
+background terms have substantial diﬀerences in their values, which aﬀects seg-
+mentation performance and training stability [5, 6].
+Our purpose is to build a boundary loss Dist pBG,BSθq, which takes the
+form of a distance metric on the space of contours (or region boundaries) in
+Ω, with BG denoting a representation of the boundary of ground-truth region
+G (e.g., the set of points of G, which have a spatial neighbor in background
+ΩzG) andBSθ denoting the boundary of the segmentation region deﬁned by the
+network output. On the one hand, a boundary loss should be able to mitigate
+the above-mentioned diﬃculties for unbalanced segmentations: rather than us-
+ing unbalanced integrals within the regions, it uses integrals over the boundary
+(interface) between the regions. Furthermore, a boundary loss provides infor-
+mation that is diﬀerent from and, therefore, complimentary to regional losses.
+On the other hand, it is not clear how to represent boundary points on BSθ as
+a diﬀerentiable function of regional network outputs sθ. This diﬃculty might
+explain why boundary losses have been mostly avoided in the context of deep
+segmentation networks.
+Our boundary loss is inspired from discrete (graph-based) optimization tech-
+niques for computing gradient ﬂows of curve evolution [21]. Similarly to our
+problem, curve evolution methods require a measure for evaluating boundary
+changes (or variations). Consider the following non-symmetric L2 distance on
+the space of shapes, which evaluates the change between two nearby boundaries
+BS andBG [21]:
+DistpBG,BSq“
+ż
+BG
+}yBSppq´ p}2dp (2)
+where pP Ω is a point on boundary BG and yBSppq denotes the corresponding
+5
+
+point on boundary BS, along the direction normal to BG, i.e., yBSppq is the
+intersection of BS and the line that is normal to BG at p (See Fig. 2.a for an
+illustration) }.} denotes the L2 norm. In fact, this diﬀerential framework for
+evaluating boundary change is in line with standard variational curve evolution
+methods [22], which compute the motion of each point p on the evolving curve
+as a velocity along the normal to the curve at point p. Similarly to any contour
+distance invoking directly points on contour BS, expression (2) cannot be used
+directly as a loss for BS“BSθ. However, it is easy to show that the diﬀerential
+boundary variation in (2) can be approximated using an integral approach [21],
+which avoids completely local diﬀerential computations involving contour points
+and represents boundary change as a regional integral:
+DistpBG,BSq« 2
+ż
+∆S
+DGpqqdq (3)
+where ∆S denotes the region between the two contours and DG : ΩÑ R` is a
+distance map with respect to boundary BG, i.e., DGpqq evaluates the distance
+between pointqP Ω and the nearest point zBGpqq on contourBG: DGpqq“} q´
+zBGpqq}. Fig. 2.b illustrates this integral framework for evaluating the boundary
+distance in Eq. (2). To clarify approximation (3), notice that integrating the
+distance map 2DGpqq over the normal segment connecting a point p onBG and
+yBSppq yields}yBSppq´ p}2, via the following variable change:
+żyBSppq
+p
+2DGpqqdq“
+ż}yBSppq´p}
+0
+2DGdDG“}yBSppq´ p}2
+Thus, from approximation (3), the non-symmetricL2 distance between contours
+in Eq. (2) can be expressed as a sum of regional integrals based on a level set
+representation of boundary BG:
+1
+2DistpBG,BSq“
+ż
+S
+φGpqqdq´
+ż
+G
+φGpqqdq“
+ż
+Ω
+φGpqqspqqdq´
+ż
+Ω
+φGpqqgpqqdq
+(4)
+where s : Ω Ñ t0, 1u is binary indicator function of region S: spqq “ 1 if
+qPS belongs to the target and 0 otherwise. φG : ΩÑ R denotes the level set
+representation of boundary BG: φGpqq“´ DGpqq if qPG and φGpqq“ DGpqq
+otherwise. Now, for S“ Sθ, i.e., replacing binary variables spqq in Eq. (4) by
+the softmax probability outputs of the network sθpqq, we obtain the following
+boundary loss which, up to a constant independent ofθ, approximates boundary
+distance DistpBG,BSθq:
+LBpθq“
+ż
+Ω
+φGpqqsθpqqdq (5)
+Notice that we omitted the last term in Eq. (4) as it is independent of network
+parameters. The level set functionφG is pre-computed directly from the ground-
+truth region G. In practice, our boundary loss in Eq. (5) is the sum of linear
+6
+
+functions of the regional softmax probability outputs of the network. Therefore,
+it can be easily combined with standard regional losses ( LR) and implemented
+with any existing deep network architecture for N-D segmentation:
+LRpθq` αLBpθq, (6)
+where αP R is a parameter balancing the two losses.
+It is worth noting that our boundary loss uses ground-truth boundary infor-
+mation via pre-computed level-set function φGpqq, which encodes the distance
+between each point q and BG. In Eq. (5), the softmax for each point q is
+weighted by the distance function. Such distance-to-boundary information is
+omitted in widely used regional losses, where all the points within a given re-
+gion are treated equally, independently of their distances from the boundary.
+Notice that the global minimum (smallest possible value) of our boundary
+loss (5) is reached when all the negative values in the distance function are in-
+cluded in the sum (i.e., the softmax predictions for the pixels within the ground-
+truth foreground are equal to 1) and all the positive values are omitted (i.e., the
+softmax predictions within the background are equal to zero). This means that
+the global optimum is reached for softmax predictions that correspond exactly
+to the ground truth, which conﬁrms the meaningfulness of our boundary loss. It
+is also worth noticing that the gradient of our loss is φG multiplied the gradient
+of the softmax predictions. This results in negative factors for the pixels in G,
+which encourages sθ to increase during SGD, with the magnitude (strength) of
+the factors depending on the distance between the pixel and the ground-truth
+boundary (the further the pixel from the boundary, the higher the magnitude of
+the factor). Positive factors for pixels within the background (Ω zG) encourage
+the softmax predictions to decrease.
+As we will see in our experiments, it is important to use our boundary
+loss in conjunction with a regional loss for the following technical facts. As
+discussed earlier, the global optimum of our boundary loss corresponds to a
+strictly negative value, with the softmax probabilities yielding a non-empty
+foreground region. However, an empty foreground, with approximately null
+values of the softmax probabilities almost everywhere, corresponds to very low
+gradients. Therefore, this trivial solution is close to a local minimum or a
+saddle point. This is why we integrate our boundary loss with a regional loss:
+the regional loss guides training during the ﬁrst epochs and avoids getting stuck
+in such trivial solutions. In the next section, we will discuss various scheduling
+strategies for updating the weight of the boundary loss during training, with the
+boundary loss becoming very dominant, almost acting alone, towards the end
+of the training process. It is also worth noting that this behaviour of boundary
+terms is conceptually similar to the behaviour of classical and popular contour-
+based energies for segmentation, e.g., level set Geodesic Active Contours (GAC)
+[23] or discrete Markov Random Fields (MRFs) for boundary regularization and
+edge alignment [24], which require additional regional terms to avoid trivial
+empty-region solutions.
+7
+
+3. Experiments
+In this section, we perform two sets of experiments. First, we perform
+comprehensive evaluations demonstrating to positive eﬀect of integrating our
+boundary loss with diﬀerent regional losses LR. Then, we perform a study on
+the diﬀerent strategies for selecting and scheduling weight α in (6), showing its
+impact on performances and good default values for new applications.
+3.1. Datasets
+To evaluate the proposed boundary loss, we selected two challenging brain
+lesion segmentation tasks, each corresponding to highly unbalanced classes.
+ISLES:. The training dataset provided by the ISLES organizers is composed
+of 94 ischemic stroke lesion multi-modal scans. In our experiments, we split
+this dataset into training and validation sets containing 74 and 20 examples,
+respectively. Each scan contains Diﬀusion maps (DWI) and Perfusion maps
+(CBF, MTT, CBV, Tmax and CTP source data), as well as the manual ground-
+truth segmentation. The spatial resolution goes from 0 .8mmˆ 0.8mmˆ 4mm
+to 1mmˆ 1mmˆ 12mm. More details can be found in the ISLES website 3.
+WMH:. The public dataset of the White Matter Hyperintensities (WMH) 4
+MICCAI 2017 challenge contains 60 3D T1-weighted scans and 2D multi-slice
+FLAIR acquired from multiple vendors and scanners in three diﬀerent hospitals.
+The spatial resolution goes from 0.95mmˆ0.95mmˆ3mm to 1.21mmˆ1mmˆ
+3mm for each volume. In addition, the ground truth for the 60 scans is pro-
+vided. From the whole set, 50 scans were used for training, and the remaining
+10 for validation.
+3.2. Compared losses
+As stated previously, our proposed boundary loss can be combined with
+any standard regional loss. In the following experiments, we evaluated diﬀerent
+popular ones:
+GDL. [6] We use the binary case of this loss, described in Equation (1). This
+is also the baseline loss that we use for the experiments on the selection of α.
+An important advantage of this loss is that it is hyper-parameter free.
+3http://www.isles-challenge.org
+4http://wmh.isi.uu.nl
+8
+
+Distance weighted cross-entropy . [10] UNet original paper proposed this
+loss as a way to integrate spatial information during the training. It is a modiﬁed
+weighted cross-entropy loss, where the weight for each pixel depends both on
+the class distribution, and its distance to the two cells closest boundaries. We
+adapted it for our case, where we take into account only one distance:
+LUNETpθq“´
+ż
+C
+ż
+Ω
+ucppq logsc
+θppqdpdc,
+where C is the set of classes and sc
+θppq are the network predictions for class c.
+ucppq is deﬁned as:
+ucppq“ gcppq
+„
+wc`w0e
+´DGppq2
+2σ2
+
+,
+where wc “
+ş
+Ωgcppqdp
+|Ω| , and w0 “ 10 and σ“ 5 are two hyper-parameters. We
+kept the paper’s default values.
+Focal loss. [18] The idea of this loss is to give hard examples a more important
+weight:
+LFOCAL“´
+ż
+C
+ż
+Ω
+p1´sc
+θppqqγgcppq logsc
+θppqdpdc,
+with γ“ 2 as default hyper-parameter. Therefore, during training, pixels cor-
+rectly classiﬁed with a high conﬁdence will have little to no inﬂuence.
+Hausdorﬀ loss . [20] This closely related loss is also designed to minimize
+some distance between the two boundaries, but through a diﬀerent path. We
+refer to this loss as LHD.
+LHD “
+ż
+Ω
+pgppq´ sθppqq2pDGppqβ`DSppqβqdp,
+where DS denotes the distance function from predicted boundary S, after
+thresholding sθ. β is a hyper-parameter, which the authors of [20] set to 2
+following a grid search. Unlike our boundary loss, computing DS cannot be
+done in a single step before training. The distance needs to be re-computed
+at each epoch during training, for all the images. It also requires to store the
+whole volume Ω in memory, as we cannot compute the distance map for only a
+subset of Ω. These might be important computational and memory limitations,
+more so when dealing with large images, as is the case for 3D distance maps.
+3.3. 2D and 3D distance maps
+While the main experiments resort to a distance map computed from each
+individual 2D slice, we evaluate the proposed boundary loss with a distance map
+computed from the whole initial 3D segmentation mask. Equation (5) enables
+us to have only a subset of Ω at each update, making it possible to use a 3D
+distance map with mini-batches of 2D slices.
+9
+
+3.4. Selection of α
+We study several strategies for selectingα, and its eﬀect on the performances.
+On top of a constant pre-selected α, we evaluated simple scheduling strategies
+to update it during the training.
+Constantα. The simplest method would be to use a constant during the whole
+training, but this might require careful tuning of its value.
+Increase α. We start with a low value of αą 0, and increase it gradually at
+the end of each epoch. The weight of the regional loss LR remains constant over
+time. At the end of the training, the two losses have the same weight.
+Rebalanceα. First we rewrite our combined loss as p1´αqLR`αLB. As for
+the increase strategy, we start with a low αą 0, and increase it over time. In
+this way, we give more importance to the regional loss term at the beginning
+while gradually increasing the impact of the boundary loss term. Note that we
+make sure that the weight for LR never reaches 0; the two losses are used at all
+times during training.
+3.5. Implementation details
+Data pre-processing. While the scans are provided as 3D images, we process
+them as a stack of independent 2D images, which are fed into the network.
+In fact, the scans in some datasets, such as ISLES, contain between 2 and 16
+slices, making them ill-suited for 3D convolutions in those cases. The scans were
+normalized between 0 and 1 before being saved as a set of 2D matrices, and re-
+scaled to 256ˆ256 pixels if needed. When several modalities were available, all
+of them were concatenated before being used as input to the network. We did
+not use any data augmentation in our experiments.
+Architecture and training. We employed UNet [10] as deep learning archi-
+tecture in our experiments. To train our model, we employed Adam optimizer,
+with a learning rate of 0 .001 and a batch size equal to 8. The learning rate is
+halved if the validation performances do not improve during 20 epochs. We did
+not use early stopping.
+To compute the level set function φG in Eq. (5), we used standard SciPy
+functions5. Note that, for slices containing only the background region, we
+used a zero-distance map, assuming that the regional loss is suﬃcient in those
+cases. For the increase and rebalance α scheduling strategies, we start with
+α“ 0.01 and increase it by 0 .01 at the end of each epoch. For all the experi-
+ments comparing diﬀerent losses, we use the same rebalance strategy, with the
+same hyper-parameters. In addition, we evaluated the performance when the
+boundary loss is the only objective, i.e., α“ 0.
+5https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.
+morphology.distance_transform_edt.html
+10
+
+For our implementation, we used PyTorch [25], and ran the experiments
+on a machine equipped with an NVIDIA GTX 1080 Ti GPU with 11GBs of
+memory. Our code (data pre-processing, training and testing scripts) is publicly
+available6. As [20] did not release their code, we relied on the re-implementation
+from [26]7.
+Evaluation. For evaluation purposes, we employ the common Dice Similarity
+Coeﬃcient (DSC) and modiﬁed Hausdorﬀ Distance 8 (HD95) metrics.
+3.6. Results
+3.6.1. Comparison of regional losses
+In this section, we detail the results that we obtained when using diﬀerent
+regional losses LR.
+Quantative evaluation . Table 1 reports the DSC and HD performances for
+our experiments using four diﬀerent choices of LR, with each regional term
+used either alone or in conjunction with our boundary loss in Eq. (6), on
+the ISLES and WMH datasets. In most of the settings, adding the boundary
+loss during training improves the performances, as reﬂected in the signiﬁcantly
+better DSC and HD values. For instance, on the ISLES segmentation task,
+adding the boundary loss yielded about 13% improvement in DSC over using
+Generalized Dice loss alone, and about 3% improvement over using UNet cross-
+entropy or focal loss alone. The discrepancy of the improvements the boundary
+loss brings might be due to the diﬀerence in the diﬃculty of the tackled tasks.
+The more diﬃcult the tasks (i.e., when regional terms have diﬃculty achieving
+good performances), the larger the gain boundary loss brings (as it complements
+regional information). GDL/ISLES is a noticeable case, where boundary loss
+corrected substantially the performance of the GDL regional loss, making it the
+winning competitor (although, without boundary information, it is the worse-
+performing regional loss).
+The mixed results with the UNet cross-entropy (improvement on ISLES,
+but stall on WMH), and the diﬀerence on the HD95 metrics can potentially be
+explained by a toxic interplay between the two losses: both of them are trying
+to use the distance from the boundary information, potentially counter-acting
+each others, and introducing instability.
+Computing the distance map from the 3D volume rather than from the
+2D slices gives a small boost in performance (about 1% DSC), and is more
+noticeable on the training curve for WMH (Figure 3). This diﬀerence could be
+explained by the spacing between the slices on the z axis: they are quite close
+(and correlated) in the case of WMH. However, in the case of ISLES, the big
+spacing (around 1cm) makes slices quite independent. Adding 3D information
+in this case is less helpful.
+6https://github.com/LIVIAETS/surface-loss
+7https://github.com/JunMa11/SegWithDistMap
+8We report the 95th percentile distance value instead of the maximum-distance value.
+11
+
+While the Hausdorﬀ loss [20] also improves the results over the GDL alone
+(around 7% on ISLES), its performance is not always at the same level as bound-
+ary loss (similar performance on WMH, but lower on ISLES). This is consistent
+with the ﬁndings of [26], which found that the diﬀerences in performances are
+dataset dependent.
+Loss ISLES WMH
+DSC HD95 (mm) DSC HD95 (mm)
+LB NA NA NA NA
+LHD NA NA 0.638 (NA) 4.578 (NA)
+GDL 0.511 (0.016) 5.320 (1.742) 0.768 (0.051) 3.634 (2.570)
+w/ LB (2D) 0.644 (0.026) 4.795 (3.712) 0.793 (0.006) 2.039 (1.834)
+w/ LB (3D) 0.659 (0.001) 2.725 (2.196) 0.818 (0.003) 1.702 (1.982)
+w/ LHD 0.582 (0.015) 4.126 (1.634) 0.805 (0.015) 2.151 (2.100)
+UNet cross-entropy [10] 0.608 (0.025) 4.572 (0.675) 0.757 (0.015) 4.355 (3.388)
+w/ LB (2D) 0.631 (0.016) 5.961 (2.291) 0.756 (0.022) 2.887 (2.629)
+Focal loss [18] 0.631 (0.046) 4.989 (2.775) 0.808 (0.026) 1.816 (1.370)
+w/ LB (2D) 0.650 (0.019) 1.770 (0.549) 0.786 (0.031) 2.258 (2.513)
+Table 1: Average DSC and HD95 values (and standard deviation over three indepen-
+dent runs) achieved on the validation subset. Best results highlighted in bold.
+Using the boundary loss alone does not yield the same competitive results
+as a joint loss (i.e., boundary and region), making the network collapse quickly
+into empty foreground regions, i.e., softmax predictions close to zero 9. We be-
+lieve that this is due to the following technical facts. In theory, the global
+optimum of the boundary loss corresponds to a negative value, as a perfect
+overlap sums only over the negative values of the distance map. In this case,
+the softmax probabilities correspond to a non-empty foreground. However, an
+empty foreground (null values of the softmax probabilities almost everywhere)
+corresponds to low gradients. Therefore, this trivial solution is close a local
+minimum or a saddle point. This is not the case when we use our boundary
+loss in conjunction with a regional loss, which guides the training during the
+ﬁrst epochs and avoids getting stuck in such a trivial solution. The scheduling
+method then increases the weight of the boundary loss, with the latter becom-
+ing very dominant towards the end of the training process. This behaviour of
+boundary terms is conceptually similar to the behaviour of classical and popular
+contour-based energies for level set segmentation, e.g., geodesic active contours
+[23], which also require additional regional terms to avoid trivial solutions (i.e.,
+empty foreground regions).
+The learning curves depicted in Figure 3 show the gap in performances be-
+tween using a regional loss LR alone and when augmented with our boundary
+loss, for diﬀerent choices of LR. In most of the settings, the diﬀerence becomes
+signiﬁcant at convergence. This behaviour is most visible when LR “ LGDL,
+and is consistent for both metrics and both dataset, which clearly shows the
+beneﬁts of employing the proposed boundary loss term.
+9For this reason, we do not report metrics in this case, as it would be meaningless.
+12
+
+Figure 3: Evolution of DSC values on validation subsets, for diﬀerent base losses, on
+both ISLES and WMH. Best viewed in colors.
+13
+
+Qualitative evaluation. Qualitative results are depicted in Fig. 4. Inspecting
+these results visually, we can observe that there are two major types of improve-
+ments when employing the proposed boundary loss. First, as the methods based
+on DSC losses, such as GDL, do not use spatial information, prediction errors
+are treated equally. This means that the errors for pixels/voxels in an already
+detected object have the same importance as the errors produced in completely
+missed objects. On the contrary, as our boundary loss is based on the distance
+map from the ground-truth boundaryBG, it will penalize much more such cases,
+helping to recover small and far regions. This eﬀect is best illustrated in Fig.
+1 and Fig. 4 (third row). False positives (ﬁrst row in Fig. 4) will be far away
+from the closest foreground, getting a much higher penalty than with the GDL
+alone. This helps in reducing the number of false positives. Additional qual-
+itative results for other base losses, and their combination with the proposed
+boundary loss, are depicted in Figures 5, 6. These ﬁgures also show failure cases
+(last column) of the boundary loss.
+Figure 4: Visual comparison on two diﬀerent datasets from the validation set.
+Computational complexity . It is worth mentioning that, as the proposed
+boundary loss term involves an element-wise product between two matrices –
+i.e., the pre-computed level-set function φG and the softmax output sθppq –
+the complexity that it adds is negligible as showed in Table 2. Contrary, the
+Hausdorﬀ loss [20] introduces around 10% of slowdown in the training process.
+This will be further magniﬁed if we generalize to multi-class problems, where
+14
+
+Figure 5: Visual comparison on the WMH dataset for diﬀerent training losses. The last
+column depicts a failure case, where the proposed loss does not enhance the regional
+loss performance. Best viewed in colors. 15
+
+Figure 6: Visual comparison on the ISLES dataset for diﬀerent training losses. The last
+column depicts a failure case, where the proposed loss does not enhance the regional
+loss performance. Best viewed in colors. 16
+
+Loss Time (s) per batch
+ISLES (Batch size = 4) WMH (Batch size = 8)
+GDL 0.187 (0.129) 0.345 (0.132)
+w/ LB 0.190 (0.128) 0.345 (0.129)
+w/ LHD 0.210 (0.108) 0.392 (0.092)
+Table 2: Training time required by diﬀerent losses. We report the average and standard
+deviation batch time in seconds for each method.
+an individual distance map should be computed for each class.
+3.6.2. Selection of α
+Table 3 reports the performances of the proposed approach on the ISLES seg-
+mentation task for diﬀerentα values and scheduling techniques. Figure 3 shows
+a subset of the learning curves related to α selection strategies in Table 3. This
+is an indication that, while our boundary loss can beneﬁt from a tuned balance
+between the two losses, even a sub-optimal α can already provide improvement
+over the regional loss alone. Observe that increasing the weight of constant α
+yields better performances, up to a certain value, with the performances de-
+creasing starting from α “ 1.5. With α “ 2, the performance is similar to a
+network trained with the boundary loss alone. In contrast, using any of the
+two proposed scheduling strategies (increasing α or re-balancing) yields better
+results than any constant α, without having to explore many conﬁgurations.
+From the learning curves (Figure 7), we can notice that the GDL alone
+and the GDL with a small constant α “ 0.001 have a similar training DSC
+over time, but that their validation DSC are signiﬁcantly diﬀerent. A similar
+behaviour can be observed by examining the results with constant α“ 1 and
+the rebalanced α: while the rebalancing training DSC is slightly higher during
+the whole training, the validation DSC becomes signiﬁcantly better around half
+the training time, where the high constant α performances starts decreasing.
+Strategy ISLES
+DSC HD95
+GDL only 0.511 (0.016) 5.320 (1.742)
+Constantα
+α“ 0.001 0.545 (0.020) 4.778 (1.546)
+α“ 0.01 0.566 (0.019) 5.052 (1.395)
+α“ 0.05 0.606 (0.015) 5.326 (1.712)
+α“ 0.1 0.605 (0.010) 5.762 (1.782)
+α“ 0.5 0.604 (0.006) 9.234 (10.463)
+α“ 1 0.628 (0.023) 2.462 (0.706)
+α“ 1.5 0.565 (0.074) 3.335 (1.164)
+α“ 2 0.549 (0.084) 20.275 (16.603)
+Increase α 0.622 (0.004) 4.952 (1.773)
+Rebalance α 0.644 (0.026) 4.795 (3.712)
+Table 3: Results on ISLES validation set for diﬀerent α.
+17
+
+Figure 7: Comparison of the training and validation DSC curves for diﬀerent α selec-
+tion strategies. For readability, not all settings from Table 3 have been included. Best
+viewed in colors.
+The rebalancing strategy was used in all other experiments, and as showed
+in Table 1, proved to be a good default strategy to integrate the boundary loss
+with another regional loss.
+4. Conclusion and future works
+We proposed a boundary loss term that can be easily combined with any
+standard regional loss, to tackle segmentation tasks in highly unbalanced scenar-
+ios. Furthermore, the proposed term can be implemented with any existing deep
+network architecture and for any N-D segmentation problem. Our experiments
+on two challenging and highly unbalanced datasets demonstrated the beneﬁts
+of including our boundary loss during training. It consistently improved the
+performances, and by a large margin on one data set, with enhanced training
+stability.
+In this work, we evaluated the proposed boundary loss in the context of
+class imbalance. However, there are other interesting avenues for extending
+and evaluating our approach. For instance, our boundary loss has a spatial
+regularization eﬀect because it is based on distance-to-boundary information.
+In particular, we observed experimentally that it yield contours, which are,
+typically, smoother than those obtained with regional losses. Focused on the
+important problem of unbalanced segmentation, our experiments did not fully
+investigate the beneﬁts of such a spatial regularization. An interesting future re-
+search avenue will be to explore such a regularization eﬀect in applications with
+challenging imaging noise, which may prevent regional losses from generating
+smooth contours, e.g., ultrasound imaging. Another limitation of our formula-
+tion and experiments is that they were limited to binary (two-region) segmen-
+tation problems. It will be interesting to investigate extensions of boundary
+loss to the multi-region scenario, with competing distance maps from multiple
+structures and various/complex topological constraints (e.g., one structure fully
+included within another).
+18
+
+Acknowledgments
+This work is supported by the National Science and Engineering Research
+Council of Canada (NSERC), Discovery Grants (DG) program, and by the ETS
+Research Chair on Artiﬁcial Intelligence in Medical Imaging.
+References
+1. G. Litjens, T. Kooi, B. E. Bejnordi, A. A. A. Setio, F. Ciompi, M. Ghafoo-
+rian, J. A. Van Der Laak, B. Van Ginneken, C. I. S´ anchez, A survey on
+deep learning in medical image analysis, Medical image analysis 42 (2017)
+60–88.
+2. D. Shen, G. Wu, H.-I. Suk, Deep learning in medical image analysis, Annual
+review of biomedical engineering 19 (2017) 221–248.
+3. J. Dolz, C. Desrosiers, I. Ben Ayed, 3D fully convolutional networks for sub-
+cortical segmentation in MRI: A large-scale study, NeuroImage 170 (2018)
+456–470.
+4. J. Ker, L. Wang, J. Rao, T. Lim, Deep learning applications in medical
+image analysis, IEEE Access 6 (2018) 9375–9389.
+5. F. Milletari, N. Navab, S.-A. Ahmadi, V-Net: Fully convolutional neural
+networks for volumetric medical image segmentation, in: 3D Vision (3DV),
+2016 Fourth International Conference on, IEEE, 2016, pp. 565–571.
+6. C. H. Sudre, W. Li, T. Vercauteren, S. Ourselin, M. J. Cardoso, Gener-
+alised dice overlap as a deep learning loss function for highly unbalanced
+segmentations, in: Deep Learning in Medical Image Analysis and Multi-
+modal Learning for Clinical Decision Support, Springer, 2017, pp. 240–248.
+7. M. Havaei, A. Davy, D. Warde-Farley, A. Biard, A. Courville, Y. Bengio,
+C. Pal, P.-M. Jodoin, H. Larochelle, Brain tumor segmentation with deep
+neural networks, Medical image analysis 35 (2017) 18–31.
+8. S. Valverde, M. Cabezas, E. Roura, S. Gonz´ alez-Vill` a, D. Pareto, J. C.
+Vilanova, L. Ramio-Torrenta, `A. Rovira, A. Oliver, X. Llad´ o, Improving
+automated multiple sclerosis lesion segmentation with a cascaded 3D con-
+volutional neural network approach, NeuroImage 155 (2017) 159–168.
+9. T. Brosch, Y. Yoo, L. Y. Tang, D. K. Li, A. Traboulsee, R. Tam, Deep
+convolutional encoder networks for multiple sclerosis lesion segmentation,
+in: International Conference on Medical Image Computing and Computer-
+Assisted Intervention, Springer, 2015, pp. 3–11.
+10. O. Ronneberger, P. Fischer, T. Brox, U-Net: Convolutional networks for
+biomedical image segmentation, in: International Conference on Medical
+image computing and computer-assisted intervention, Springer, 2015, pp.
+234–241.
+19
+
+11. K. Kamnitsas, C. Ledig, V. F. Newcombe, J. P. Simpson, A. D. Kane,
+D. K. Menon, D. Rueckert, B. Glocker, Eﬃcient multi-scale 3D CNN with
+fully connected CRF for accurate brain lesion segmentation, Medical image
+analysis 36 (2017) 61–78.
+12. J. Long, E. Shelhamer, T. Darrell, Fully convolutional networks for semantic
+segmentation, in: Proceedings of the IEEE conference on computer vision
+and pattern recognition, 2015, pp. 3431–3440.
+13. L. Yu, X. Yang, H. Chen, J. Qin, P.-A. Heng, Volumetric convnets with
+mixed residual connections for automated prostate segmentation from 3D
+MR images., in: AAAI, 2017, pp. 66–72.
+14. F. Milletari, S.-A. Ahmadi, C. Kroll, A. Plate, V. Rozanski, J. Maiostre,
+J. Levin, O. Dietrich, B. Ertl-Wagner, K. B¨ otzel, et al., Hough-CNN: deep
+learning for segmentation of deep brain regions in MRI and ultrasound,
+Computer Vision and Image Understanding 164 (2017) 92–102.
+15. K. C. Wong, M. Moradi, H. Tang, T. Syeda-Mahmood, 3D segmenta-
+tion with exponential logarithmic loss for highly unbalanced object sizes,
+in: International Conference on Medical Image Computing and Computer-
+Assisted Intervention, Springer, 2018, pp. 612–619.
+16. S. S. M. Salehi, D. Erdogmus, A. Gholipour, Tversky loss function for image
+segmentation using 3D fully convolutional deep networks, in: International
+Workshop on Machine Learning in Medical Imaging, Springer, 2017, pp.
+379–387.
+17. N. Abraham, N. M. Khan, A novel focal tversky loss function with improved
+attention U-Net for lesion segmentation, arXiv preprint arXiv:1810.07842
+(2018).
+18. T.-Y. Lin, P. Goyal, R. Girshick, K. He, P. Doll´ ar, Focal loss for dense object
+detection, IEEE transactions on pattern analysis and machine intelligence
+(2018).
+19. W. Zhu, Y. Huang, L. Zeng, X. Chen, Y. Liu, Z. Qian, N. Du, W. Fan,
+X. Xie, Anatomynet: Deep learning for fast and fully automated whole-
+volume segmentation of head and neck anatomy, Medical physics 46 (2)
+(2019) 576–589.
+20. D. Karimi, S. E. Salcudean, Reducing the hausdorﬀ distance in medical
+image segmentation with convolutional neural networks, IEEE transactions
+on medical imaging (2019).
+21. Y. Boykov, V. Kolmogorov, D. Cremers, A. Delong, An integral solution to
+surface evolution PDEs via geo-cuts, in: European Conference on Computer
+Vision, Springer, 2006, pp. 409–422.
+20
+
+22. A. Mitiche, I. Ben Ayed, Variational and level set methods in image seg-
+mentation, Springer, 2011.
+23. V. Caselles, R. Kimmel, G. Sapiro, Geodesic active contours, International
+Journal of Computer Vision 22 (1997) 61–79.
+24. Y. Boykov, G. Funka-Lea, Graph cuts and eﬃcient n-d image segmentation,
+International Journal of Computer Vision 70 (2006) 109–131.
+25. A. Paszke, S. Gross, S. Chintala, G. Chanan, E. Yang, Z. DeVito, Z. Lin,
+A. Desmaison, L. Antiga, A. Lerer, Automatic diﬀerentiation in pytorch
+(2017).
+26. J. Ma, Z. Wei, Y. Zhang, Y. Wang, R. Lv, C. Zhu, G. Chen, J. Liu, C. Peng,
+L. Wang, et al., How distance transform maps boost segmentation cnns: An
+empirical study, in: Medical Imaging with Deep Learning, 2020.
+21

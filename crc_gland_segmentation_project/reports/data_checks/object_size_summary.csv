@@ -1,0 +1,8 @@
+dataset,split,metric_name,sample_count,min_value,mean_value,median_value,max_value
+glas,train,foreground_bbox_area_px,68,156912,360125.191176,397653.500000,404550
+glas,val,foreground_bbox_area_px,17,70625,317378.058824,352625.000000,404550
+glas,testA,foreground_bbox_area_px,60,66394,345911.233333,404550.000000,404550
+glas,testB,foreground_bbox_area_px,20,200166,374390.200000,404550.000000,404550
+crag,train,foreground_bbox_area_px,153,162165,2064891.699346,2287644.000000,2295224
+crag,val,foreground_bbox_area_px,20,836136,2051268.600000,2286886.000000,2295224
+crag,test,foreground_bbox_area_px,40,509600,1985222.600000,2268000.000000,2295224

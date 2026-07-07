@@ -1,0 +1,14 @@
+run_name: A1_UNet_GlaS_v1_seed3407
+stage_code: A1
+dataset_code: glas
+model_name: unet
+config_version: v1
+train_seed: 3407
+result_tag: reproduced
+aggregation: single_seed
+smoke_check_run_name: A1_UNet_GlaS_v1_seed3407_smoke
+config_refs:
+  data: configs/data/glas.yaml
+  model: configs/model/unet_v1.yaml
+  train: configs/train/unet_flow_v1.yaml
+  eval: configs/eval/eval_proto_v1.yaml

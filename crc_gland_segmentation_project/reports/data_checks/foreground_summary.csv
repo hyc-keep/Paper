@@ -1,0 +1,8 @@
+dataset,split,sample_count,min_foreground_ratio,mean_foreground_ratio,median_foreground_ratio,max_foreground_ratio
+glas,train,68,0.140910,0.522581,0.536064,0.893514
+glas,val,17,0.105574,0.422844,0.491111,0.804215
+glas,testA,60,0.121453,0.493940,0.532317,0.858947
+glas,testB,20,0.359528,0.565639,0.577864,0.796997
+crag,train,153,0.026195,0.478433,0.499540,0.929467
+crag,val,20,0.054062,0.471867,0.499619,0.759207
+crag,test,40,0.093494,0.417762,0.382733,0.822388

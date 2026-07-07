@@ -1,0 +1,6 @@
+model_name: unet
+model_version: unet_v1
+in_channels: 3
+out_channels: 1
+base_channels: 32
+arch_source: standard_unet_encoder_decoder_skip

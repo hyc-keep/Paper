@@ -1,0 +1,108 @@
+# Formal Doc Gate Report
+
+## 1. 输入文档
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/writing_entry_decision.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/stop_loss_decision.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/stage_gate_matrix.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/final_readiness_judgement.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/en_entry_readiness.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/cn_entry_readiness.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/04_英文起步条件.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/03_中文保底条件.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/02_止损与回退规则.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/01_阶段门槛总表.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/04_保留或删除标准.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/03_实验步骤.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/02_插入位置与参数范围.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/01_设计依据.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/05_投稿结果包检查表.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/04_stage_summary模板.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/03_可视化与失败案例清单.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/02_主表与消融表回填规则.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/01_结果记录模板.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/04_Baseline/04_阶段验收.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/04_Baseline/03_对比与判断规则.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/04_Baseline/02_训练协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/04_Baseline/01_R34UNet结构与来源.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/04_Baseline/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/04_阶段验收.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/03_结果解释规则.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/02_训练与验证协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/01_任务定位.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/03_UNet稳定性/03_阶段验收.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/03_UNet稳定性/02_mean_std汇总规则.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/03_UNet稳定性/01_三次重复设计.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/03_UNet稳定性/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/07_阶段验收.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/06_引用值与复现值标记规则.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/05_增强对比进入条件.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/04_AttUNet适配方案.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/03_DeepLabV3P适配方案.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/02_UNetPP适配方案.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/01_统一公平协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/02_UNet流程验证/05_阶段验收.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/02_UNet流程验证/04_错误排查.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/02_UNet流程验证/03_验证测试与可视化.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/02_UNet流程验证/02_训练步骤.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/02_UNet流程验证/01_任务与默认配置.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/02_UNet流程验证/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/04_保留或降级标准.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/03_实验步骤.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/02_距离图与lambda范围.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/01_设计依据.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/01_数据协议/07_数据阶段验收.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/01_数据协议/06_数据产物清单.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/01_数据协议/05_标签转换与可视化规则.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/01_数据协议/04_CRAG划分协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/01_数据协议/03_GlaS划分协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/01_数据协议/02_数据检查与配对规则.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/01_数据协议/01_数据源与目录约定.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/01_数据协议/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/04_保留或删除标准.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/03_实验步骤.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/02_边界标签生成规则.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/01_设计依据.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/00_总览与规范/07_实验执行全局修订与质检规范.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/00_总览与规范/06_实验执行证据化写作模板.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/00_总览与规范/05_代码工程映射与实现策略.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/00_总览与规范/04_评估口径与官方脚本对齐.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/00_总览与规范/03_命名与结果记录规范.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/00_总览与规范/02_参数冻结总表.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/00_总览与规范/01_工程目录框架.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/00_总览与规范/00_执行导航.md`
+
+## 2. 检查范围
+- 检查正式模板/规程/协议文档是否缺少关键章节骨架。
+- 检查文档是否同时回答了角色边界、前置依赖、规则或证据、代码或工程落点、验收或回退。
+- 检查文档是否保留当前正式状态口径，而不是回退到旧二元写法。
+- 检查文档中的反引号路径是否能解析到真实存在的文件，而不是只写一个看起来像路径的字符串。
+- 检查治理文件组（中央 SKILL / 导航 / 总规范 / implementation_tracking 规程）是否共同覆盖状态口径、自动门禁命令和调用顺序。
+- 检查文档是否留下了最小路径锚点、来源锚点和质检痕迹。
+- 对启用了“单文档双达标模式”的正式文档，额外检查下面这些教学信号是否达到最小可执行强度：
+- `## 0. 先给结论` 是否存在，且开头至少有 3 条结论型 bullet。
+- `设计取舍对比` 是否是结构化对比，而不是只写一句“最后选了什么”。
+- `误区预防` 是否同时给出误区/误判和对应的纠正或正确理解。
+- `联读顺序` 是否给出带顺序词和可定位目标的真实阅读路径。
+- `收口自检` 是否给出至少 2 条带动作词和证据对象的自检/复核步骤。
+- `学习型说明文人工审稿清单.md` 是否不仅被回链，还明确出现人工终审/人工审稿动作。
+
+## 3. 结论
+- `formal_doc_gate_status`: `pass`
+
+## 4. 检查摘要
+
+- `章节与边界`: 未发现 formal gate 异常。
+- `证据与锚点`: 未发现 formal gate 异常。
+- `状态口径`: 未发现 formal gate 异常。
+- `治理一致性`: 未发现 formal gate 异常。
+- `双达标模式`: 未发现 formal gate 异常。
+
+## 5. 详细结果
+- [pass] 正式模板/规程/协议文档的关键章节、边界、代码落点与质检痕迹检查通过。

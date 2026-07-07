@@ -1,0 +1,1262 @@
+  
+International Journal of the Physical Sciences Vol. 6(27), pp. 6329-6341, 2 November, 2011 
+Available online at http://www.academicjournals.org/IJPS 
+DOI: 10.5897/IJPS11.867 
+ISSN 1992 - 1950 ©2011 Academic Journals 
+ 
+ 
+ 
+ 
+Full Length Research Paper 
+ 
+Performance metrics for active contour models in 
+image segmentation 
+ 
+Hum Yan Chai*, Teng Jih Bao, Lai Khin Wee, Tan Tian Swee and Sh-Hussain Salleh 
+ 
+1Centre for Biomedical Engineering, Faculty of Health Science and Biomedical Engineering, Universiti Teknologi 
+Malaysia, Skudai, 81310, Johor, Malaysia. 
+2Biomedical Engineering Group, Institute of Biomedical Engineering and Informatics, Faculty of Computer Science and 
+Automation, Technische Univeristat Ilmenau, Germany. 
+ 
+Accepted 28 September, 2011 
+ 
+Image segmentation is one of the significant technique s in image processing to distinguish desired 
+parts from its background  for further analysis.  It provides visual means for inspection of anatomical 
+structure of human body, identification of disease, tracking of its developme nt and input for sur gical 
+planning and simulation. Active contour models are regarded as promising and vigorously research 
+model-based approach to computer assisted medical image analysis. However, it is not trivial to assess 
+whether one segmentation algor ithm performs more superior than the other. Therefore, a systematic 
+assessment tool is designed and implemented to examine all the important asp ects of active contour 
+models. Meanwhile, a novel supervised evaluator including analytical method and empirical  methods 
+are proposed to acts as objective evaluator.  The obtained results highlighted both the strengths and 
+limitations of the studied active contour models. A proper area usage of each active contour model is 
+also suggested at the end of this paper. 
+ 
+Key words: Active contour models, assessment tool, image segmentation, objective evaluation. 
+ 
+ 
+INTRODUCTION 
+ 
+Image segmentation (Lai et al., 2011) is the process by 
+which an image is broken into similar pieces or  in which 
+desired parts (region of interest,  ROI) of an image  are 
+extracted and processed (Linda and George, 2001) . It 
+provides informative inp ut for further image analysis. 
+Numerous techniques incorporating artificial intelligence , 
+such as heuristic optimization are proposed to perform 
+the segmentation (Hao and Pu, 2011; Noor  et al., 2011; 
+Zhu et al., 2011) . Its importance and application in the 
+biomedical image processing are numerous, where it aids 
+physicians greatly in providing visual means for 
+inspection of anatomical human body (Worth et al, 1997), 
+identification of disease, iris recognition which requires a 
+fast and yet accurate iris segmentation (Zhaofeng et al., 
+2009), fingerprint recognition (Mehtre and Chatterjee,  
+ 
+ 
+ 
+*Corresponding author. E-mail: ychum2@live.utm.my. 
+1989) and tracking of disease development, such as 
+brain tumor ( Taylor, 1995 ). Also, it serves as input for  
+surgical planning (Khoo  et al ., 1997), image -guided 
+surgical (Grimson, 1997) and simul ation (Dzung et al., 
+2000). However, segmentation remains  a fundamental 
+problem of computer vision (Linda and George, 2001)  in 
+low level image processing (Mirzaei et al., 2011), such as 
+Marr-Hildreth (Mark and Alberto, 2002) and Canny edge 
+detection (Canny, 1986) ; however, are not effective in 
+locating an object of image especially medi cal images 
+which usu ally appears in  arbitrary shapes. The 
+consideration of local information alone by these kinds of 
+techniques could make incorrect assumptions during 
+integration progress and subsequently would produce in -
+feasible object boundaries (McInerney and Terzopoulos, 
+1996). 
+In contrast, the energy minimization deformable 
+models, such as active contour mod el provide a partial 
+solution. It is invariably labeled as a promising and  
+
+  
+6330          Int. J. Phys. Sci. 
+ 
+ 
+ 
+vigorously research model -based m ethod to computer-
+assisted medical image analysis (McInerney and 
+Terzopoulos, 1996). The basic idea of active contour is 
+allowing a contour to contort to minimize  energy 
+functional to achieve objective. These deformable models 
+are capable of segmenting, ma tching and  tracking 
+images of anatomical structure (Dzung et al., 2000). 
+However, it is not trivial to assess whether one 
+segmentation algorithm performs better than the other  
+(Fenster and Chiu, 2005). Each active contour model has 
+its own advantages and l imitation. Misused of these 
+methods would lead to the wrong medical diagnosi s and 
+redundancy in resources. Critical issues that deal with the 
+application of active contour models in biomedical 
+applications include the complex procedure (execution 
+time), nu merous parameter selection and sensitivity to 
+the placement of init ial contour (capture ability). Besides, 
+to date, the popular methods to examine the effective -
+ness of segmentation are based on subjective evaluat ion 
+method and edge detection. These current evaluators are 
+tedious, time consuming and the applications are res -
+tricted to t he edge-based active contours. Thus, in order 
+to assess the performance of each active contour model 
+in image segmentation, a systematic assessment tool is 
+proposed for all i mportant aspects. The comparative 
+results will highlight the strengths and restrictions of the 
+active contour models.  The studied models are Kass, 
+localized region based (LRB), level set (LS), distance 
+snake (Distance) and Chan -Vese active contour without 
+edges (CV).   
+Subsequently, typical active contour models for digital 
+image segmentation are reviewed after which details of 
+the designed performance evaluation  are given. This is 
+followed by establishing the result of the analysis on each 
+active contour m odel in accordance with  their 
+characteristic. Finally, to illustrate the performance and 
+properties of the active contour model, experimental 
+results are drawn. 
+ 
+ 
+Medical imaging modalities 
+ 
+Medical imaging is a technique and process employed to 
+produce im ages of the anatomical structure and 
+physiological part of the human body (Paul, 2002) . 
+Medical imaging modalities include Ultrasound, CT scan, 
+MRI and Nuclear Medicine PET (Dhawan, 2003; William 
+et al., 2002; David et al., 2001; Joseph 1996, 1997, 1998, 
+1999, 2010; Paul, 2002 ). These modalities are cate -
+gorized into invasive and non -invasive techniques. The 
+invasive techniques include operation and endoscope, 
+while non -invasive techniques comprise of modalities , 
+such as MRI, Ultrasound, X -ray, CT and PET. All these 
+medical imaging modalities provide different measure -
+ments enabling physicians to accomplish clinical tasks , 
+such as patient diagnosis and monitoring more safely and 
+effectively. 
+ 
+ 
+ 
+ 
+Digital image and image preprocessing techniques 
+ 
+A computer im age is a matrix  of pixels (Linda and 
+George, 2001; Mark and Alberto, 2002; Gonzalez et al., 
+2004). The value of each pixel is proportional to the 
+brightness of the co rresponding point in the scene.  The 
+matrix of pixels is generally square and described as N × 
+N m-bit pixels, where N is the number of points along the 
+axes and m regulates the number of brightness values 
+(Mark and Alberto, 2002). The intensity histogram shows 
+the brightness levels of image. For 8 -bit pixels, the 
+brightness ranges from zero (bl ack) to 255 (white). The 
+image energy is inversely proportional to the intensity, 
+gradient magnitude and image features.   
+The wiener low pass filter is deployed to degrade noise 
+that is caused by constant power addictive (Lim and Jae, 
+1990). A pixel-wise adaptive Wiener method is ut ilized in 
+the Wiener filter (Tachaphetpiboon and Amornraksa, 
+2008). The local mean and standard deviation of the 
+each neighbor’s pixel is estimated statistically. 
+ 
+
+ =
+
+21,
+21 ),(1
+nn
+nnaNM                                (1)                                                           
+ 
+2
+ =
+2
+,
+21
+2
+21
+),(1 
+
+
+nn
+nnaNM                    (2)                                                   
+ 
+where 
+  is the M by N local neighborhood of each  pixel. 
+Equation 3 shows the estimation of pixel-wise Wiener 
+filter where 
+  denotes the noise variance. 
+ 
+)),((),( 212
+22
+21 
+  nnavnnb
+                 (3)                                                 
+ 
+Laplacian filter is one of the edge enhancement  filters. It 
+uses second derivatives information about the image 
+intensity changes through a difference equation. It is 
+generated by using convolution filter with a kernel (Fisher 
+et al., 2003). 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+010
+141
+010
+4
+1K
+                                         (4)                                                                  
+ 
+The unsharp contrast enhancement filter can be crea ted 
+using negative Laplacian filter by varying α value in the 
+range of 0.1 to 1.0. The negative Laplacian filter is given 
+as: 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+ 1
+151
+1
+)1(
+1
+                              (5)                                                            
+
+  
+ 
+ 
+ 
+ 
+Snakes and its variants 
+ 
+Snakes (Kass et al., 1987)  or active contours are curves 
+described inside an image domain which deform under 
+the control of internal energy and external energy (Xu 
+and Prince, 1998) . The internal energy responsible for 
+smoothness and stretchiness of the contour, whereas the 
+external energy pulls the contour to the region-of-interest 
+(ROI). The curve evolution method is deploying an 
+energy minimization function and it can be represented 
+as:  
+ 
+ 
+1
+0
+22
+))((2/)()()()(( dssVEsVssVsE extsss 
+      (6)                            
+ 
+where α and β denotes weighting parameters  that 
+regulate the smoothness and stretchiness of snake , 
+respectively. The external energy 
+  is obtained from 
+the image which value is small at the ROI. Euler equation 
+must be satisfied to minimize E. 
+ 
+0)()()()( '''  extEsVssVs 
+                 (7)                                                  
+ 
+Xu and Prince ( 1998) introduced new external forces 
+which consist of static and dynamic forces. The gradient 
+vector field (GVF) is described as the vector field v(x,y) = 
+(u(x,y), v(x,y)) which minimizes the energy functional: 
+ 
+dxdyfvfvvuuE yxyx
+222222
+)(  
+  (8)                              
+ 
+where f denotes gray level or binary edge map , while the 
+µ regularizes the effect of the first term in the intergrand 
+which i s a same smoothing term utilized by Horn and 
+Schunck (1981) in their formulation of optical flow. 
+Li and Acton (2007) proposed another new external 
+force which is computed by convoluting a vector field with 
+the edge map  obtained from  the image. Cohen and 
+Cohen (1993) and Lei et al.  (2008) introduced another 
+type of external function which is given as: 
+ 
+)(vQF 
+                         (9) 
+                                                 
+where Q(v) denotes the minimum normalized Euclidean 
+distance from v  to an edge point with the edge point 
+identiﬁed by a thresholded gradient.  This force is formed 
+as the negative of the external energy gradient and 
+enables a large magnitude for the external force in the 
+image and consequently the capture range i s enlarged. 
+The initial contour can be located far away from the 
+desired boundary if there are no spurious edges along 
+the way. By using a ﬁnite element method, the deform -
+able contour is represented as a continuous curve  in the 
+form of weighted sum of local polynomial basic functions. 
+Chai et al.          6331 
+ 
+ 
+ 
+The result has good stability and convergence in the 
+energy minimization process.  
+Li and Acton (2006) proposed a weighting function 
+which is added into external energy to minimize the noise 
+sensitivity of snake. Similarly, Lu and Shen (2006) uses 
+shape similarity metric method to modify the snake in 
+order to solve the noise problem. In this method, Fourier 
+descriptor (Bryan, 1998, 1999, 2000; Gang et al., 2008) is 
+an aspect for the distribution de scription of image pixels 
+on image contour.  
+Lankton ( 2008) proposed a novel local region -based 
+structure. The energy minimization is based on the 
+investigation of each point along the curve where the 
+energy is calculated in its local region. The curve 
+evolution breaks the local neighborhoods into local 
+interior and exterior and thus , computes the local 
+energies. The smoothed Heaviside function is used for 
+establishing the interior of closed contour. For the exterior 
+contour, it is represented by (1- Hφ(x)). 
+Chunming et al.  (2005) presented a  new variational 
+energy functional using lev el set function . It eases the 
+costly re -initialization procedure by forcing the level set 
+function near to a signed distance function. In the 
+traditional methods (Vicent et al., 1997; Ravikanth et al., 
+1995; Osher and Fedkiw, 2003 ), the level set function 
+can lead to shocks shape, while evolving the curve. The 
+new energy functional was proposed to address the 
+problem and is given as:  
+ 
+)()()( ,,   vgEPE 
+                  (10)                                                        
+ 
+where µP(Ф) is internal energy which penalizes the 
+difference of Ф from sign distance function. 
+ (Ф) is 
+external energy which consists of univariate Dirac 
+function and Heaviside function.  Chan and Vese  (2001) 
+introduced another model by taking the information within 
+the regions into consideration not only at their edges. The 
+segmentation problem was explicated by (Mumford and 
+Shah, 1989) and level sets (Osher and Sethian, 1988). 
+   
+ 
+Objective evaluation 
+ 
+Pratt ( 1978) brought about a figure of merit (FOM)  that 
+balances the types of errors induced by the absence of 
+valid edge points, failure to localize edge points and 
+classification of noise fluctuation as edge points. The 
+equation is defined as: 
+ 
+
+ 
+AI
+iN adI
+IR
+1
+21
+1
+                             (11)                                                                 
+ 
+where 
+  denotes max {
+ ,
+ }x and 
+  and 
+  entitle the 
+number of ideal and actual edge map points, ’a’ is a 
+scaling constant and ’d’  is  the  distance  between  actual 
+
+  
+6332          Int. J. Phys. Sci. 
+ 
+ 
+ 
+and ideal edge points.  It is a normalization rating factor 
+where R equals to unity is the perfect detected edge. Ji 
+and Haralick  (1999) proposed a novel quantitative 
+evaluation of edge det ectors by utilizing the minimum 
+kernel variance criterion. They found out that the decision 
+of determining a pixel as an edge is based on the 
+outcome of the convolution of image with a kernel.   
+The global consistency error (GCE) which is developed 
+by (Martin et al., 2001) acts as an objective evaluation of 
+consistency between image segmentations. The resultant 
+image of one algorithm is compared with respective 
+manually segmented image to quantify the error 
+measure. For a given pixel 
+ , consider the segments  
+  
+and 
+  that contain 
+ , the segments are sets of pixels 
+and denoted as C(
+ ,
+ ) and C(
+ ,
+ . Let the \ 
+symbolize the set difference, and thus the local 
+refinement error (LRE) and GCE are defined as:  
+     
+),(
+),(\),(),,(
+1
+21
+21
+i
+ii
+i
+PSC
+PSCPSCPSSLRE 
+           (12)                                                
+ 
+   ),,(),,,(min1),( 122121 ii PSSLREPSSLRENSSGCE
+  (13)  
+  
+By referring to Equation 12, if one segment is inclusive of 
+the other, then the pixel is in th e area of refinement and 
+the LRE value is zero. The GCE forces all the local 
+refinement to be in the same direction and thus , it 
+assesses one segmentation can be viewed as a 
+refinement of the other to which extent.  
+ Meila (2 005) presented Variation of Information (VoI) 
+as a measurement of information loss and gain between 
+the two clustering. The clusterings are viewed as 
+elements of a lattice and its distance apart across the 
+lattice is estimated based on mutual information metrics 
+and entropy. In short, t his nonnegative metric measures 
+the amount of randomness in one segmentation which 
+cannot be explained by the other. A random clustering 
+with clusters 
+ , 
+ ,..
+  is entitled by a random variable 
+X with X={1…k}, such that 
+  = |
+ | / n i Є X and n = 
+  
+the VoI between two clustering X and Y represented as: 
+ 
+);(2)(:),( YXIXHYXVoI 
+       (14)                                                    
+ 
+where H(X) is representing the entropy of  X and I(X,Y) is 
+mutual information betwe en  X and  Y. The lower the 
+value of VoI denotes the greater similarity.  
+Probabilistic Rand Index (PRI) ( Unnikrishnan et al., 
+2007) calculates the fraction of pixels whose labeling are 
+consistent between the computed segmentation and the 
+ground truth, ave raging across multiple ground truth 
+segmentations to account for scale variation in human  
+perception. Consider a set  of  ground  truth  images  {
+ , 
+ 
+ 
+ 
+ 
+, …, 
+ } corresponding to an image X = {
+ , … 
+}, where a subscript indexes one of N pixels. 
+  is 
+the segmentation of a test image and thus , the PRI is 
+defined as: 
+ 
+   
+
+
+
+
+
+
+
+
+ji
+ji
+ij
+S
+j
+S
+iij
+S
+i
+S
+iktest pllIpllINSSPR testtesttesttest
+,
+)1)(((
+2
+1),(
+    (15)    
+ 
+)(1)(
+1
+
+
+
+K
+k
+k
+j
+k
+ijiij llIkllPp
+                            (16)                                                
+ 
+This measure takes values in [0, 1] with maximum 1 
+when all the segmentations are identical.  
+Boundary displacement error (BDE) is proposed by 
+Freixenet et al. (2002) to  measure the average 
+displacement error of boundary pixels between two 
+segmented images. The distance between the pixel and 
+the closet pixel in the other boundary image is defined as 
+error of one boundary pixel.   
+ 
+ 
+MATERIALS AND METHODS 
+ 
+Database design 
+ 
+With the intent of assessing the performance of active contour 
+models, a  standard A to Z alphabet database is created.  The 
+purpose of utilizing alphabets as testing images is on account of the 
+uniqueness and various boundary concavities patterns. It provides 
+distinct and typical problems encountered in biomedical image 
+segmentation. It is known that one of the two main problems 
+associated with the utility of active contours is the convergence to 
+the boundary concavities (Xu and Prince, 1998) . The font used for 
+alphabet database is Times New Roman with size 300 and 
+resolution of 512 × 512. 
+ 
+ 
+Proposed indicator for segmentation accuracy assessment of 
+active contour models 
+ 
+A novel supervised evaluator that is proposed includes analytical 
+method and empirical methods. The equation is given as : 
+ 
+A
+PEM  
+
+1
+1
+        (17)    
+ 
+where E depicts the non-segmented area of desired ROI, P is the 
+unwanted segmented area, A is the ideal area of ROI, α and β are 
+the scaling factors. The default scaling factors are set at 1. The 
+range of the indicator is [0 , 1], where  the 1 is the highe st value for 
+the perfectly segmented area.  
+   α and β are the parameters used to penalize regions that are 
+offset from the ideal region. α is used to penalize the region E , 
+whereas β is the coefficient of P. The parameters can be relatively 
+adjusted to indicate the significant error caused by false
+
+  
+Chai et al.          6333 
+ 
+ 
+ 
+Table 1. The accuracy index for each active contour model.  
+ 
+Alphabet Proposed indicator value (M) 
+Kass LRB LS Distance CV 
+A 0.5072 0.7157 0.6977 0.6437 0.9009 
+B 0.4558 0.5015 0.5004 0.4777 0.9344 
+C 0.5314 0.8998 0.8901 0.7542 0.9235 
+D 0.3801 0.4379 0.4394 0.4179 0.9647 
+E 0.4793 0.9506 0.9180 0.7295 0.9176 
+F 0.5148 0.9661 0.9282 0.7458 0.9127 
+G 0.5288 0.9580 0.9071 0.7611 0.9512 
+H 0.5297 0.9867 0.9145 0.7659 0.9524 
+I 0.5639 0.9877 0.9523 0.7917 0.9870 
+J 0.5984 0.9715 0.8960 0.7763 0.9339 
+K 0.5299 0.9382 0.9103 0.7660 0.9398 
+L 0.5623 0.9705 0.9269 0.7690 0.9531 
+M 0.5990 0.9563 0.9121 0.7571 0.9432 
+N 0.6103 0.9479 0.8935 0.7406 0.9289 
+O 0.3426 0.3733 0.3727 0.3606 0.9432 
+P 0.5442 0.6559 0.6501 0.5974 0.9349 
+Q 0.3649 0.3949 0.3999 0.3855 0.9263 
+R 0.5606 0.7025 0.6901 0.6268 0.9524 
+S 0.6168 0.9327 0.8921 0.7558 0.9163 
+T 0.6289 0.9876 0.9378 0.7638 0.9884 
+U 0.6000 0.9691 0.9088 0.7406 0.9631 
+V 0.6330 0.9365 0.8963 0.7647 0.9186 
+W 0.6292 0.9459 0.9005 0.7638 0.9231 
+X 0.6316 0.9196 0.8691 0.7473 0.9248 
+Y 0.6329 0.9402 0.8878 0.7555 0.9253 
+Z 0.6299 0.9449 0.9046 0.7555 0.9466 
+Average 0.5460 0.8420 0.8076 0.6890 0.9387 
+ 
+ 
+ 
+segmentation. For example, higher value of β  is deployed to 
+emphasize the offset caused by the u nwanted area. On the 
+contrary, α is set lower than β to indicate the subordination of error. 
+The default scaling factors are set at 1.  
+ 
+ 
+Image preprocessing 
+ 
+The preprocessing techniques , such as noise re moval filter (Wiener 
+filter) and edge enhancing filter (Laplacian filter) are used to 
+compensate the effect of resizing of the input image.  The purpose 
+of image resizing is to accelerate the segmentation algorithm. 
+However, it triggers the aliasing . It us ually appears as "stair -step" 
+patterns or as moiré (ripple -effect) patterns in the output image.  
+Thus, these filters are utilized to reduce the undesired effect. 
+ 
+ 
+RESULTS AND DISCUSSION 
+ 
+Accuracy 
+ 
+It can be seen as shown in Table 1 that the most  
+accuracy segmentation technique among the investigated 
+active contour models is CV. This assessment is to  
+evaluate the best proposed indicator value that can be 
+achieved by each active contour model. The same 
+experiment was executed five times for each active 
+contour model in order to get the best score. Averagely, 
+the CV gives the best score, 0.9387. It is also observed 
+that the initial contour for the Kass, LRB and distance had 
+to be placed as near as possible to the boundary of 
+object to get the best score. In some cases, especially 
+the LS where the number of iterations is excessive, it will 
+lead to over segmentation. Moreover, Kass, LRB, LS and 
+distance show the incapability to segment images that 
+contain interior contour, such as alphabet A and B. The 
+consistency of giving the output can be seen on the 
+Figure 1, where CV always gives the score above 0.9 
+over all the alphabets.  
+ 
+ 
+Execution time 
+ 
+The average execution time of each active contour, 
+tested with 50, 100, 150 and 200 Iterations are  shown  in  
+
+  
+6334          Int. J. Phys. Sci. 
+ 
+ 
+ 
+ 
+ 
+Figure 1. The segmentation accuracy of each active contour model using A to Z 
+alphabets. 
+ 
+ 
+ 
+ 
+ 
+Figure 2. Average execution time of each active contour, tested with 50, 100, 150 and 
+200 iterations. 
+ 
+ 
+ 
+Figure 2. From Figur e 2, it is found that the highest 
+convergence speed of all the algorithms is  the LS. The 
+LS method implemented new variational formulation that 
+drives the level set function approach a signed distance 
+function. Consequently, the curve evolves without the r e-
+initialization step. For the CV, the speed is relatively fast, 
+because it involves no re -initialization step. By virtue of 
+the simplicity of the Kass method which only considers 
+the internal and external energy, the algorithm is 
+considerably faster than the LRB and distance. The
+
+  
+Chai et al.          6335 
+ 
+ 
+ 
+Method Without noise 
+With noise 
+SNR = 107.6066 dB 
+With noise 
+SNR = 98.0641 dB 
+Input image 
+ 
+  
+  
+Kass 
+ 
+  
+  
+LRB 
+ 
+  
+  
+LS 
+ 
+  
+  
+CV 
+ 
+  
+  
+ 
+ 
+ 
+Figure 3. Illustration on the effect of imposing noise on segmentation.  
+ 
+ 
+ 
+subsequent step of LRB which requires re -initialization of 
+each pixel proved costly as the time spent increases 
+rapidly with the number of iterations. For the distance, the 
+computation of image vector field impedes the 
+segmentation in the initial stage. However, once the 
+vector field is established, the contour evolves smoothly. 
+ 
+ 
+Noise resistance 
+ 
+Segmentation algorithm that  possesses the high 
+resistance to noise is favorable as the noise will distort 
+the information in the image. The effect of the imposing 
+noise on segmentation using the alphabet 'T' is shown in 
+Figure 3. The result of segmentation with the existence of 
+noise can be assessed in two techniques, by using the 
+proposed indicator and the execution time. Based on the 
+results from Table 2, the existence of noise in image 
+impedes the overall segmentation performance. 
+The segmentation accuracy of LS has deteriorated 
+57.9% when compared with the result without noise. This 
+indicates that the LS is the most sensitive to the 
+existence of noise. On the other hand, the LRB exhibits 
+highest resistance against the noise, which only drops 
+12%. Concerning the execution time, the  distance 
+computational   time  increases  sharply  by  68.7%  when 
+
+  
+6336          Int. J. Phys. Sci. 
+ 
+ 
+ 
+Table 2. Relative error of segmentation for M, proposed indicator value and TS, time spent on images  without noise and with noise.  
+ 
+  Without 
+noise 
+With noise 
+(SNR=107.6066 dB) 
+Relative error 
+(%) 
+ With noise 
+(SNR=98.0641 dB) 
+Relative error 
+(%) 
+ With noise 
+(SNR = 88.5217 dB) 
+Relative error 
+(%) 
+Kass  M 0.4191 0.3664 12.573  0.3624 13.5347  0.3696 11.8166 
+TS  15.7763 15.6284 0.9375  16.8827 7.0131  26.7342 69.458 
+ 
+LRB  M 0.6277 0.5520 12.0525  0.5188 17.3387  0.5069 19.2458 
+TS  40.4532 40.7192 0.6575  41.7197 3.1308  42.4197 4.8612 
+ 
+LS  M 0.9330 0.3927 57.9147  0.3869 58.5331  0.3946 57.7079 
+TS  11.0721 11.1321 0.5419  11.12 0.4326  11.1928 1.0901 
+ 
+Distance  M 0.7578 0.6553 13.5271  0.4275 43.5914  0.3633 52.0605 
+TS  27.3575 46.1627 68.7387  76.0215 177.882  69.2804 153.24 
+ 
+CV  M 0.9456 0.7861 16.8662  0.7091 25.0116  0.5975 36.8089 
+TS  10.6809 12.0867 13.1618  13.6526 27.5226  15.5467 45.5561 
+ 
+SNR, signal-to-noise-ratio. 
+ 
+ 
+ 
+when compare with the result without noise. As 
+the consequence of the complexity of vector field, 
+the overall execution time increases. 
+ 
+ 
+Position of initial contour 
+ 
+Generally, the position of initial contour gives a 
+great impact to the final output of segmentation, 
+especially the Kass snake. For the initialization of 
+contour far from the object, the LRB and CV 
+require longer time than the LS to attract the 
+contour to the boundary. The Kass poses the 
+weakest capture ra nge where it is only able to 
+segment the object that near -object initialization. 
+Among all the studied models, only the CV is able 
+to segment the cross-object initialization. In short, 
+the most flexible initialization is the CV. This 
+indicates that most of  the  active  contour  models  
+are sensitive to the initial contour location. 
+ 
+ 
+Multiple objects 
+ 
+The ability to capture multiple objects using 
+different active contours is illustrated in Figure 4.  
+By visual inspection  on Figure 4, the LS and CV 
+are able to perfectly segment the multiple objects. 
+The LRB requires many iterations and the 
+movement of the contour is time -consuming. 
+However, it is still possible to segment the objects. 
+The Kass and distance shows incapability in 
+multiple object segmentation. 
+ 
+ 
+Segmentation metrics 
+ 
+Tables 3, 4, 5 and 6 give comparative  
+performance measure of  five  investigated  active 
+contour models using the three  evaluation para-
+meters. Results show that CV method gives the 
+overall best performance with the lowest values of 
+GCE, VoI, BDE and highest score of PRI.   
+ 
+ 
+Conclusion 
+ 
+A systematic assessment tool has been  dev-
+eloped to assess some of the important aspects of 
+active contour models, such as accuracy, 
+resistance to noise, execution time consumption 
+and multiple object  segmentation ability. Further -
+more, a novel supervised evaluator based on 
+region feature is introduced. Experiment results 
+show that the CV demonstrates better result 
+generally among all the studied methods, followed 
+by LRB and LS. For the evaluation on c om-
+putational cost, LS has the highest  algorithm
+
+  
+Chai et al.          6337 
+ 
+ 
+ 
+a
+  b
+  c
+  
+d
+  e
+  f
+  
+ 
+ 
+ 
+Figure 4. Ability to capture multiple objects: (a) Original image, (b) Kass, (c) LRB, (d) LS, 
+(e) Distance and (f) CV. 
+ 
+ 
+ 
+Table 3. Comparison of each active contour using the GCE index (lower values indicate the 
+better segmentation).   
+ 
+Alphabet Global consistency error 
+Kass LRB LS Distance CV 
+A 0.0832 0.0506 0.0493 0.0680 0.0260 
+B 0.1320 0.1040 0.1045 0.1320 0.0271 
+C 0.0361 0.0271 0.0262 0.0408 0.0249 
+D 0.1416 0.1123 0.1126 0.1229 0.0214 
+E 0.0582 0.0197 0.0193 0.0449 0.0163 
+F 0.0406 0.0155 0.0161 0.0330 0.0141 
+G 0.0890 0.0259 0.0281 0.0521 0.0257 
+H 0.0816 0.0216 0.0218 0.0498 0.0205 
+I 0.0337 0.0072 0.0081 0.0229 0.0063 
+J 0.0345 0.0118 0.0119 0.0271 0.0109 
+K 0.0861 0.0254 0.0271 0.0566 0.0229 
+L 0.0539 0.0108 0.0119 0.0325 0.0095 
+M 0.0940 0.0334 0.0361 0.0727 0.0315 
+N 0.0687 0.0237 0.0251 0.0492 0.0223 
+O 0.1330 0.1174 0.1178 0.1246 0.0299 
+P 0.0848 0.0559 0.0560 0.0698 0.0186 
+Q 0.1498 0.1305 0.1297 0.1390 0.0353 
+R 0.1126 0.0660 0.0671 0.0875 0.0224 
+S 0.0758 0.0266 0.0281 0.0447 0.0262 
+T 0.0526 0.0094 0.0105 0.0343 0.0085 
+U 0.0640 0.0183 0.0205 0.0459 0.0174 
+V 0.0641 0.0248 0.0263 0.0409 0.0247 
+W 0.0894 0.0412 0.0441 0.0675 0.0405 
+X 0.0894 0.0352 0.0364 0.0537 0.0336 
+Y 0.0588 0.0235 0.0234 0.0395 0.0230 
+Z 0.0737 0.0255 0.0265 0.0478 0.0242 
+Average 0.0800 0.04090 0.0417 0.0615 0.0225 
+
+  
+6338          Int. J. Phys. Sci. 
+ 
+ 
+ 
+Table 4.  Comparison of each active contour using the VoI index (lower values 
+indicate the better segmentation).   
+   
+Alphabet Variation of information 
+Kass LRB LS Distance CV 
+A 0.6361 0.4507 0.4410 0.5318 0.3002 
+B 0.9824 0.7713 0.7807 0.9824 0.3105 
+C 0.4508 0.2807 0.2863 0.3778 0.2754 
+D 1.0600 0.8755 0.8992 0.9876 0.2546 
+E 0.5253 0.2276 0.2786 0.3652 0.2175 
+F 0.4030 0.1765 0.2339 0.2883 0.1988 
+G 0.6788 0.2852 0.3244 0.4440 0.2916 
+H 0.6304 0.2211 0.3083 0.3834 0.2694 
+I 0.2796 0.1070 0.1358 0.1866 0.0984 
+J 0.3173 0.1628 0.1438 0.2302 0.1282 
+K 0.6733 0.2975 0.3375 0.4559 0.2778 
+L 0.4100 0.1587 0.1883 0.2597 0.1461 
+M 0.8111 0.3739 0.4523 0.5819 0.3628 
+N 0.6126 0.2578 0.3430 0.4228 0.2786 
+O 1.1263 0.9690 0.9808 1.0491 0.3163 
+P 0.6515 0.4439 0.4534 0.5424 0.2082 
+Q 1.2212 1.0394 1.0483 1.1210 0.3671 
+R 0.7870 0.5415 0.5686 0.6698 0.2725 
+S 0.6127 0.2817 0.3135 0.4030 0.2878 
+T 0.4227 0.1483 0.1976 0.2683 0.1462 
+U 0.5404 0.2373 0.2702 0.3796 0.2299 
+V 0.5400 0.2806 0.2971 0.3747 0.2771 
+W 0.7973 0.4314 0.4771 0.5952 0.4436 
+X 0.7099 0.3508 0.3858 0.4775 0.3426 
+Y 0.5058 0.2582 0.2734 0.3537 0.2746 
+Z 0.6093 0.2867 0.3154 0.4013 0.2787 
+Average 0.6536 0.3813 0.4129 0.5051 0.2636 
+ 
+ 
+ 
+Table 5. Comparison of each active contour using the BDE index (lower values 
+indicate the better segmentation).  
+ 
+Alphabet Boundary displacement error 
+Kass LRB LS Distance CV 
+A 5.2050 2.4750 2.3227 3.1545 0.3813 
+B 7.3943 6.7691 6.4258 7.3943 0.5357 
+C 13.0452 0.4727 0.4169 1.5106 0.3387 
+D 7.5810 5.4015 5.3833 5.4974 0.4448 
+E 6.8450 0.9238 0.8991 2.7770 0.5346 
+F 8.3042 0.8143 0.7633 3.7226 0.5150 
+G 4.3079 0.3780 0.5529 1.5455 0.3467 
+H 6.5166 0.6484 0.8144 3.8511 0.6324 
+I 5.8261 0.7785 0.7951 3.9335 0.6418 
+J 5.8962 0.5923 0.7334 3.0726 0.7065 
+K 4.0202 0.6696 0.5348 2.1084 0.4919 
+L 4.2095 0.9159 0.8594 3.2148 0.6056 
+M 5.2942 0.6221 0.8252 1.9795 0.4149 
+
+  
+Chai et al.          6339 
+ 
+ 
+ 
+Table 5. Cont’d 
+ 
+N 4.7154 0.4544 0.7676 1.9903 0.4722 
+O 5.9653 5.0169 5.0608 4.8021 0.3948 
+P 5.9701 3.7958 3.7719 4.3853 0.3580 
+Q 5.8594 4.4666 4.2298 4.3449 0.3625 
+R 5.2747 2.6574 2.7302 3.5213 0.4199 
+S 3.7471 0.3998 0.4877 1.5968 0.3515 
+T 5.1244 0.9101 0.7304 3.2562 0.7095 
+U 4.0962 0.5604 0.8773 2.3922 0.4777 
+V 2.9346 0.2967 0.3300 1.5401 0.3114 
+W 3.4300 0.3767 0.4406 1.6403 0.3307 
+X 2.7984 0.5503 0.4526 1.4778 0.4641 
+Y 3.3629 0.4932 0.5384 2.1300 0.4451 
+Z 3.4881 0.4897 0.4904 1.5129 0.4159 
+Average 5.4312 1.6127 1.6244 3.0135 0.4655 
+ 
+ 
+ 
+ 
+Table 6. Comparison of each active contour using the PRI index (higher values indicate the better 
+segmentation). 
+ 
+Alphabet Variation of information 
+Kass LRB LS Distance CV 
+A 0.9075 0.9453 0.9469 0.9311 0.9751 
+B 0.8017 0.8369 0.8364 0.8017 0.9763 
+C 0.9221 0.9781 0.9783 0.9579 0.9795 
+D 0.7557 0.7936 0.7919 0.7810 0.9823 
+E 0.9095 0.9811 0.9769 0.9490 0.9827 
+F 0.9273 0.9844 0.9802 0.9547 0.9837 
+G 0.9046 0.9796 0.9751 0.9512 0.9789 
+H 0.8967 0.9808 0.9728 0.9421 0.9771 
+I 0.9600 0.9907 0.9886 0.9752 0.9918 
+J 0.9540 0.9843 0.9883 0.9703 0.9892 
+K 0.9051 0.9758 0.9722 0.9483 0.9774 
+L 0.9430 0.9859 0.9831 0.9663 0.9869 
+M 0.8679 0.9707 0.9615 0.9320 0.9725 
+N 0.9030 0.9791 0.9684 0.9447 0.9765 
+O 0.7396 0.7644 0.7639 0.7570 0.9759 
+P 0.8923 0.9307 0.9288 0.9170 0.9838 
+Q 0.7307 0.7601 0.7604 0.7523 0.9731 
+R 0.8708 0.9224 0.9195 0.9018 0.9803 
+S 0.9197 0.9798 0.9767 0.9567 0.9795 
+T 0.9342 0.9858 0.9824 0.9633 0.9869 
+U 0.9292 0.9814 0.9783 0.9531 0.9831 
+V 0.9333 0.9782 0.9766 0.9608 0.9788 
+W 0.8901 0.9668 0.9620 0.9347 0.9650 
+X 0.9116 0.9732 0.9701 0.9492 0.9747 
+Y 0.9331 0.9796 0.9780 0.9596 0.9781 
+Z 0.9175 0.9781 0.9757 0.9560 0.9789 
+Average 0.8908 0.9449 0.9420 0.9218 0.9795 
+ 
+
+  
+6340          Int. J. Phys. Sci. 
+ 
+ 
+ 
+  
+a
+  b
+  
+ 
+c
+  
+ 
+ 
+ 
+ 
+Figure 5. Application of active contour model in medical image (a) input noisy ultrasound image, 
+(b) segmentation using LRB and (c) output image.  
+ 
+ 
+ 
+speed. On contrary, the LRB posed the highest 
+computational cost. However, this method has the most 
+robustness towards noise. In general, the decision of 
+placing initial contour has great impact to the final 
+segmentation results. Contour which is initialized near to 
+the edge of ROI will get the best result. The most flexible 
+initialization is the CV. It shows the capability of segment 
+object(s) regardless of the distance of initial contour. The 
+results from segmentation metrics also show that CV 
+gave the minimal boundary error and highest consistency 
+among all the investigated models. 
+Based on all the experiments that had been carried out, 
+it is suggested that the LRB is best  suited for analyzing 
+the ultrasound image. Its high robustness to the noise 
+and considerably high accuracy make it the most 
+appropriate method to examine the noisy image. For the 
+MRI images, particularly those that entail the scanning of 
+brain, the CV is the most suitable in consideration of its 
+high accuracy.     
+The future research will focus on analyzing more 
+properties of active contour model in image segmentation 
+and exploring the influences of each property in different 
+environment. Besides, the significance and intuition of 
+each property in different application would be 
+investigated in order to optimize the performance of 
+segmentation in different application in future research. 
+ 
+ 
+RECOMMENDATION 
+ 
+Based on the results and discussion, a few 
+recommendations can be drawn out for the area usage of 
+studied active contour models in medical images. For the 
+noisy ultrasound medical imaging, it is recommended that 
+the LRB is the most suitable segmentation method due to 
+its high noise resistance. Figure 5 shows the application 
+of LRB in a noisy ultrasound image. The initialization of 
+contour was placed near to the tumor (ROI) and number 
+of iteration was set at 100. Results show that it was able 
+to crop the kidney accurately. Active contour models, 
+while serving as segmentation tools in medical image 
+diagnosis has be en selected by considering their 
+properties. Different method will give distinct outpu t. LRB 
+poses the local segmentation by extracting the tumor 
+alone, whereas the CV is global segmentation. The CV 
+method is a powerful segmentation tool that could 
+perform global anatomical structure segmentation. 
+ 
+ 
+REFERENCES 
+ 
+Bryan S (1998 -2000). Morse. Shape Description (Contours). Brigham 
+Young University, pp. 34-50. 
+Canny J (1986).  A  computational  approach  to  edge  detection. IEEE  
+Trans. Pattern Analysis and Machine Intelligence, 8(6):  679-698. 
+Chan T, Vese L (2001). Active contours without edges.  IEEE Trans. 
+Image Process, 10: 266-277. 
+Chunming L, Xu C, Gui C, MD  Fox (2005). Level set evolution without 
+re-initialization: A new variational formulation, San Diego, CA.  
+Cohen L, Cohen I (1993). Finite element methods for active contour 
+models and ball oons for 2 -D and 3 -D images, IEEE Trans. Pattern 
+Anal. Machine Intell. 15(11):1131-1147. 
+David JB, Carl DE, Eric JH, Walter EB (2001). Estimated risks of 
+radiation-induced fatal cancer from pediatric CT . Am J.  
+Roentgenology 176:  289-296. 
+Dhawan PA (2003). Medical imaging analysis. NJ: Wiley Interscience 
+Publication, pp. 67-90. 
+Dzung LP , Chenyang X , Jerry LP  (2000). Curren t methods  in medical 
+image segmentation. Ann. Rev. Biomed. Eng., 2:315-337. 
+Fenster A Chiu B (2005). Evaluation of segmentation algorithms for 
+medical imaging . Annual Internati onal Conference of the IEEE 
+Engineering in M edicine and Biology - Proc  7 VOLS, art. no. 
+1616166, pp. 7186-7189. 
+Fisher R, Perkins  S, Walker  A, Wolfart E (2003). Spatial Filters - 
+Laplacian of Gaussian.  
+http://homepages.inf.ed.ac.uk/rbf/HIPR2/log.htm.  
+Freixenet J, Muñoz X, Raba D, Martí J, Cufí X (2002).  Yet Another 
+Survey on Image. Springer, 47: 7 –42. doi: 10.1023/A:  
+1014573219977. 
+Gang Z ,  Ma ZM, Qiang T , Ying H , Tienan Z  (2008). Shape feature  
+extraction using fourier descriptors with brightness in vontent -Based 
+medical image retrieval. International Conference on Intelligent 
+Information Hiding and Multimedia Signal Processing, pp. 71 - 74. 
+Grimson WEL, Ettinger GJ, Kapur T, Leventon ME, Wells WM, Kikinis R 
+(1997).Utilizing segmented MRI data in image -guided surgery. Int. J. 
+Patt. Rec. Art. Intel., 11:1367-1397. 
+Hao X, Pu W  (2011). An improved genetic algorithm for solving 
+simulation optimization problems. Int J. Phys. Sci. 6(10): 2399-2404. 
+
+  
+ 
+ 
+ 
+ 
+Horn BKP, Schunck BG (1981). Determining optical flow. Artif. Intell.,  
+17:185-203. 
+Ji Q , Haralick RM (1999).  Quantitative evaluation of edge detectors   
+using the minimum kernel variance criterion.  In Proceedings of ICIP 
+(2):705-709 
+Joseph PH (1996-2010). The Basics of MRI, E-Book, pp. 23-80. 
+Kass M, Witkin A, Terzopoulos D (1987). Snakes - active contour 
+models. Int.  J. Comput. Vision, 1: 321-331. 
+Khoo V S, Dearnaley  DP, Finnigan DJ, Padhani  A, Tanner  SF, Leach 
+MO (1997). Magnetic resonance imaging (MRI) : considerations and 
+applications in radiotheraphy treatment planning. Radiother, Oncol. , 
+42:1-15. 
+Lai Khin Wee, Hum Yan Chai,  Eko Supriyanto (2011).  Three 
+dimensional nuchal translucency ultrasound segmentation using 
+region growing for trisomy 21 early as sessment. Int. J. Phys. Sci., 
+6(15):3704-3710. 
+Lankton S (2008). Localizing  region-based active contours.  IEEE 
+Transactions On Image Processing , 17: 2029 - 2039. 
+Lei H, Zhigang P, Bryan E, Xun W, Chia YH, Kenneth LW, William GW  
+(2008). A comparative study of deformable contour methods on 
+medical image segmentation. Image and Vision Computing, 26:141 -
+163. 
+Li B, Acton ST (2006). Feature Weighted Active Contours for Image 
+Segmentation. Proceedings of IEEE Southwest Symposium on 
+Image Analysis and Interpretation, pp. 188 - 192. 
+Li B, Acton ST (2007). Vector field convolution for image segmentation 
+using snakes.  IEEE Int. Conf. Image Processing, Atlanta, GA.  
+Li B, Acton ST (2007). Vector field convolution for image segmentation 
+using snakes. IEEE Trans. On Image  Processing, 16: 1637-1640. 
+Lim, Jae S (1990). Two dimensional signal and image processing.  
+Englewood Cliffs, NJ, Prentice Hall, pp. 548 -550. 
+Linda G Shapiro, George C Stockman (2001). Computer vision. New 
+Jersey, Prentice-Hall, pp. 279-325. 
+Lu R, Shen Y (2006). Noisy Image Segmentation by Modified Snake 
+Model. J. Phys. Conf. Ser. 48:369-372. 
+Mark S N, Alberto S Aguado (2002). Feature extraction and image 
+processing. Reed Educational and Professional Publishing Ltd, pp. 
+45-60. 
+Martin D, Fowlkes C, Tal D, Malik J (2001). A database of human 
+segmented natural images and its application to evaluating 
+segmentation algorithms and measuring ecological statistics. Proc. 
+IEEE Int. Conf. Comput. Vision, 2: 416 –423, ISBN: 0 -7695-1143-0, 
+Vancouver, July 2001. 
+McInerney T, Terzopoulos D (1996). Deformable models in medical 
+image analysis: A survey. Medical Image Analysis. 1(2):91-108. 
+Mehtre BM, Chatterjee B (1989). Segmentation of fingerprint images -- 
+A composite method. Pattern Recognitio n 22(4): 381-385. 
+Meilǎ M  (2005). Comparing clusterings - An axiomatic view,  
+Proceedings of the 22nd international conference on Machine 
+learning, pp. 577-584. 
+Mirzaei K , Motameni H, Enayatifar R (2011). New method for edge 
+detection and de noising via fu zzy cellular automata. Int. J. Phys. 
+Sci., 6(13): 3175-3180. 
+Mumford D, Shah J (1989). Optimal approximation by piecewise smooth 
+functions and associated variational problems. Commun. Pure Appl.  
+Math, 42:577-685. 
+Noor MM, Kadirgama K, Rahman MM (2011). Particle swarm 
+optimisation prediction model f or surface roughness. Int. J. Phys. Sci.  
+6(13): 3082-3090. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Chai et al.          6341 
+ 
+ 
+ 
+Osher S, Fedkiw R (2003). Level Set Methods and Dynamic Implicit 
+Surfaces, New York: Cambridge Univ. Press, pp. 50 -60. 
+Osher S, Sethian JA (1988). Fronts propagating with curvature -
+dependent speed: Algorithms based on Hamilton -Jacobi Formulation.  
+J. Comput. Phys., 79:12-49. 
+Paul S (2002). Fundamentals of medical imaging, Cambridge University 
+Press, pp. 60-90. 
+Pratt WK (1978). Digital Image Processing, Wiley, New York, pp. 55 -70. 
+Gonzalez RC, Woods RE Eddins SL (2004). Digital image processing  
+using MATLAB, Pearson Education, Inc, pp. 70-90. 
+Ravikanth M, James AS, Baba CV  (1995). Shape modeling with front 
+propagation: A  level set approach. IEEE Trans. Patt. Anal. Mach. 
+Intell., 17:158-175. 
+Tachaphetpiboon S, Amornraksa T (2008). The Pixel -wise adaptive 
+wiener filter watermarking. International Symposium on Intelligent 
+Signal, Processing and Communication Systems Swissôte l Le 
+Concorde, Thailand, pp. 1-4. 
+Taylor P  (1995). Invited review: computer aids for decision -making in 
+diagnostic radiology- a literature review. Brit. J. Radiol., 68:945-957. 
+Unnikrishnan R, Pantofaru C , Hebert M (2007).  Toward objective 
+evaluation of image segmentation algorithms. IEEE Trans. Patt. Anal. 
+Mach. Intell., 29(6): 929-944. 
+Vicent C, Ron K, Guillermo S  (1997). Geodesic active contours . Int.  J. 
+Comp. Vis., 22:61-79. 
+William R Hendee, Russell Ritenour E (2002).  Medical imaging physics, 
+John Wiley & Sons, Inc, pp. 45-60.  
+Worth AJ , Makris  N, Caviness VS, Kennedy DN (1997). 
+Neuroanatomical segmentation in MRI: technological objectives. Int. 
+J. Patt. Rec. Art. Intel., 11:1161-1187. 
+Xu CY, Prince JL (1998). Snakes, shapes, and gradient vector flow. 
+IEEE Trans. Image Proces., 7: 359-369. 
+Zhaofeng H, Tieniu T, Zhenan S, Xianchao Q  (2009). Toward accurate 
+and fast iris segmentation for iris biometric s. Pattern Analysis and 
+Machine Intelligence, IEEE Transactions on, 31(9):1670 -1684. 
+Zhu Z, Liu P, Zheng Y, Zhao J, Li S, Wang J  (2011). Hybrid filtering 
+model based on particle swarm  optimization and geneti c algorithm. 
+Int. J. Phys. Sci., 6(14): 3518-3523. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

@@ -1,0 +1,539 @@
+Classiﬁcation and Histological Characteristics
+of Colorectal Cancer
+BROOKE DUBANSKY, SALLY LEWIS, DALE TELGENHOFF
+LEARNING OBJECTIVES
+1. Describe typical histological characteristics of dysplasia
+in colorectal lesions.
+2. Discuss the generalized progression of adenocarci-
+noma from a benign adenoma (polyp).
+3. List and describe some general histological character-
+istics of the most common subtypes of adenomas
+and adenocarcinomas.
+ABSTRACT
+Classiﬁcation and staging of recognized colorectal
+cancer subtypes are based on histological characteristics
+of the lesion and predictable changes in morphology.
+Adenocarcinoma arising from adenomatous polyps is
+the most common type of colorectal cancer. The histo-
+logical progression from be nign, non-neoplastic polyps
+to invasive neoplastic adenocarcinoma is, in many cases,
+correlated with speci ﬁc molecular aberrations. This
+review describes the classi ﬁcation, histological charac-
+teristics, and progression of non-neoplastic, as well as
+benign and malignant neopla stic, colorectal lesions.
+ABBREVIATIONS: CRC - colorectal cancer, LCRC - left-sided
+colorectal cancer, MSI - microsatellite instability, RCRC -
+right-sided colorectal cancer, WHO - World Health
+Organization.
+INDEX TERMS: colorectal cancer, polyps, adenoma, adeno-
+carcinoma, histology.
+Clin Lab Sci 2024;00(0):1 –5
+INTRODUCTION
+According to the American Cancer Society, colorectal
+cancer (CRC) is the third most common cancer diagnosed
+in men and women in the United States, with 106 180 new
+cases of colon cancer and 44 850 new cases of rectal
+cancer predicted in 2022. Signs and symptoms of CRC
+include a change in bowel habits, constipation (in some
+cases diarrhea), rectal bleeding or blood in the stool,
+abdominal discomfort, and unexplained weight loss. As
+most CRCs begin as a polyp, early detection and removal
+via colonoscopy are key to diagnosis and treatment and
+improving the prognosis. The purpose of this article is
+to review the classi ﬁcation and histological characteristics
+of various CRC subtypes, with emphasis on the adenocar-
+cinomas, which make up the majority of CRC cases.
+Subsequent articles in this focus series build upon these
+basic histological classi ﬁcations. Normal histology of the
+colon is reviewed when appropriate; however, a more
+in-depth review of normal colon histology is beyond the
+scope of this article, and the reader is referred to a text-
+book of histology.
+1
+The colon is divided anatomically into ascending,
+transverse, descending, and sigmoid sections (Figure 1).
+The sigmoid colon terminates in the rectum, which exits
+the body at the anus. Outer longitudinal bands of smooth
+muscle called taeniae coli span the length of the colon and
+contract to move fecal material through the colon. Taeniae
+coli form sacculations, also called haustra coli, which com-
+partmentalize and partially control the movement of fecal
+material through the large intestine.
+1 The colon and rectal
+segments of the large intestine are histologically similar,
+with a mucosal layer specialized for protection and absorp-
+tion of water.
+1 The underlying lamina propria, unlike in the
+small intestine, lacks lymphatic vessels. 1 This is an impor-
+tant modiﬁcation, as invasive CRCs are slower to metasta-
+size since they must penetrate the deeper tissues of the
+intestinal wall to access areas with lymphatic drainage.
+1
+The regional location of the initial neoplastic lesion
+(polyp) in the large intestine is correlated with the progres-
+sion of the disease and, in some cases, the outcome.
+2 For
+prognostication, CRC is described as a ﬀecting 2 sectors: 1)
+the right side as right-sided CRC (RCRC), involving the
+ascending and transverse colon; and 2) the left side as
+left-sided CRC (LCRC), involving the descending and sig-
+moid colon as well as the rectum.
+2 RCRC incidence is lower
+than LCRC, although the incidence of this type is increas-
+ing, especially in females.
+2,3 Patients with RCRC typically
+Brooke Dubansky , Louisiana State University School of
+Veterinary Medicine
+Sally Lewis , Tarleton State University
+Dale Telgenho ﬀ,O a k l a n dU n i v e r s i t y
+Address for Correspondence: Brooke Dubansky ,
+Louisiana State University School of Veterinary Medicine,
+bdubansky@lsu.edu
+VOL 00, NO 0, 2024, CLINICAL LABORATORY SCIENCE | 1
+FOCUS
+ Copyright 2024 by .
+ on June 11 2026 http://hwmaint.clsjournal.ascls.org/Downloaded from 
+
+present with a higher grade and stage of cancer, with
+larger tumors of the mucinous subtype.2 These tumors typ-
+ically have a worse overall survival rate than LCRC, which is
+characterized by smaller, lower-stage tumors.
+2 Other char-
+acteristics such as clinical presentation, immunologic
+response, and the speci ﬁc molecular aberrations of CRCs
+can also be correlated to this regional variation. 2
+PROGRESSION OF COLORECTAL LESIONS
+(BENIGN TO MALIGNANT)
+Non-neoplastic lesions in the colon include inﬂ ammatory
+bowel disease (ulcerative colitis) and Crohn ’s disease.
+Benign, neoplastic lesions are called polyps. 4 With accu-
+mulating mutations, benign polyps can progress to can-
+cerous lesions. Adenocarcinomas, which form most
+CRCs, are one such lesion that can progress from in ﬂam-
+matory bowel disease (nonpolyploid) or benign polyps
+(polyploid).4 Additional carcinomas frequently seen and
+diﬀerentiated based on histologic appearance include
+adenosquamous, spindle cell, and squamous cell carcino-
+mas. Undi ﬀerentiated carcinomas can also occur. The
+increased risk of cancerous transformation of inﬂ amma-
+tory bowel diseases, such as Crohn ’s and ulcerative colitis,
+is an important reason to screen a ﬀected patients fre-
+quently for dysplastic change.
+4 A dysplastic response pre-
+cedes most cancerous CRC lesions and occurs when the
+epithelial lining of the colon no longer exhibits normal
+histological features, often due to recurrent cycles of
+inﬂammation and healing.
+4,5
+Rather than a distinct separation between benign and
+malignant colorectal neoplasms, it is perhaps best to view
+the progression of the disease on a continuum. Normal
+colon glands are single, tubular invaginations of the epi-
+thelium lined by a single layer of columnar cells that are
+interspersed with numerous mucin-secreting goblet cells.
+1
+These features, along with a thickened lamina propria and a
+robust population of immune cells, facilitate absorption and
+transport of water and electrolytes and protect the under-
+lying tissue layers from bacterial invasion.
+1 Dysplastic
+change may result from a single mutation in one of the epi-
+thelial cells, which prevents it from adhering to normal
+growth regulations. Dysplastic epithelium in the colon
+and rectum often becomes stratiﬁed, and nuclear changes
+include hyperchromasia and elongation.
+4-6 Low-grade dys-
+plasia is characterized by retention of recognizable gland
+architecture and fewer epithelial abnormalities than high-
+grade dysplasia, which is characterized by more severe cell
+and nuclear abnormalities and a loss of gland architecture.
+5
+Low-grade dysplasia carries less risk of cancerous progres-
+sion than high-grade dysplasia. The dysplastic response
+may be reversible, depending on the underlying cause of
+the transformation and whether the stressors are relieved.
+Additional mutations in the rapidly dividing cells of
+dysplastic epithelium may lead to a loss of normal gland
+architecture, resulting in an overgrowth of epithelium,
+which can lead to polyp formation. At this point the
+growth is referred to as an in situ neoplasm, provided it
+has not invaded beyond the lamina propria into the under-
+lying submucosa where it may access lymphatic vessels.
+4,5
+Additional mutations may lead to malignancy, character-
+ized by invasion of the submucosa, and even the external
+muscular layers (muscularis externa). Lymphovascular
+invasion, lymph node involvement, and metastasis are
+characteristics of advanced neoplastic disease.
+4,5
+STAGING OF CRC
+The stages of CRC are based on the progressive continuum
+described earlier. Staging involves the histologic appear-
+ance of the tumor as well as other characteristics of inva-
+sion and metastasis. The earliest stage, sometime called
+stage 0, describes a carcinoma in situ, which is con ﬁned
+to the epithelium or lamina propria. Stage I is characterized
+by invasion into and beyond the submucosal layers where
+tumor cells may gain access to the lymphovascular
+system.
+4 Stages 2– 3 exhibit progressive characteristics,
+including deeper invasion, lymphovascular invasion, and
+degrees of lymph node involvement. Stage IV, the last
+stage, is characterized by distant metastasis to organs
+and tissue, such as the liver, lung, or peritoneum. The scor-
+ing system for staging CRCs uses the TNM scale, which
+scores tumor characteristics (T) (grade, size), nodal involve-
+ment (N), and metastasis (M) to distant organs.
+4 Regardless
+Figure 1. The large intestine (colon and rectum). The colon is
+divided anatomically into ascending, transverse,
+descending, and sigmoid sections. The sigmoid
+colon terminates in the rectum, which exits the body
+at the anus. Right-sided colorectal cancers (RCRCs)
+involve the ascending and transverse colon (left of
+dotted line); left-sided colorectal cancers (LCRCs)
+involve the descending and sigmoid colon as well as
+the rectum.
+2 | VOL 00, NO 0, 2024, CLINICAL LABORATORY SCIENCE
+FOCUS
+ on June 11 2026 http://hwmaint.clsjournal.ascls.org/Downloaded from 
+
+of the T and N scores, any distant metastasis results in a
+stage IV diagnosis.
+CLASSIFICATION AND CHARACTERISTICS OF
+BENIGN POLYPS
+Raised, benign colorectal lesions (polyps) may be inﬂ am-
+matory, hamartomatous, hyperplastic, or adenomatous
+(Table 1).6 A ﬁfth category of benign colorectal lesion is
+the sessile serrated lesion (formerly called sessile serrated
+polyp or adenoma),
+7,8 which is an intermediate subtype
+between hyperplastic and adenomatous polyps and is
+characterized by a particular developmental pathway that
+results in a distinct histological appearance (Table 1).
+4
+Macroscopically, polyps may be pedunculated (containing
+a broad body and small, thin stalk) or sessile ( ﬂattened).
+4
+Adenomatous polyps exhibit a glandular architecture
+and are the type that most frequently progresses to
+adenocarcinoma, the most common type of CRC.
+4,5
+There are 3 types of adenomatous polyp that are char-
+acterized by the histology of their gland structure: tubular
+adenomas, villous adenomas, and tubulovillous adeno-
+mas. Tubular adenomas are the most common subtype
+and comprise about 75% – 80% of benign adenomatous
+polyps. Other adenomas are represented by villous and
+tubulovillous subtypes.
+6,9 While making up fewer of the
+adenoma subtypes, villous and tubulovillous adenomas
+are more likely to undergo malignant transformation than
+tubular adenomas. 9
+Tubular adenomatous polyps are typically small
+(<10 mm in diameter), pedunculated, and contain numer-
+ous elongated branching crypts lined by a mucus-secreting
+dysplastic epithelium.
+6 The size of the polyp may be propor-
+tional to the likelihood of malignant transformation. 4,6,9
+Villous adenomatous polyps are usually large ( >20 mm in
+diameter) and sessile and contain elongated villi in a pap-
+illary growth pattern, giving them a velvety appearance. 6
+The dysplastic glandular epithelium often lacks mucous-
+secreting cells. Tubulovillous adenomatous polyps contain
+intermediate features of the previously described morphol-
+ogies in di ﬀerent regions of the polyp. 4,6
+Sessile serrated lesions, which are histologically inter-
+mediate between hyperplastic polyps and adenomatous
+polyps described above, are characterized by low- to
+high-grade dysplasia, a serrated glandular luminal pro ﬁle,
+and an increased risk of malignant transformation.
+3,4 One
+study found that around 75% of serrated adenomas carry a
+BRAF mutation.
+10 Serrated adenomas represent a distinct
+malignant pathway to adenocarcinoma. 9
+CLASSIFICATION AND CHARACTERISTICS
+OF CRC
+The World Health Organization’ s( W H O’s) classi ﬁcation of
+colorectal carcinomas identi ﬁes 5 categories: 1) adeno-
+carcinoma, 2) adenosquamous carcinoma, 3) spindle cell
+carcinoma, 4) squamous cell carcinoma, and 5) undi ﬀer-
+entiated carcinoma. Adenocarcinomas are the most
+common type, making up about 90% of all colorectal
+carcinomas, 4,5,7,11 and are the only type discussed in
+detail in this review. Adenocarcinomas commonly arise
+from benign adenomatous polyps and progress to inva-
+sive (malignant) neoplasms. Histological grading of
+adenocarcinomas is independent of staging and may
+help to determine prognosis in conventional adenocar-
+cinomas.
+5 As deﬁned by Fleming et al, well-di ﬀerentiated
+adenocarcinomas (low grade) contain numerous recog-
+nizable epithelial glands, constituting greater than 95%
+of the tumor, while moderately di ﬀerentiated adenocar-
+cinomas, which comprise most cases at diagnosis,
+exhibit 50% – 90% recognizable gland formation. 5
+Poorly di ﬀerentiated adenocarcinomas (high grade)
+show less than 50% gland formation. In less common
+adenocarcinoma subtypes (described later), histological
+Table 1. Basic characteristics of benign colorectal polyps
+Benign Colorectal Polyps
+Basic Shapes
+Pedunculated—broad body
+with
+a narrow stalk, most common
+Sessile—raised body,
+no stalk, di ﬃcult to
+locate
+Common Types With Description
+Subtypes of
+adenomatous polyps
+Adenomatous Increased
+likelihood of
+cancer
+progression
+Tubular—small,
+pedunculated; with
+tube-shaped crypts on
+microscopic exam
+Villous—large, sessile,
+elongated villi (velvety
+appearance)
+Tubulovillous—
+diﬀering morphologies
+in diﬀerent parts of the
+polyp
+Hyperplastic Overgrowth of cells; low chance of cancer
+progression
+Inﬂammatory Associated with inﬂ ammatory response
+(ulcerative colitis, Crohn ’s disease)
+Harmartomatous Overgrowth of normal-appearing tissue;
+hereditary association (Peutz-Jeghers)
+Sessile serrated Histologically similar to hyperplastic;
+increased risk of malignant transformation
+VOL 00, NO 0, 2024, CLINICAL LABORATORY SCIENCE | 3
+FOCUS
+ on June 11 2026 http://hwmaint.clsjournal.ascls.org/Downloaded from 
+
+grade may be less likely to predict patient outcome than
+molecular characteristics. 5
+To become invasive, adenocarcinomas must pen-
+etrate through the basement membrane, underlying con-
+nective tissue (lamina propria), and muscularis mucosa
+into the submucosa. Invasive tumors that only invade into
+the lamina propria are not likely to metastasize because
+the lamina propria lacks suﬃcient lymphatic vasculature.
+1,5
+Once the tumor invades into the lymphovascular network
+of the submucosa, the most common site of metastasis for
+most subtypes is the liver. Mucinous subtypes, however,
+exhibit an uncommon metastatic pattern to the surface
+of the peritoneal cavity.
+11,12 On histology, the invasive
+adenocarcinoma may appear sessile or pedunculated,
+with a disruption in the muscularis mucosa, indicating
+movement into the submucosa. Lymphovascular invasion
+indicates a higher-stage tumor and suggests an increased
+probability of metastasis. The degree of sentinel and dis-
+tant lymph node involvement is also important in the
+development of the staging score.
+4 Desmoplasia (a ﬁbro-
+proliferative response of the tumor stroma) and dirty
+necrosis (necrotic debris in the gland lumina) are unique
+histological features of adenocarcinomas.
+4,5
+ADENOCARCINOMA SUBTYPES
+The WHO recognizes 6 subtypes of adenocarcinoma based
+on histological appearance: 1) cribriform-comedo, 2)
+medullary, 3) micropapillary, 4) mucinous, 5) serrated,
+and 6) signet ring (Table 2). Mucinous subtypes make
+up approximately 10% of adenocarcinomas.
+12 Mucinous
+subtype tumors are characterized by the excessive
+amount of mucin composing the tumor, occasionally
+approaching half of the total tumor volume.
+5,13 Cells with
+a signet ring morphology and intracellular mucin may
+make up less than 50% of the tumor. 5 Mucinous carcino-
+mas are more commonly RCRCs and generally present a
+high stage at diagnosis.13 These tumors are less responsive
+to treatment compared to conventional adenocarcinoma,
+and, as mentioned previously, these tumors frequently
+metastasize to the peritoneum rather than to the liver.
+12
+Molecular characteristics of mucinous adenocarcinoma
+include microsatellite instability (MSI) (discussed in sub-
+sequent sections) and a higher rate of KRAS, BRAF, and
+PI3K mutations.12,13 Mucinous adenocarcinoma is often
+associated with a hereditary predisposition for cancer
+called Lynch syndrome.
+5,12
+The signet ring subtype of adenocarcinoma is rare,
+making up less than 1% of adenocarcinomas, and is histo-
+logically related to the mucinous subtype described
+above.
+5,12,14 Mucin makes up less than 50% of the tumor
+volume and is associated with RCRC, MSI, and BRAF and
+KRAS mutations.12 The overall prognosis is poor, usually
+because of the high stage at diagnosis, with a mean 5-year
+survival rate of about 30%. 12,14 Unlike many of the other
+CRCs, the signet ring adenocarcinoma tends to a ﬀect
+patients under 60 years of age. 12 The tumor derives its
+name from the appearance of the tumor cell, which con-
+tains a large mucinous vacuole that displaces the nucleus
+to the outer rim of the cell membrane, thus giving it the
+appearance of a signet ring.
+5
+Another rare subtype, medullary adenocarcinoma,
+formerly known as large cell adenocarcinoma with mini-
+mal di ﬀerentiation, is di ﬃcult to diagnose because of its
+poor histological di ﬀerentiation.
+12,15 This subtype occurs
+most commonly on the right side of the colon (RCRC)
+and is characterized by solid sheets of tumor cells and a
+prominent lymphocytic in ﬁltrate.
+5,11,12,15 Despite being
+poorly di ﬀerentiated, medullary adenocarcinoma carries
+a good prognosis, as it is less likely to spread to lymph
+nodes.
+5,11,12,15 This subtype is strongly associated with
+MSI and BRAF mutations.5,11,12,15
+Serrated adenocarcinoma may be mucinous or non-
+mucinous and is characterized by the saw-toothed pattern
+of the surface of the gland epithelium. This pattern is
+induced by stages of epithelial growth separated by rest-
+ing stages associated with a lack of apoptotic activity.
+5 Like
+serrated adenoma, serrated adenocarcinoma is histologi-
+cally similar to hyperplastic polyps. 13 Up to half of all cases
+develop from benign serrated adenoma and a ﬀect the
+right side of the colon (RCRC). 13 This subtype is associated
+with BRAF and KRAS mutations and carries a poor
+prognosis.13
+Micropapillary adenocarcinoma in the colon, as in
+other organs, shows distinct micropapillary projections
+within lacunae, which is a histological feature that can
+mimic lymphovascular invasion (identiﬁ ed by clusters of
+tumor cells ﬂoating in vessels).
+12,16 The epithelium of the
+micropapillae exhibit reverse polarity, with basal and api-
+cal protein expression reversed, which is a unique charac-
+teristic of this subtype.
+16 Micropapillary adenocarcinoma
+carries a poor prognosis because lymphovascular invasion,
+lymph node involvement, and metastasis are common
+features.12,16
+Cribriform adenocarcinoma in the colon presents with
+circular nests of epithelioid tumor cells, often with dirty
+necrosis at the center.
+17,18 This histological subtype
+Table 2. Colorectal cancer subtypes
+Colorectal Cancers
+Types Adenocarcinoma—90% of all colorectal
+cancer types
+Adenosquamous carcinoma
+Spindle cell carcinoma
+Squamous cell carcinoma
+Undiﬀerentiated carcinoma
+Subtypes of
+adenocarcinoma
+Cribriform-comedo
+Medullary
+Micropapillary
+Mucinous
+Serrated
+Signet ring
+4 | VOL 00, NO 0, 2024, CLINICAL LABORATORY SCIENCE
+FOCUS
+ on June 11 2026 http://hwmaint.clsjournal.ascls.org/Downloaded from 
+
+resembles cribriform subtypes of other cancers. 17,18
+Epithelial nests are compartmentalized by an extensive
+ﬁbrous stroma. This subtype is associated with MSI, a high
+rate of lymphovascular invasion, nodal involvement, and
+metastasis. Hence, it exhibits a poor 5-year survival rate. 18
+CONCLUSION
+Adenocarcinoma, being the most common type of CRC,
+exhibits a large variety of histological characteristics and
+subtypes. The histological features of adenocarcinoma in
+general determine tumor grade and subtype classi ﬁcation
+but are not always reﬂ ective of prognosis. Common
+molecular aberrations that drive the progression of adeno-
+carcinoma include KRAS and BRAF mutations and MSI,
+among others. In the context of tumor histology, molecu-
+lar variations may be more important for assessing tumor
+aggression and patient outcome.
+REFERENCES
+1. Pawlina W, Ross MH. Histology: A Text and Atlas with
+Correlated Cell and Molecular Biology . 8th ed. LWW; 2020:
+chap 17.
+2. Lee GH, Malietzis G, Askari A, Bernardo D, Al-Hassi HO,
+Clark SK. Is right-sided colon cancer di ﬀerent to left-sided
+colorectal cancer? - a systematic review. Eur J Surg Oncol.
+2015;41(3):300– 308. doi: 10.1016/j.ejso.2014.11.001
+3. Fu X, Qiu Y, Zhang Y. Screening, management and surveil-
+lance for the sessile serrated adenomas/polyps. Int J Clin
+Exp Pathol. 2014;7(4):1275– 1285.
+4. Turner JR, Lingen MW. Oral cavities and gastrointestinal tract.
+In: Kumar V, Abbas AK, Aster JC, eds. Robbins Basic Pathology.
+10th ed. Elsevier Saunders; 2018:chap 15.
+5. Fleming M, Ravula S, Tatishchev SF, Wang HL. Colorectal car-
+cinoma: pathologic aspects. J Gastrointest Oncol. 2012;3
+(3):153– 173.
+6. Damjanov I. Pathophysiology for the Health Professions .
+4th ed. Elsevier Saunders; 2012:chap 10.
+7. Nagtegaal ID, Odze RD, Klimstra D, et al; WHO Classiﬁcation of
+Tumours Editorial Board. The 2019 WHO classi ﬁcation of
+tumors of the digestive system. Histopathology. 2020;76(2):
+182– 188. doi: 10.1111/his.13975
+8. Assarzadegan N, Montgomery E. What is new in the 2019
+World Health Organization (WHO) classi ﬁcation of tumors
+of the digestive system: review of selected updates on neuro-
+endocrine neoplasms, appendiceal tumors, and molecular
+testing. Arch Pathol Lab Med. 2021;145(6):664– 677. doi: 10.
+5858/arpa.2019-0665-RA
+9. Short MW, Layton MC, Teer BN, Domagalski JE. Colorectal
+cancer screening and surveillance. Am Fam Physician.
+2015;91(2):93– 100.
+10. Spring KJ, Zhao ZZ, Karamatic R, et al. High prevalence of sessile
+serrated adenomas with BRAF mutations: a prospective study
+of patients undergoing colonoscopy. Gastroenterology.
+2006;131(5):1400– 1407. doi: 10.1053/j.gastro.2006.08.038
+11. Cunningham J, Kantekure K, Saif MW. Medullary carcinoma of
+the colon: a case series and review of the literature. In Vivo.
+2014;28(3):311– 314.
+12. Nagtegaal ID, Hugen N. The increasing relevance of tumour
+histology in determining oncological outcomes in colorectal
+cancer. Curr Colorectal Cancer Rep. 2015;11(5):259– 266.
+doi: 10.1007/s11888-015-0280-7
+13. Lee C-T, Huang Y-C, Hung L-Y, et al. Serrated adenocarcinoma
+morphology in colorectal mucinous adenocarcinoma is associ-
+ated with improved patient survival. Oncotarget. 2017;8(21):
+35165– 35175. doi: 10.18632/oncotarget.16815
+14. Mora-Guzmán I, Di Martino M, Mu ˜noz de
+ Nova JL, et al.
+Primary signet ring cell carcinoma of the colon: a rare condi-
+tion with a poor prognosis. A report on two cases. Rev
+Gastroenterol Mex (Engl Ed). 2018;83(3):358 – 360. doi: 10.
+1016/j.rgmxen.2017.07.010
+15. G ´ omez-Álvarez MA, Lino-Silva LS, Salcedo-Hernández RA, et al.
+Medullary colonic carcinoma with microsatellite instability has
+lower survival compared with conventional colonic adenocar-
+cinoma with microsatellite instability. Prz Gastroenterol.
+2017;12(3):208– 214. doi: 10.5114/pg.2016.64740
+16. Akimoto N, Fujimori T, Mitomi H, et al. Micropapillary pattern
+at the invasive front and its association with unresectable
+colorectal carcinomas. Dis Markers. 2013;35(5):451– 455.
+doi: 10.1155/2013/851623
+17. Lino-Silva LS, Salcedo-Hernández RA, Herrera-G ´ omez A, et al.
+Colonic cribriform carcinoma, a morphologic pattern associ-
+ated with low survival. Int J Surg Pathol. 2015;23(1):13– 19.
+doi: 10.1177/1066896914542125
+18. Branca G, Ieni A, Barresi V, Tuccari G, Caruso RA. An updated
+review of cribriform carcinomas with emphasis on histopa-
+thological diagnosis and prognostic signi ﬁcance. Oncol
+Rev. 2017;11(1):317– 323. doi: 10.4081/oncol.2017.317
+VOL 00, NO 0, 2024, CLINICAL LABORATORY SCIENCE | 5
+FOCUS
+ on June 11 2026 http://hwmaint.clsjournal.ascls.org/Downloaded from 

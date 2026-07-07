@@ -1,0 +1,861 @@
+A Database of Human Segmented Natural Images
+and its Application to Evaluating Segmentation Algorithms
+and Measuring Ecological Statistics
+David Martin, Charless Fowlkes, Doron Tal, Jitendra Malik
+Report No. UCB/CSD-1-1133
+January 2001
+Computer Science Division (EECS)
+University of California
+Berkeley, California 94720
+
+Abstract
+This paper presents a database containing ‘groundtruth’
+segmentations produced by humans for images of a wide
+variety of natural scenes. We deﬁne an error measure
+which quantiﬁes the consistency between segmentations
+of differing granularities and ﬁnd that different human
+segmentations of the same image are highly consistent.
+Use of this dataset is demonstrated in two applications:
+(1) evaluating the performance of segmentation algo-
+rithms and (2) measuring probability distributions asso-
+ciated with Gestalt grouping factors as well as statistics
+of image region properties.
+1. Introduction
+Two central problems in vision are image segmentation
+and recognition1. Both problems are hard, and we do not
+yet have any general purpose solution approaching human
+level competence for either one.
+While it is unreasonable to expect quick solutions to
+either problem, there is one dimension on which research
+in recognition is on much more solid grounds–it is con-
+siderably easier to quantify the performance of computer
+vision algorithms at recognition than at segmentation.
+Recognition is classiﬁcation, and one can empirically esti-
+mate the probability of misclassiﬁcation by simply count-
+ing classiﬁcation errors on a test set. The ready avail-
+ability of test sets – two of most signiﬁcant ones are the
+MNIST handwritten digit dataset and the FERET face
+data set–has meant that different algorithms can be com-
+pared directly using the same quantitative error measures.
+It is well accepted that one cannot evaluate a recognition
+algorithm by showing a few images of correct classiﬁca-
+tion. In contrast, image segmentation performance evalu-
+ation remains subjective. Typically, researchers will show
+their results on a few images and point out why the results
+‘look good’. We never know from such studies whether
+the results are best examples or typical examples, whether
+the technique will work only on images that have no tex-
+ture, and so on.
+The major challenge is that the question “What is a cor-
+rect segmentation” is a subtler question than “Is this digit
+a 5”. This has led researchers e.g. Borra and Sarkar[3]
+1It could be argued that they are aspects of the same problem. We do
+not necessarily disagree!
+Figure 1: Sample of 10 images from the segmentation database. Each
+image has been segmented by 3 different people. A total of 10 people
+are represented in this data.
+1
+
+(a) (b) (c) (d)
+Figure 2: Using the segmentation tool. See
+
+2.1 for details.
+to argue that segmentation or grouping performance can
+be evaluated only in the context of a task such as object
+recognition. We don’t wish to deny the importance of
+evaluating segmentations in the context of a task. How-
+ever, the thesis of this paper is that segmentations can also
+be evaluated purely as segmentations by comparing them
+to those produced by multiple human observers and that
+there is considerable consistency among different human
+segmentations of the same image so as to make such a
+comparison reliable.
+Figure 1 shows some example images from the
+database and 3 different segmentations for each image.
+The images are of complex, natural scenes. In such im-
+ages, multiple cues are available for segmentation by a
+human or a computer program–low level cues such as co-
+herence of brightness, texture or continuity of contour, in-
+termediate level cues such as symmetry and convexity, as
+well as high level cues based on recognition of familiar
+objects. The instructions to the human observers made
+no attempt to restrict or encourage the use of any partic-
+ular type of cues. For instance, it is perfectly reasonable
+for observers to use their familiarity with faces to guide
+their segmentation of the image in the second row of Fig-
+ure 1. We realize that this implies that a computational ap-
+proach based purely on, say, low-level coherence of color
+and texture, would ﬁnd it difﬁcult to attain perfect per-
+formance. In our view, this is perfectly ﬁne. We wish to
+deﬁne a ‘goldstandard’for segmentation results without
+any prior biases on what cues and algorithms are to be
+(a) (b)
+(c) (d)
+Figure 3: Motivation for making segmentation error measures tol-
+erant to reﬁnement. (a) shows the original image. (b)-(d) show three
+segmentations in our database by different subjects. (b) and (d) are both
+simple reﬁnements of (c), while (b) and (d) illustrate mutual reﬁnement.
+exploited to obtain those results. We expect that as seg-
+mentation and perceptual organization algorithms evolve
+to make richer use of multiple cues, their performance
+could continue to be evaluated on the same dataset.
+Note that the segmentations produced by different hu-
+mans for a given image in Figure 1 are not identical. But,
+are they consistent? One can think of a human’s percep-
+tual organization as imposing a hierarchical tree structure
+on the image. Even if two observers have exactly the same
+perceptual organization of an image, they may choose to
+segment at varying levels of granularity. See e.g. Figure 3.
+This implies that we need to deﬁne segmentation consis-
+tency measures that do not penalize such differences. We
+demonstrate empirically that human segmentations for the
+wide variety of images in the database are quite consistent
+according to these criteria, suggesting that we have a re-
+liable standard with which to evaluate different computer
+algorithms for image segmentation. We exploit this fact
+to develop a quantitative performance measure for image
+segmentation algorithms.
+There has been a limited amount of previous work eval-
+uating segmentation performance using datasets with hu-
+man observers providing the ground truth. Heath et al.
+[8] evaluated the output of different edge detectors on a
+subjective quantitative scale using the criterion of ease of
+recognizability of objects (for human observers) in the
+edge images. Closer to our work is the Sowerby image
+2
+
+dataset that has been used by Huang [9] and Konishi et
+al. [12]. This dataset is small, not publicly available, and
+contains only one segmentation for each image. In spite
+of these limitations, the dataset has proved quite useful for
+work such as that of Konishi et al. who used it to evalu-
+ate the effectiveness of different edge ﬁlters as indicators
+of boundaries. We expect that our dataset would ﬁnd far
+wider use, by virtue of being considerably more varied
+and extensive, and the fact that we provide a mechanism
+for computing the consistency of different segmentations.
+The database that we have collected is a valuable re-
+source for studying statistics of natural images. Most such
+studies in the past have concentrated on ﬁrst and second
+order statistics such as the power spectrum or covariances,
+either on pixel brightnesses directly or on wavelet coefﬁ-
+cients [10, 15, 16, 11, 12, 5, 13, 18]. We can go much
+further given the additional information provided by the
+segmentations. For instance, we can evaluate prior distri-
+butions corresponding to the various Gestalt factors such
+as similarity, proximity, convexity etc. and thus provide
+objective justiﬁcations for the use of these cues in group-
+ing. While this way of thinking about the Gestalt factors
+was suggested nearly 50 years ago by Brunswik [4], so far
+empirical measurements of probability distributions have
+been limited to the factor of good continuation, e.g. [2].
+Another application of the database is in studying the em-
+pirical distribution of sizes of regions in an image. This
+turns out to follow a power law, consistent with the work
+of Alvarez, Gousseau and Morel [1] with a rather different
+deﬁnition of sizes.
+This paper is organized as follows. In  2, we describe
+in detail the construction of the database of image seg-
+mentations. In  3 we deﬁne measures for evaluating con-
+sistency of different segmentations of an image.  4 puts
+the database to use by evaluating the performance of the
+Normalized cut algorithm on the different images. Perfor-
+mance is evaluated by computing the consistency of the
+computer segmentations with those made by human ob-
+servers and comparing that to consistency among human
+observers. In  5, we ﬁnd another use for the database,
+namely in evaluating the ecological statistics of various
+Gestalt grouping factors. We conclude in  6.
+0 0.2 0.4 0.6 0.8 10
+20
+40
+60
+GCE measure (same images)
+0 0.2 0.4 0.6 0.8 10
+200
+400
+600
+800
+1000
+GCE measure (different images)
+0 0.2 0.4 0.6 0.8 10
+20
+40
+60
+LCE measure (same images)
+0 0.2 0.4 0.6 0.8 10
+200
+400
+600
+800
+1000
+LCE measure (different images)
+Figure 4: Distributions of the GCE (left) and LCE (right) measures
+over the segmentation database. The error measures are applied to all
+pairs of segmentations. The upper graphs show the error for segmenta-
+tions of the same image. The lower graphs show the error for segmenta-
+tions of different images. The spike at zero in the different-image graphs
+is due to degenerate segmentations of one particular image, of which ev-
+erything else is a reﬁnement. Clockwise from the top-left, the means are
+0.11, 0.07, 0.39, 0.30.
+2. Image Segmentation Database
+The ﬁrst task in constructing the segmentation database
+was to select a set of images. We chose 1000 representa-
+tive 481x321 RGB images from the Corel image database.
+This database of 40,000 images is widely used in com-
+puter vision (e.g. [6, 7]). The criterion for selecting im-
+ages was simple: We chose images of natural scenes that
+contain at least one discernible object. This criterion culls
+images that are inappropriate for the task of recognition,
+such as photographs of reﬂections of neon signs on wet
+concrete sidewalks, or photographs of marble textures.
+2.1. Segmentation Tool
+In order to easily collect segmentations from a wide range
+of people, we have developed a Java application that one
+can use to divide an image into segments, where a seg-
+ment is simply a set of pixels. This approach has several
+advantages. First, anyone with Internet access can seg-
+ment images. Second, the process produces an explicit
+partition of the pixels into groups (segments). Third, a
+server process can dynamically assign images to users,
+which gives precise control over the database content as it
+evolves.
+Figure 2 shows a sequence of snapshots taken from a
+3
+
+GCE
+ LCE
+ Ideal Measure
+Figure 5: Error matrix for all image pairs, for GCE (left) and LCE
+(middle).   corresponds to the error between segmentations  and  ,
+where black signiﬁes zero error. Segmentations are sorted by image, so
+segmentations of the same image are adjacent. The spurious horizontal
+and vertical bands conﬁrm that the spike in the different-image graphs
+of Figure 4 are caused by degenerate segmentations of one image. The
+rightmost matrix shows the block-diagonal structure of the ideal error
+measure applied to a ﬂawless dataset.
+0 0.5 10
+0.2
+0.4
+0.6
+0.8
+1
+LCE
+GCE
+Measure Correlation (all segmentations)
+0 0.5 10
+0.2
+0.4
+0.6
+0.8
+1
+LCE
+GCE
+Measure Correlation (same images)
+Figure 6: LCE vs. GCE for segmentations of different images (left)
+and the same image (right). The dashed line 
+	 shows that GCE is a
+stricter measure than LCE.
+typical session with the segmentation tool. Each snap-
+shot shows two windows. The upper window is the main
+window of the application. It shows the image with all
+segments outlined in white. The lower window in each
+snapshot is the splitter window, which is used to split an
+existing segment into two new segments.
+Consider Figure 2(a). The main window shows two
+segments. The user has selected the larger one in order to
+split it using the lower window. Between (a) and (b), the
+user drew a contour around the leftmost two pups in the
+top pane of the splitter window. This operation transfers
+the enclosed pixels to the bottom pane, creating a new
+segment. Between (c) and (d), the user split the two pups
+from each other. In (d), there are 4 segments.
+In addition to simply splitting segments, the user can
+transfer pixels between any two existing segments. This
+provides a tremendous amount of ﬂexibility in the way
+in which users create and deﬁne segments. The interface
+is simple, yet accommodates a wide range of segmenta-
+tion styles. In less than 5 minutes, one can create a high-
+quality, pixel-accurate segmentation with 10-20 segments
+using a standard PC.
+2.2. Experiment Setup and Protocol
+It is imperative that variation among human segmenta-
+tions of an image is due to different perceptual organiza-
+tions of the scene, rather than aspects of the experimental
+setup. In order to minimize variation due to different in-
+terpretations of the task, the instructions were made inten-
+tionally vague in an effort to cause the subjects to break up
+the scene in a “natural” manner: Divide each image into
+pieces, where each piece represents a distinguished thing
+in the image. It is important that all of the pieces have
+approximately equal importance. The number of things
+in each image is up to you. Something between 2 and 20
+should be reasonable for any of our images.
+The initial subject group was a set of students in a
+graduate-level computer vision class who were addition-
+ally instructed to segment as naive observers. The sub-
+jects were provided with several example segmentations
+of simple, unambiguous images as a visual description of
+the task.
+Images were assigned to subjects dynamically. When
+a subject requested a new image, an image was chosen
+randomly with a bias towards images that had been seg-
+mented by some other subject. In addition, the software
+ensured that (1) no subject saw the same image twice, (2)
+no image was segmented by more than 5 people, and (3)
+no two images were segmented by exactly the same set of
+subjects.
+2.3. Database Status and Plans
+The results in this paper were generated using our ﬁrst
+version of the dataset that contains 150 grayscale segmen-
+tations by 10 people of 50 images, with 30 images with 3
+or more segmentations. The data collection is ongoing,
+and at this time, we have 3000 segmentations by 25 peo-
+ple of 800 images. We aim to ultimately collect at least 4
+grayscale and 4 color segmentations of 1000 images.
+4
+
+Figure 7: Segmentations produced by the Normalized Cuts algorithm
+using both contour and texture cues. Compare with Figure 1.
+3. Segmentation Error Measures
+There are two reasons to develop a measure that provides
+an empirical comparison between two segmentations of
+an image. First, we can use it to validate the segmenta-
+tion database by showing that segmentations of the same
+image by different people are consistent. Second, we can
+use the measure to evaluate segmentation algorithms in an
+objective manner.
+A potential problem for a measure of consistency be-
+tween segmentations is that there is no unique segmenta-
+tion of an image. For example, two people may segment
+an image differently because either (1) they perceive the
+scene differently, or (2) they segment at different granu-
+larities. If two different segmentations arise from differ-
+ent perceptual organizations of the scene, then it is fair to
+declare the segmentations inconsistent. If, however, one
+segmentation is simply a reﬁnement of the other, then the
+error should be small, or even zero. Figure 3 shows ex-
+amples of both simple and mutual reﬁnement from our
+database. We do not penalize simple reﬁnement in our
+measures, since it does not preclude identical perceptual
+organizations of the scene.
+In addition to being tolerant to reﬁnement, any error
+measure should also be (1) independent of the coarseness
+of pixelation, (2) robust to noise along region boundaries,
+and (3) tolerant of different segment counts between the
+two segmentations. The third point is due to the complex-
+ity of the images: We need to be able to compare two
+0 0.2 0.4 0.6 0.8 10
+20
+40
+60
+GCE measure (same images)
+0 0.2 0.4 0.6 0.8 10
+200
+400
+600
+800
+1000
+GCE measure (different images)
+0 0.2 0.4 0.6 0.8 10
+20
+40
+60
+LCE measure (same images)
+0 0.2 0.4 0.6 0.8 10
+200
+400
+600
+800
+1000
+LCE measure (different images)
+Figure 8: Distributions of the GCE (left) and LCE (right) measures
+for NCuts segmentations vs. human segmentations. The error measures
+were applied to pairs of segmentations, where each pair contains one
+NCuts and one human segmentations (see
+
+4 for details). The upper
+graphs show the error for segmentations of the same image. For ref-
+erence, the lower graphs show the error for segmentations of different
+images. Clockwise from the top-left, the means are 0.28, 0.22, 0.38,
+0.31. Compare with Figure 4.
+segmentations when they have different numbers of seg-
+ments. In the remainder of this section, we present two
+error measures that meet all of the aforementioned crite-
+ria. We then apply the measures to the database of human
+segmentations.
+3.1. Error Measure Deﬁnitions
+A segmentation is simply a division of the pixels of an
+image into sets. A segmentation error measure takes two
+segmentations  and  as input, and produces a real-
+valued output in the range  	
+ where zero signiﬁes no
+error.
+We deﬁne a measure of error at each pixel that is tol-
+erant to reﬁnement as the basis of both measures. For a
+given pixel  consider the segments in  and  that
+contain that pixel. The segments are sets of pixels. If
+one segment is a proper subset of the other, then the pixel
+lies in an area of reﬁnement, and the local error should
+be zero. If there is no subset relationship, then the two
+regions overlap in an inconsistent manner. In this case,
+the local error should be non-zero. Let  denote set differ-
+ence, and   the cardinality of set  . If 
+ is the set
+of pixels corresponding to the region in segmentation 
+that contains pixel 
+ , the local reﬁnement error is deﬁned
+as:
+5
+
+1 3 5 7 9 11 13 15 17 19 21 23 25 27 290
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+Error
+Image Number
+Figure 9: The GCE for human vs. human (gray) and NCuts vs.
+human (white) for each image for which we have  3 human segmenta-
+tions. The LCE data is similar.
+
+
+
+ 
+
+ 
+ 
+    
+
+    
+
+
+     
+
+
+(1)
+Note that this local error measure is not symmetric. It
+encodes a measure of reﬁnement in one direction only:
+
+      
+
+is zero precisely when  is a reﬁnement of
+ at pixel  , but not vice versa. Given this local reﬁne-
+ment error in each direction at each pixel, there are two
+natural ways to combine the values into a error measure
+for the entire image. Global Consistency Error (GCE)
+forces all local reﬁnements to be in the same direction.
+Local Consistency Error (LCE) allows reﬁnement in dif-
+ferent directions in different parts of the image. Let  be
+the number of pixels:
+
+
+    
+
+
+
+
+	
+
+
+
+      
+
+
+
+
+
+    
+
+(2)
+
+
+
+   
+
+
+
+
+
+
+	
+
+     
+
+
+
+     
+
+(3)
+As
+
+
+
+
+
+for any two segmentations, it is
+clear that GCE is a tougher measure than LCE. Looking
+at Figure 3, GCE would tolerate the simple reﬁnement
+from (c) to (b) or (d), while LCE would also tolerate the
+mutual reﬁnement of (b) and (d). Note that since both
+measures are tolerant of reﬁnement, they are meaningful
+only when comparing two segmentations with an approx-
+imately equal number of segments. This is because there
+are two trivial segmentations that achieve zero error: One
+pixel per segment, and one segment for the entire image.
+The former is a reﬁnement of any segmentation, and any
+segmentation is a reﬁnement of the latter.
+3.2. Error Measure Validation
+We apply the GCE and LCE measures to all pairs of seg-
+mentations in our dataset with two goals. First, we hope to
+show that given the arguably ambiguous task of segment-
+ing an image into an unspeciﬁed number of segments, dif-
+ferent people produce consistent results on each image.
+Second, we hope to validate the measures by showing that
+the error between segmentations of the same image is low,
+while the error between segmentations of different images
+is high.
+Figure 4 shows the distribution of error between pairs
+of human segmentations. The top graphs show the er-
+ror between segmentations of the same image; the bottom
+graphs show the error between segmentations of different
+images. As expected, the error distribution for segmenta-
+tions of the same image shows a strong spike near zero,
+while the error distribution for segmentations of different
+images is neither localized nor close to zero.
+We characterize the separation of the two distributions
+by noting that for LCE, 5.9% of segmentation pairs lie
+above 0.12 for the same image or below 0.12 for different
+images. For GCE, 5.9% of pairs lie above 0.16 for the
+same image or below 0.16 for different images. Note the
+good behavior of both measures despite the fact that the
+number of segments in each segmentation of a particular
+image can vary by a factor of 10. Figure 5 shows the raw
+data used to the compute the histograms.
+In Figure 6, we plot LCE vs. GCE for each pair of
+segmentations. As expected, we see (1) that GCE and
+LCE are measuring similar qualities, and (2) that GCE 
+LCE in all cases.
+6
+
+4. A Segmentation Benchmark
+In this section, we use the segmentation database and er-
+ror measures to evaluate the Normalized Cuts (NCuts) im-
+age segmentation algorithm.
+In collecting our dataset, we permitted a great deal of
+ﬂexibility in how many segments each subject created for
+an image. This is desirable from the point of view of cre-
+ating an information-rich dataset. However, when com-
+paring a human segmentation to a computer segmentation,
+our measures are most meaningful when the number of
+segments is approximately equal. For example, an algo-
+rithm could thwart the benchmark by producing one seg-
+ment for the whole image, or one segment for each pixel.
+Due to the tolerance of GCE and LCE to reﬁnement, both
+of these degenerate segmentations have zero error.
+Since image segmentation is an ill-posed problem with-
+out stating the desired granularity, we can expect any seg-
+mentation algorithm to provide some sort of control over
+the number of segments it produces. If our human seg-
+mentations of an image contain 4, 9, and 13 segments,
+then we instruct the computer algorithm to also produce
+segmentations with 4, 9, and 13 segments. We then com-
+pare each computer segmentation to each human segmen-
+tation. In this way, we can make a meaningful compari-
+son to the human segmentation error shown in Figure 4.
+In addition, we consider the mean error over all images
+as a summary statistic that can be used to rank different
+segmentation algorithms.
+The NCuts algorithm [17, 14] takes a graph theoretic
+approach to the problem of image segmentation. An im-
+age is treated as a weighted graph. Each pixel corresponds
+to a node, and edge weights computed from both con-
+tour and texture cues denote a local measure of similarity
+between two pixels. NCuts segments an image by cut-
+ting this graph into strongly connected parts. The ver-
+sion of NCuts described in [14] automatically determines
+the number of regions by splitting the graph until the cuts
+surpass a threshold. We modiﬁed the stopping criterion
+to provide explicit control over the ﬁnal number of seg-
+ments.
+Figure 8 shows the error between NCuts segmentations
+and human segmentations. In comparing this NCuts error
+to the human error shown in Figure 4, we see that NCuts
+is producing segmentations worse than humans, but still
+better than “random.” The error distributions for segmen-
+0 0.2 0.4 0.6 0.8 10
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+P(samesegment|distance)
+distance (normalized)
+probability of same segment
+Figure 10: Proximity: The probability that two points belong to
+the same segment given their distance. Distances have been scaled per
+image as discussed in the text and normalized to range from 0 to 1. We
+sample 1000 points from each segmentation and compute all pairwise
+distances. Error bars show  intervals.
+tations of different images (the bottom graphs in each ﬁg-
+ure) approximate the performance of random segmenta-
+tion. The mean error over all segmentation pairs gives
+NCuts an overall error of 22% by LCE (compared to 7%
+for humans), and 28% by GCE (compared to 11% for hu-
+mans).
+Figure 9 shows both the human error (blue) and NCuts
+error (red) for each image separately. In most cases, the
+human segmentations form a tight distribution near zero.
+In virtually all cases, NCuts performs worse than humans,
+but it fares better on some images than others. This data
+can be used to ﬁnd the type of images for which an algo-
+rithm has the most difﬁculty.
+5. Bayesian Interpretation of Gestalt
+Grouping Factors
+Brunswik [4] suggested that the various Gestalt factors
+of grouping such as proximity, similarity, convexity, etc.
+made sense because they reﬂected the statistics of natural
+scenes. For instance, if nearby pixels are more likely to
+belong to the same region, it is justiﬁed to group them.
+In computer vision, we would similarly like grouping al-
+gorithms to be based on these ecological statistics. The
+Bayesian framework provides a rigorous approach to ex-
+ploiting this knowledge in the form of prior probability
+distributions. Our database enables the empirical mea-
+surement of these distributions.
+7
+
+0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+P(samesegment|intensitydif)
+intensity differnece (normalized)
+probability of same segment
+Figure 11: Similarity: The probability that two points belong to
+the same segment given their absolute difference in intensity (256 gray
+levels). We sample 1000 points from each segmentation and compute all
+pairwise similarities. Error bars show  intervals.
+In this section, we present our measurements of the
+probability distributions associated with the Gestalt cues
+of proximity, similarity of intensity, and convexity of re-
+gions. As another interesting empirical ﬁnding, we deter-
+mine the frequency distribution of region areas and show
+that it follows a power law.
+5.1. Proximity Cues
+Experiments have long shown that proximity is an im-
+portant low-level cue in deciding how stimuli will be
+grouped. We characterize this cue by estimating the prob-
+ability that two points in an image will lie in the same re-
+gion given their distance on the image plane. The results
+are summarized in the form of a histogram where each
+bin counts the proportion of point-pairs in a given dis-
+tance range that lie within the same segment as designated
+by the human segmentor. We would like our estimate to
+be invariant to the granularity at which a particular image
+has been segmented. To this end, we scale all distances
+by
+
+number of segments
+image area .
+Results are show in Figure 10. As might be expected
+the probability of belonging to the same group is one
+when the distance is zero and decreases monotonically
+with increasing distance.
+5.2. Similarity Cues
+Using a similar methodology to  5.1, we examine the
+probability that two points lie in the same region given
+their similarity. We evaluate point-wise similarity based
+on the absolute difference in pixel intensity (256 gray lev-
+els). This could be clearly be extended to make use of
+color or local texture. The results are shown in Figure 11.
+If images of objects were uniform in intensity over the
+extent of the object with some additive noise and each
+object in a given scene had a unique intensity, we would
+expect to see a curve that started at 1 and quickly decayed
+to 0. However, images of natural objects feature varia-
+tion in intensity due to texture, shading, and lighting so
+the histogram we compute starts at 0.6 and monotonically
+decays to 0.2. This suggests that although similarity in
+intensity isn’t a perfect cue, it does capture some useful
+information about group membership.
+5.3. Region Convexity
+One commonly posited mid-level grouping cue is the con-
+vexity of foreground object boundaries. We capture the
+notion of convexity for discrete, pixel-based regions by
+measuring the ratio of a region’s area to the area of its
+convex hull. This yields a number between zero and one
+where one indicates a perfectly convex region. Since the
+regions in our dataset have no labels that designate them
+as foreground or background we are forced to look at the
+distribution of the convexity of all image regions. This
+on its own is arguably instructive and we imagine that
+since there can be many foreground groups and only a
+few background groups in a given image, the distribution
+for only foreground regions would look very similar. Fig-
+ure 12 shows our results. As expected, grouped pixels
+commonly form a convex region.
+5.4. Region Area
+The authors of [1] approach the problem of estimating the
+distribution of object sizes in natural imagery by automat-
+ically ﬁnding connected components of bilevel sets and
+ﬁtting the distribution of their areas. Our results from
+ 5.2 suggest that intensity bilevel sets are only a rough
+approximation to perceptual segments in the image. Fig-
+ure 13 shows the distribution of region areas in our data
+set. We get an excellent ﬁt from a power law curve of the
+form 
+
+
+yielding an 
+
+
+   	 .
+8
+
+0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+0
+20
+40
+60
+80
+100
+120
+140
+160
+frequency of convexity measure
+convexity
+number of occurances
+Figure 12: Convexity: The distribution of the convexity of segments.
+Convexity is measured as ratio of a region’s area to the area of its convex
+hull yielding a number between 0 and 1. Error bars show  intervals.
+6. Summary and Conclusion
+In this paper, we presented a database of natural images
+segmented by human subjects along with two applications
+of the dataset. First, we developed an image segmentation
+benchmark by which one can objectively evaluate seg-
+mentation algorithms. Second, we measured ecological
+statistics related to Gestalt grouping factors. In time, we
+expect the database to grow to cover 1000 images, with
+4 human segmentations of each image in both grayscale
+and color. This data is to be made available to the commu-
+nity in the hope that we can place the problem of image
+segmentation on ﬁrm, quantitative ground.
+Acknowledgments
+We would like to thank Dave Patterson for his valuable
+input, particularly in the data collection and benchmark
+portions of this paper. We also graciously thank the Fall
+2000 students of UCB CS294, who provided our image
+segmentations. This work was supported in part by the
+UC Berkeley MICRO Fellowship (to CF), the NIH Train-
+ing Grant in Vision Science T32EY 07043-22 (to DT),
+ARO contract DAAH04-96-1-0341, the Digital Library
+grant IRI-9411334, Defense Advanced Research Projects
+Agency of the Department of Defense contract DABT63-
+96-C-0056, the National Science Foundation infrastruc-
+ture grant EIA-9802069, and by a grant from Intel Cor-
+poration. The information presented here does not neces-
+10
+3
+10
+4
+10
+510
+−3
+10
+−2
+10
+−1
+10
+0
+region area
+number of occurances
+frequency of region area
+Figure 13: Region Area: This log-log graph shows the distribution in
+region areas. We ﬁt a curve of the form 	 
+
+
+yielding an   	 .
+For the purposes of ﬁtting, we throw out those sparsely populated bins
+which contain regions that are greater than 25% of the total image area.
+sarily reﬂect the position or the policy of the Government
+and no ofﬁcial endorsement should be inferred.
+References
+[1] L. Alvarez, Y. Gousseau, and J. Morel. Scales in natu-
+ral images and a consequence on their bounded variation
+norm. In Scale-Space Theories in Computer Vision, 1999.
+[2] J. August and S. Zucker. The curve indicator random ﬁeld:
+Curve organization via edge correlation. In K. L. Boyer
+and S. Sarkar, editors, Perceptual Organization in Artiﬁ-
+cial Vision Systems, pages 265–287. Kluwer, 2000.
+[3] S. Borra and S. Sarkar. A framework for performance
+characterization of intermediate-level grouping modules.
+PAMI, 19(11):1306–1312, Nov. 1997.
+[4] E. Brunswik and J. Kamiya. Ecological validity of prox-
+imity and other gestalt factors. Am. J. of Psych., pages
+20–32, 1953.
+[5] R. W. Buccigrossi and E. P. Simoncelli. Image compres-
+sion via joint statistical characterization in the wavelet do-
+main. IEEE Trans. on Image Proc., 8(12):1688–1701,
+Dec. 1999.
+[6] C. Carson, M. Thomas, S. Belongie, J. M. Hellerstein, and
+J. Malik. Blobworld: A system for region-based image
+indexing and retrieval. Third International Conference on
+Visual Information Systems, Jun. 1999.
+[7] O. Chapelle, P. Haffner, and V. N. Vapnik. Support vector
+machines for histogram-based image classiﬁcation. IEEE
+Trans. on Neural Networks, 10(5):1055–1064, Sep. 1999.
+9
+
+[8] M. D. Heath, S. Sarkar, T. Sanocki, and K. W. Bowyer.
+A robust visual method for assessing the relative perfor-
+mance of edge-detection algorithms. PAMI, 19(12):1338–
+1359, 1997.
+[9] J. Huang. Statistics of Natural Images and Models. PhD
+thesis, Brown University, May 2000.
+[10] J. Huang, A. B. Lee, and D. Mumford. Statistics of range
+images. CVPR, pages 324–331, 2000.
+[11] J. Huang and D. Mumford. Statistics of natural images
+and models. CVPR, pages 541–547, 1999.
+[12] S. Konishi, A. L. Yuille, J. Coughlan, and S. C. Zhu. Fun-
+damental bounds on edge detection: an information theo-
+retic evaluation of different edge cues. CVPR, pages 573–
+579, 1999.
+[13] A. B. Lee and D. Mumford. Scale-invariant random-
+collage model for natural images. In Proc. IEEE Work-
+shop on Statistical and Computational Theories of Vision.
+1999.
+[14] J. Malik, S. Belongie, T. Leung, and J. Shi. Contour
+and image analysis for segmentation. In K. L. Boyer and
+S. Sarkar, editors, Perceptual Organization for Artiﬁcial
+Vision Systems, pages 139–172. Kluwer, 2000.
+[15] D. L. Ruderman. The statistics of natural images. Net-
+work, 5(4):517–548, 1994.
+[16] D. L. Ruderman. Origins of scaling in natural images.
+Vision Research, 37:3385–3395, 1997.
+[17] J. Shi and J. Malik. Normalized cuts and image segmen-
+tation. PAMI, 22(8):888–905, Aug. 2000.
+[18] J. H. van Hateren and A. V. der Schaaf. Independent
+component ﬁlters of natural images compared with sim-
+ple cells in primary visual cortex. Proc. R. Soc. Lond.,
+265:359–366, 1998.
+10

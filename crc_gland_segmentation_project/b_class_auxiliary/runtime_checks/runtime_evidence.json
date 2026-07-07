@@ -1,0 +1,243 @@
+{
+  "project_root": "D:/12_Medical_Image_Segmentation/Paper/crc_gland_segmentation_project",
+  "experiment_config": "configs/experiment/A1_UNet_GlaS_v1_seed3407.yaml",
+  "run_name": "A1_UNet_GlaS_v1_seed3407",
+  "stage_code": "A1",
+  "dataset_code": "glas",
+  "model_code": null,
+  "runtime_profile": "full_training_runtime",
+  "config_resolution": {
+    "config_refs": {
+      "data": "configs/data/glas.yaml",
+      "model": "configs/model/unet_v1.yaml",
+      "train": "configs/train/unet_flow_v1.yaml",
+      "eval": "configs/eval/eval_proto_v1.yaml"
+    },
+    "resolved": {
+      "data": {
+        "relative_path": "configs/data/glas.yaml",
+        "exists": true
+      },
+      "model": {
+        "relative_path": "configs/model/unet_v1.yaml",
+        "exists": true
+      },
+      "train": {
+        "relative_path": "configs/train/unet_flow_v1.yaml",
+        "exists": true
+      },
+      "eval": {
+        "relative_path": "configs/eval/eval_proto_v1.yaml",
+        "exists": true
+      }
+    },
+    "missing": []
+  },
+  "formal_chain_readiness": [
+    {
+      "label": "train_entrypoint",
+      "relative_path": "scripts/train.py",
+      "ready": true,
+      "reason": "implemented"
+    },
+    {
+      "label": "dataset_module",
+      "relative_path": "src/data/datasets.py",
+      "ready": true,
+      "reason": "implemented"
+    },
+    {
+      "label": "trainer",
+      "relative_path": "src/engine/trainer.py",
+      "ready": true,
+      "reason": "implemented"
+    },
+    {
+      "label": "model_registry",
+      "relative_path": "src/models/__init__.py",
+      "ready": true,
+      "reason": "implemented"
+    },
+    {
+      "label": "model_module",
+      "relative_path": "src/models/unet.py",
+      "ready": true,
+      "reason": "implemented"
+    },
+    {
+      "label": "loss_module",
+      "relative_path": "src/losses/seg_losses.py",
+      "ready": true,
+      "reason": "implemented"
+    }
+  ],
+  "raw_sample_evidence": {
+    "status": "pass",
+    "reason": "split_csv_sample_readable",
+    "source": "split_csv",
+    "split_name": "train",
+    "split_csv": "splits/glas/glas_train68.csv",
+    "sample_id": "GlaS_official_train_train_1",
+    "image_path": "datasets/01_GlaS_official_raw/train_1.bmp",
+    "mask_path": "datasets/01_GlaS_official_raw/train_1_anno.bmp",
+    "image_exists": true,
+    "mask_exists": true,
+    "image_shape_hw": [
+      522,
+      775
+    ],
+    "image_dtype": "uint8",
+    "image_mode": "RGB",
+    "mask_shape_hw": [
+      522,
+      775
+    ],
+    "mask_dtype": "uint8",
+    "mask_mode": "L",
+    "mask_unique_values": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "image_extrema": [
+      [
+        36,
+        255
+      ],
+      [
+        2,
+        242
+      ],
+      [
+        50,
+        255
+      ]
+    ],
+    "mask_extrema": [
+      0,
+      7
+    ]
+  },
+  "runtime_execution": {
+    "attempted": true,
+    "mode": "train_runtime_check_cli",
+    "command": [
+      "D:\\conda_envs\\sd\\python.exe",
+      "D:\\12_Medical_Image_Segmentation\\Paper\\crc_gland_segmentation_project\\scripts\\train.py",
+      "--config",
+      "configs/experiment/A1_UNet_GlaS_v1_seed3407.yaml",
+      "--run-name",
+      "A1_UNet_GlaS_v1_seed3407",
+      "--runtime-check",
+      "--runtime-check-output",
+      "b_class_auxiliary/runtime_checks/train_runtime_payload.json",
+      "--device",
+      "cpu",
+      "--max-steps",
+      "1"
+    ],
+    "cwd": "D:/12_Medical_Image_Segmentation/Paper/crc_gland_segmentation_project",
+    "exit_code": 0,
+    "timed_out": false,
+    "stdout_log": "b_class_auxiliary/runtime_checks/runtime_check.log",
+    "train_runtime_output": "b_class_auxiliary/runtime_checks/train_runtime_payload.json",
+    "blocking_reasons": [],
+    "payload": {
+      "run_name": "A1_UNet_GlaS_v1_seed3407",
+      "mode": "runtime_check",
+      "device": "cpu",
+      "max_steps": 1,
+      "steps_executed": 1,
+      "experiment_config": "configs/experiment/A1_UNet_GlaS_v1_seed3407.yaml",
+      "data_config": "configs/data/glas.yaml",
+      "model_config": "configs/model/unet_v1.yaml",
+      "train_config": "configs/train/unet_flow_v1.yaml",
+      "eval_config": "configs/eval/eval_proto_v1.yaml",
+      "sample_id": "GlaS_official_train_train_42",
+      "sample_path": "datasets/01_GlaS_official_raw/train_42.bmp",
+      "mask_path": "datasets/01_GlaS_official_raw/train_42_anno.bmp",
+      "input_shape": [
+        2,
+        3,
+        512,
+        512
+      ],
+      "input_dtype": "float32",
+      "target_shape": [
+        2,
+        1,
+        512,
+        512
+      ],
+      "target_dtype": "float32",
+      "target_unique_values": [
+        0,
+        1
+      ],
+      "output_shape": [
+        2,
+        1,
+        512,
+        512
+      ],
+      "output_dtype": "float32",
+      "loss_value": 1.2771382331848145,
+      "loss_is_finite": true,
+      "backward_executed": true,
+      "optimizer_step_executed": true,
+      "runtime_profile": "full_training_runtime",
+      "entrypoint_check_pass": true,
+      "entrypoint_check_reason": "formal_train_step_completed"
+    },
+    "status": "pass",
+    "reason": "runtime_payload_loaded"
+  },
+  "runtime_fields": {
+    "sample_path": "datasets/01_GlaS_official_raw/train_42.bmp",
+    "sample_id": "GlaS_official_train_train_42",
+    "input_shape": [
+      2,
+      3,
+      512,
+      512
+    ],
+    "input_dtype": "float32",
+    "target_shape": [
+      2,
+      1,
+      512,
+      512
+    ],
+    "target_dtype": "float32",
+    "target_unique_values": [
+      0,
+      1
+    ],
+    "output_shape": [
+      2,
+      1,
+      512,
+      512
+    ],
+    "output_dtype": "float32",
+    "loss_value": 1.2771382331848145,
+    "loss_is_finite": true,
+    "backward_executed": true,
+    "optimizer_step_executed": true
+  },
+  "checks": {
+    "smoke_run_pass": "pass",
+    "dataloader_batch_check_pass": "pass",
+    "tensor_shape_dtype_pass": "pass",
+    "loss_finite_pass": "pass",
+    "grad_step_pass": "pass"
+  },
+  "overall_status": "pass",
+  "runtime_evidence_json": "b_class_auxiliary/runtime_checks/runtime_evidence.json",
+  "runtime_log": "b_class_auxiliary/runtime_checks/runtime_check.log"
+}

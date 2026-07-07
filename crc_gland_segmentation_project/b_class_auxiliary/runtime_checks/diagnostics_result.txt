@@ -1,0 +1,12 @@
+- py_compile: pass
+- import_check: pass
+- stage_boundary_pass: pass
+- smoke_run_pass: pass
+- dataloader_batch_check_pass: pass
+- tensor_shape_dtype_pass: pass
+- loss_finite_pass: pass
+- grad_step_pass: pass
+- code_quality_gate_pass: pass
+- learning_doc_gate_pass: pass
+- formal_doc_gate_pass: not_applicable
+- diagnostics_result: pass

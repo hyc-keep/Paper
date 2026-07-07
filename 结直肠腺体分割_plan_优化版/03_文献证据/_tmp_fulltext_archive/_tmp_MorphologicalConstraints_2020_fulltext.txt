@@ -1,0 +1,1193 @@
+ResearchArticle
+Multiple Morphological Constraints-Based Complex Gland
+Segmentation in Colorectal Cancer Pathology Image Analysis
+Kun Zhang
+ ,1 JunHong Fu,1 Liang Hua
+ ,1 Peijian Zhang,1 Yeqin Shao,2 Sheng Xu,3
+Huiyu Zhou
+ ,4 Li Chen,5 and Jing Wang6
+1Department of Electrical Engineering, Nantong University, Nantong 226019, China
+2School of Transportation, Nantong University, Nantong 226019, China
+3School of Electronic and Information Engineering, Nantong Vocational University, Nantong 226019, China
+4School of Informatics University of Leicester, Leicester, UK
+5Medical School, Nantong University, Nantong 226019, China
+6Nantong Second People’s Hospital, Nantong 226019, China
+CorrespondenceshouldbeaddressedtoKunZhang;zhangkun_nt@163.comandLiangHua;hualiang@ntu.edu.cn
+Received 11 May 2020; Accepted 23 June 2020; Published 28 July 2020
+Guest
+Editor:ZhileYang
+Copyright©2020KunZhangetal.w+_hisisanopenaccessarticledistributedundertheCreativeCommonsAttributionLicense,
+which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited.
+Histological assessment of glands is one of the major concerns in colon cancer grading. Considering that poorly diﬀerentiated
+colorectalglandscannot beaccuratelysegmented,weproposeanapproachforsegmentationofglandsincoloncancerimages,
+basedonthecharacteristicsoflumensandroughglandboundaries.First,weuseaU-netforstainseparationtoobtainH-stain,
+E-stain,andbackgroundstainintensitymaps.Subsequently,epithelialnucleusisidentiﬁedonthehistopathologyimages,andthe
+lumensegmentationisperformedonthebackgroundintensitymap.w+_hen,weusetheaxisofleastinertia-basedsimilartrianglesas
+the spatial characteristics of lumens and epithelial nucleus, and a triangle membership is used to select glandular contour
+candidatesfromepithelialnucleus.Byconnectinglumensandepithelialnucleus,moreaccurateglandsegmentationisperformed
+basedontheroughglandboundary.w+_heproposedstainseparationapproachisunsupervised,andthestainseparationmakesthe
+categoryinformationcontainedintheH&Eimageeasytoidentifyanddealwiththeunevenstainintensityandtheinconspicuous
+staindiﬀerence.Inthisproject,weusedeeplearningtoachievestainseparationbypredictingthestaincoeﬃcient.Underthedeep
+learning framework, we design a stain coeﬃcient interval model to improve the stain generalization performance. Another
+innovationisthatweproposethecombinationoftheinternallumencontourofadenomaandtheoutercontourofepithelialcells
+toobtainapreciseglandcontour.Wecomparetheperformanceoftheproposedalgorithmagainstthatofseveralstate-of-the-art
+technologies on publicly available datasets. w+_he results show that the segmentation approach combining the characteristics of
+lumens and rough gland boundary has better segmentation accuracy.
+1. Introduction
+Coloncancermaybecausedbyepithelium(lumensofblood
+vessels, organs, and surface tissues), also called adenocar-
+cinoma (malignant tumor formed by gland structures in
+epithelial tissues) [1]. It aﬀects the distribution of cells and
+alsochangesthestructureofglands.Pathologistsareableto
+accurately detect small abnormalities in a biopsy [2–4].
+Withtheincreasingpopularityofhistopathologyimages,
+digitalpathologyprovidesaviablesolutiontothedetection
+problem. Histopathology image analysis can help us to
+extractquantitativemorphologicalfeaturesandcanbeused
+forcomputer-assistedcancergrading[5].Histopathologyis
+theﬁxationofthinsectionsofpotentiallydiseasetissuesona
+glassslideandstaintoshowspeciﬁcstructuralorfunctional
+details [6, 7]. By scanning the entire slide with a scanner,
+digitized images of those slides can be obtained, making
+histopathology suitable for image analysis [8, 9].
+Colon histopathology image analysis is the basis of the
+primarydetectionofcolonlesions[10].w+_heglandstructure
+isshowninFigure1(a).Atypicalcolonglandhistopathology
+image contains four tissue components: lumen, cytoplasm,
+Hindawi
+Complexity
+Volume 2020, Article ID 6180457, 16 pages
+https://doi.org/10.1155/2020/6180457
+
+
+epithelialcells,andstroma(connectivetissues,bloodvessels,
+nervetissue,etc.).w+_helumenareaissurroundedbyanoval
+structurecalledepithelialcells[11,12].w+_hewholestructure
+isboundedbyathickline,calledtheepithelialcellnucleus.
+In clinical practice, pathologists use glands as the ob-
+jects of interests, including their structural morphology
+and gland formation [13, 14]. Particularly, when per-
+forming automated gland segmentation in H&E images,
+pathologistscanextractimportantmorphologicalfeatures
+todetermineprognosisandplantreatmentsforindividual
+patients [15]. Digital histopathology images contain noise
+and homogenous regions that hinder gland detection and
+segmentation.Forexample,Zoltanetal.[16]developedtwo
+diagnosticmodules,oneforglanddetectionandtheother
+for nuclei detection. In gland detection, HSV and LAB
+color spaces are used for color segmentation, and glands
+can be identiﬁed using the connected component. Due to
+largediﬀerencesbetweenthetissuepreparationprotocols,
+stain programs, and scanning characteristics, stain nor-
+malization of histopathology images provides a tool to
+ensuretheeﬃciencyandstabilityofthesystem.Danieletal.
+[17]usedanormalizationtechniquetoassociatethemean
+andstandarddeviationofeachchannelofthetargettissue
+image with those of the template image through a set of
+lineartransformationsintheLABcolorspace.Inorderto
+segment a large number of color images into meaningful
+structures, Banwari et al. [18] proposed a thresholding
+approach based on image intensity. w+_hese approaches are
+based on diﬀerent tissue structures and color diﬀerences
+and are not suitable for segmenting adherent glands or
+glandsthataremixedwith stromawhichrequirecomplex
+correctionalgorithmstoobtainaccurateresults.w+_heactive
+contour segmentation approach proposed by Cohen [19]
+relies on the characteristics of the gland structures. w+_he
+thicknessofthetissuesliceandthefadingofthestainwill
+lead to the change of the color distribution of the tissue
+image, and the gland model is not suitable for the glands
+withincompleteglandboundaries.w+_heaboveconventional
+approachesmainlyusedglands’appearancecharacteristics
+andfeatures.w+_heappearancecharacteristicsarecomposed
+of the nucleus, cytoplasm, and epithelial cells. Sir-
+inukunwattanaetal.[20],Jacobsetal.[21],andothersused
+low-level features such as color, texture, and edges, to
+identifyglands.w+_hecontour featuresarebased onagland
+structuresurroundedbyepithelialcells.Sirinukunwattana
+et al. [22] and Fu et al. [23] proposed that the spatial
+random ﬁeld model well segmented the benign gland
+contour, but it was not suitable for segmenting malignant
+and diseased glands.
+With the recent development of deep learning in the
+ﬁeld, it has become possible to apply deep learning to
+histopathologyimages.Rothetal.[24]proposedamultilevel
+deep convolutional neural network for automated pancre-
+atic segmentation. Ronneberger et al. [25] and others pro-
+posed using U-net for histopathology image segmentation.
+w+_hedeepcontoursensenetworkproposedbyChenetal.[26]
+illustrates that contours play an important role in gland
+segmentation. w+_he double parallel branch deep neural
+network proposed by Wang et al. [27] combined contours
+andotherfeaturestoaccuratelysegmentglands.Inaddition,
+Xu et al. [28] proposed a fusion of complex multichannel
+regions and boundary modes for segmentation of gland
+instancesbysidesupervision.w+_hisworkwasextendedinthe
+study of Xu et al. [29], which included additional infor-
+mationtoenhanceperformance.Razaetal.[30]proposeda
+multi-input multi-output network (MIMO-Net) for gland
+segmentationandachievedstate-of-the-artperformance.All
+of the above approaches require a large number of manual
+annotations,butitwasverydiﬃculttolabelalargenumber
+of histopathology images. Zhang et al. [31] used a deep
+confrontation network for unannotated images, achieving
+consistently good segmentation performance.
+Althoughthepreviousapproacheshaveachievedcertain
+promising results in gland segmentation, automated seg-
+mentation of glands is still a challenging task due to the
+complexity of histopathology images and the diversity of
+gland morphology, especially the gland lesions shown in
+Figure1(b).Fornormalglands,epithelialcellscanbeclearly
+distinguished from the surrounding environment [32]. For
+malignantglands,epithelialcellsareusuallyintermingledin
+the stroma, and the epithelial nucleus are not easily dis-
+tinguished from stromal nucleus [33], and even glands are
+attachedtoeachother.Inthissituation,weconsiderthatthe
+lumenisadeﬁnedstructureofthegland.w+_hisstructurecan
+helpdecision-makingbecauseitspresenceandmorphology
+indicate the grade of cancers [34]. It is observed that the
+lumen of the gland and the gland boundary have certain
+similarities in shapes, and the lumen can be accurately
+segmented compared to other structures of the gland. Af-
+terward, a gland segmentation approach based on the
+correlationbetweenthelumenandtheglandboundarywas
+proposed.
+(a) (b)
+Nuclei
+Epithelial cell
+Lumen
+Stroma
+Figure1:Illustrationofcolonimages.(a)Atypicalbenigncolonglandhistopathologyimageanditscomposition.(b)Amalignantcolon
+gland image.
+2 Complexity
+
+Our proposed approach ﬁrst uses a U-net for stain
+separationtoobtainH-,E-,andbackgroundstainintensity
+maps. Subsequently, epithelial nucleus is identiﬁed on the
+histopathologyimage.Takingintoaccountthatthelumenis
+similar to the background, shown in Figure 2, the histo-
+pathologyimageisthenusedastheinputoftheframework
+proposed in [35] to obtain the rough gland boundary and
+epithelialnucleus,andthelumenissegmentedbasedonthe
+improved SPF approach reported in [36]. Finally, based on
+thecorrelationbetweenthelumenandtheglandboundary,
+weselectthebestglandcontourfromthecandidatecontours
+soastoachievethesegmentationofglandsattachedtoeach
+other.w+_heinnovationinourmethodisthatwearetheﬁrstto
+usedeeplearningtoachievestainseparation.Deeplearning
+isusedtopredictthestaincoeﬃcients.Inthedeeplearning
+framework,wedesignastaincoeﬃcientintervalmodelusing
+Gaussian distribution. We can get an interval of the coef-
+ﬁcient instead of a certain stain coeﬃcient to improve the
+staingeneralizationperformance.Anotherinnovationisthat
+we use multiple morphological constraints to ﬁnd the op-
+timal tumor contour based on the internal (lumen) and
+external (epithelium) contours. w+_he proposed approach is
+evaluatedonthe2015MICCAIGlaSChallengedatasetand
+colon adenocarcinoma dataset, resulting in satisfactory
+segmentation outcomes.
+2. Materials and Methods
+2.1. Histopathology Image Stain Separation-Based Deep
+Learning Framework. w+_he proposed stain separation
+framework is shown in Figure 3. Gaussian U-net Stain
+Separation(GUSS)makestheinformationcontainedinH&E
+images easy to identify, thus overcoming the inﬂuence of
+unevenstainingintensityorlargediﬀerencesinH&Eimages.
+Traditionalstainseparationmethodsrequiremanualsettings
+for a standard stain matrix and cannot separate multiple
+stainsatthesametime.Wehereusedeeplearningtoachieve
+this function. First, the histopathology image is used as the
+inputofthemodel,andtheU-shapedencoder-decodermodel
+isconstructedforstainseparation.w+_henetworkissupported
+by three parts: contracting, bridge, and expanding paths to
+complete the stain separation of H (hematoxylin), E (eosin),
+andB(background)channels.w+_hecontractingpathisusedto
+reduce the spatial dimension of the feature map, while in-
+creasing the number of the feature maps layer by layer
+[37–40],extractingtheinputimageasacompactfeature.w+_he
+bridge connects the contracting and expanding paths. w+_his
+U-shaped encoder-decoder model is improved to be a
+multipletasksmodel;besidestheoutputoftheU-net,wealso
+use the most compact features to predict the stain color
+matrixes,whichiscombinedwithmeanandvarianceofstain
+color values of hematoxylin, eosin, and background paths.
+w+_heexpandingpathisusedtograduallyrecoverthedetailsof
+thetargetandthecorrespondingspatialdimensions,andthe
+output is used for the prediction of the pixelwise intensity
+map.w+_henetworkisdividedintotenresidualbranches.Prior
+to each residual branch of the expanding path, there is a
+cascadefortheupsamplingfromthelowerlevelfeaturemaps
+and the feature maps from the corresponding contracting
+path. w+_heexistence of the residual unit eﬀectively avoids the
+problem of gradient disappearance during the back-
+propagation[41].Inaddition,each residualbranchincluded
+Convolution, Max Pooling, BN (Batch Normalization), and
+ReLU(RectiﬁedLinearUnit),whicheﬀectivelyacceleratethe
+convergence speed [42].
+w+_he model is trained by minimizing the reconstruction
+loss between the input image and each reconstructed out-
+come;theoriginalimagegoesintoa10-branchcalledF1-F10
+network for stain separation. w+_he contracting path is
+composed of the ﬁrst 1–4-branch network, and the ﬁfth
+branch is the bridge connecting the contracting and
+expanding paths, implementing the stain color matrix
+predictionfunction.w+_heexpandingpathconsistsofthe6th-
+9thbranchnetwork,andthetenthbranchoutputisusedfor
+stain intensity matrix prediction. In the stain color matrix
+prediction, the F5 features are ﬁrst ﬂattened into a vector,
+and two fully connected layers are deployed, with an in-
+termediate node of 500 and an output node of 9, repre-
+senting the R, G, and B distributions of the three stain
+channels. During the training, the proposed predicts the
+stainconcentrationsforeachpixelaswellastheparameters
+(mean and variance) of a series of Gaussian distributions
+sampled to form an estimate of the stain matrix.
+Figure 4 shows an example of this process.
+For each of the stains contained in the image, the
+proposed method predicts 3 distributions, one for each of
+the RGB color channels. w+_hek
+th probability distribution
+Pk � N(μk,σk) may represent the red value of the hema-
+toxylin stain. We use a valuehR∽Pk to form an estimate of
+the red value of hematoxylin. w+_his process is repeated for
+each of the distributions which are combined to form the
+estimated stain matrixS. w+_he mean of each distributionμ
+k
+represents the value around which our model has assigned
+the most probability, while the standard deviationσ
+k de-
+scribeshowcertainthemodelwhereavalueissampledfrom
+will result in a low reconstruction error.
+Taking the example above, we again assume thatP
+k �
+N(μk,σk) is the distribution representing the red value of
+hematoxylin; ifμk �0.5 and the standard deviation is low,
+thenthevaluewesamplefrom Pk hasahighchanceofbeing
+close to 0.5. If the true red value of hematoxylin is close to
+0.5, then the sampled value results in a reduced recon-
+structionloss;consequently,ifthetrueredvalueisfarfrom
+0.5, then the sampled value will result in a very high re-
+construction loss. If the model predicts a large standard
+deviation,thesampledvaluewillvarygreatlyandproducea
+largereconstructionlossevenifthemeanvalueiscorrect.To
+ﬁnd the optimal values forS, each of the mean valuesμ
+k is
+close to the true values and the standard deviationsσk are
+low.
+For the stain separation task, in order to test the sepa-
+ration eﬀect, the following loss function is deﬁned:
+loss � 1
+MN 􏽘
+M
+m�1
+􏽘
+N
+n�1
+xn,m − xn,m′􏼐 􏼑
+2
+. (1)
+Inthe formula, xn,m representsthe nth pixelofthe mth
+image, andxn,m′ represents the predicted image pixel.
+Complexity 3
+
+Featuresareextractedfromthehistopathologyimageby
+thenetworkdescribedaboveandthenpassedtoanumberof
+subbranches that predict the intensity of the stain of each
+pixelandtheparameters(meanandvariance)ofaseriesof
+Gaussiandistributions.Foreachpixelintheimage,R,G,and
+B of the three channels (hematoxylin, eosin, and back-
+ground) are predicted.
+2.2. Segmentation of Lumens from the Background Channel
+BasedontheSPF-LevelSetMethod. Consideringthatlumens
+are one of the key components to distinguish glands, we
+segment lumens from the background channel after the
+stain separation. w+_he SPF (Symbol Pressure Function) is
+constructed by using the statistical information of the
+image, so that the SPF has the function of maintaining or
+even enhancing the prominent foreground target. Similar
+totheclassicalC-Vmodel[43],thecontour Callowsusto
+divide the imageI into two parts, inner and outer, re-
+spectively,andusestheglobalintensitydistributionofthe
+image to construct the SPF function. w+_he stain intensity
+distributionfunctionsofregions Ω
+1 and Ω2 arerepresented
+by P1 and P2:
+P1 I, u1,σ1 􏼁 � 1�� �
+2π
+√
+σ1
+e− I− u1( )
+2
+/2σ2
+1 ,
+P2 I, u2,σ2 􏼁 � 1�� �
+2π
+√
+σ2
+e− I− u2( )
+2
+/2σ2
+2 ,
+(2)
+where u and σ are the mean and standard deviation of the
+Gaussian distribution of the stain intensity, respectively. In
+thelevelsetapproach,thelevelsetfunction ϕisembedded,
+assuming Ω1 � ϕ >0􏼈 􏼉 and Ω2 � ϕ <0􏼈 􏼉 , and the corre-
+spondingcontour Ccanberepresentedbythezerolevelset
+ϕ �0􏼈 􏼉 . We can use the above stain intensity distribution
+function to construct the following new SPF function:
+spf(I(x)) � ln p1 −ln p2
+max ln p1 −ln p2
+􏼌􏼌
+􏼌
+􏼌
+􏼌
+􏼌
+􏼌
+􏼌􏼐 􏼑
+. (3)
+w+_he level set equation is
+zφ
+zt � spf(I(x)) · α|∇φ|. (4)
+Algorithm implementation is as follows:
+(i) Step1.Initializethelevelsetfunction ϕ,andsetthe
+parameter α
+(ii) Step 2.Calculate u1,σ1, u2, andσ2
+(iii) Step 3.Estimate the evolution curve through (4)
+(iv) Step4.ϕ �ϕ∗Gσ,applyGaussianﬁlteringtosmooth
+the curve
+(v) Step5. Examinewhetherornotthelevelsetfunction
+curve converges; otherwise returns to Step 2
+w+_he lumen segmentation process is shown in Figure 5.
+w+_he lumen contourC is obtained from the background
+channel by the above algorithm.
+We use the spatially constrained CNN (SC-CNN) for
+nucleardetectionandthesoftmaxCNNfornuclearsorting
+[35]. We use the H-stain intensity map obtained from the
+stain separation as the input of SC-CNN to locate the nu-
+cleus. Since the detected nucleus includes epithelial and
+stromalnucleus,nuclearsortingisused.Inclassiﬁcation,the
+morphology(shape,size,color,andtexture)ofthenucleusis
+employed. w+_herefore, the original RGB histopathology im-
+ageisselectedastheinputofthesoftmaxCNN,andthepixel
+set V represents the epithelial cell nucleus. We select the
+epithelialnucleusclosesttothestromalnucleusastherough
+Stain intensity 
+matrix C
+Stain colour 
+matrix S
+SPF-level setGUSS SC-CNN ALI
+H-stain 
+distribution
+H-stain Background 
+CNN encoder CNN decoder
+Features 
+vector
+Nuclear 
+detection
+Nuclear 
+classiﬁcation
+Stain separation Lumen segmentation Coarse segmentation Precise segmentation
+Similar 
+triangles
+Figure 2: w+_he architecture of the proposed approach.
+4 Complexity
+
+C: channel
+F: feature
+S: size
+Convolution 
+ReLU
+Batch normalization
+Addition
+Concatenate
+Upsampling
+F10:
+c = 3 
+s = 128
+Input
+Tissue image
+F5: stain color 
+prediction
+S × C
+Reconstruction loss 
+F1:
+c = 8
+s = 128
+F2:
+c = 16
+s = 64
+F3:
+c = 32
+s = 32
+F4:
+c = 64
+s = 16
+F5: c = 128 
+s = 8
+F6:
+c = 64
+s = 16
+F7:
+c = 32
+s = 32
+F8:
+c = 16
+s = 64
+F9:
+c = 8
+s = 128
+E Bg
+Imagewise
+Stain colour matrix S
+H
+80% 12% 8%
+Pixelwise
+Stain intensity matrix C
+Hematoxylin
+Eosin
+Background
+R G Bμ
+μ R G B
+μ R G B
+R G
+G
+B
+R B
+R G Bσ2
+σ2
+σ2
+Figure 3: w+_he stain intensity map of hematoxylin, eosin, and background channels is obtained from the histopathology image by the
+proposed stain separation framework.
+μ
+σ 2
+Hematoxylin
+Eosin
+Background
+R G Bμ
+μ R G B
+μ R G B
+R G
+G
+B
+R B
+R G Bσ 2
+σ 2
+σ 2
+Figure 4: Stain mean and variance of the color matrix.
+Complexity 5
+
+gland boundary pixels so as to obtain the rough gland
+boundary L.
+2.3. Lumen and Rough Gland Boundary Feature Represen-
+tation Based on the ALI (Axis of Least Inertia).w+_he axis of
+least inertia is a line that minimizes the value after the in-
+tegrationofthesquareofthedistancetoallthepointsonthe
+imageboundary.Itsphysical meaningisthattherotational
+inertiaofthegrapharoundthisaxisisthesmallest.Itisthe
+onlyreferencelineforrepresentingtheshapeofthetarget.It
+canbeknownthat,fromthephysicaldeﬁnitionoftheaxisof
+least inertia, it must pass through the centroidO of the
+graph. w+_he mathematical expression was as follows: let the
+line x + By + C �0; then, the axis of least inertia is
+min 􏽘
+xi,yi ∈ϕ
+xi + Byi + C 􏼁2
+1 + B2 , (5)
+whereϕisthesetofedgepoints.w+_hen,weusethecondition
+that the axis of least inertia passes the centroidO(x0, y0):
+x0 + By0 + C �0;then,BandCcanbeobtained.Inorderto
+describetheoutlineoftheshape,thestructure-basedshape
+descriptor commonly used in the boundary description
+methodismainlyachain:thisisawidelyuseddescriptor,
+anditsroleistousetheoutlineoftheshapewithdirections.
+w+_hechainrepresentationofthegraph:thechainrepresents
+the target by a sequence of straight lines in a given di-
+rection.Ifthechainisusedformatching,itdependsonthe
+choiceoftheﬁrstboundarypixelinthissequence.Fromthe
+startpointofaselection,achainsequenceisgeneratedby
+using the x-direction (x �12, based on our experience)
+chain.
+AsshowninFigure6(a),theaxisofleastinertiaisusedas
+the reference axis, and the coordinate system is established
+byitsperpendicularline.w+_helumencentroidistheorigin O
+ofthecoordinatesystem,andthenaccordingtothedirection
+chain,thefourregionsofthecoordinatesystemareequally
+divided into three regions with three directions so as to
+generateachainsequencewith12directions.w+_hedirection
+isperpendiculartotheaxisofleastinertiaandthedirection
+of the closest point to the lumen is 0-direction, and the
+counterclockwiserotationis30
+°,respectively,inthe0-to11-
+direction.w+_hen,the12straightlineswiththe Opointasthe
+vertexwillbecomparedwiththelumencontour Cto C0, C1,...,
+C11. 12 points constitute the chain code representing the
+lumencontour,andsimilarlytheintersectionpointsofthese
+straight lines and the epithelial cell core setV represent
+candidatecontourchaincodes.InFigure6(b), C
+0 and C1 are
+theintersectionofthe0-andthe1-directionandcontour C,
+respectively,andthetriangleformedbythethreepoints C0,
+C1, and O is the characteristic triangle of the lumen (the
+pointofthelumenoutlineineachdirectionisunique). V0,j
+and V1,j are the intersections of the 0- and 1-direction and
+the epithelial nucleus setV, respectively, and the triangles
+formed by these points represent the gland’s candidate re-
+gion. w+_here are multiple epithelial nuclei in each direction.
+w+_he similarity measure is performed using a trigonometric
+membership function. For each feature triangle, letθ
+1, θ2,
+andθ3 be the inner angles of the triangles, respectively, for
+which they have the following relationship:
+μ θ1,θ2,θ3 􏼁 �1 − 1
+180 θ1 −θ3 􏼁 . (6)
+w+_hen,the triangularmembershipfunctionisasfollows:
+θ1 �cos−1 d2
+2 + d2
+3
+− d2
+1
+2d2d3
+􏼠 􏼡 ,
+θ3 �cos−1 d2
+1 + d2
+2
+− d2
+3
+2d1d2
+􏼠 􏼡 ,
+θ2 �30∘.
+⎧⎪⎪
+⎪
+⎪⎪⎪
+⎪
+⎪⎪⎪
+⎪
+⎨
+⎪⎪⎪⎪
+⎪
+⎪⎪⎪
+⎪
+⎪⎪⎩
+(7)
+where distheEuclideandistancebetweentheverticesofthe
+featuretriangle.Lookingatthemembershipvalueofthe n-th
+feature triangle of the lumen and the membership value of
+(a)
+ (b)
+ (c)
+Figure5:Extractionoflumensfromthebackgroundchannel.(a)w+_hebackgroundstainintensitymap.(b)w+_hesegmentationimageusing
+SPF, which contains small background areas. (c) w+_he lumen outline after removing the small target.
+6 Complexity
+
+the n-th feature triangle of the gland candidate region, the
+similarity between them is
+Sim(c, v) �μn
+μn′ . (8)
+w+_he similarity of all the eigenvalues is
+TotalSim(c, v) �1
+n 􏽘
+n
+i�1
+Sim μi,μi′ 􏼁 . (9)
+IftotalSim(c, v)∼1,itindicatesthatthetwocontoursare
+similar, and n represents the number of the characteristic
+triangles.
+w+_he proposed approach is to ﬁnd an accurate gland
+outline based on the two constraints.
+w+_hetargetcontourSbasedontheepithelialnucleusset V
+issimilartothelumencontour Candroughglandboundary
+L, thus constructing a feature similarity constraint:
+α ≤TotalSim(l, v)≤1,
+β ≤TotalSim(c, v)≤1.
+(10)
+w+_hetargetcontourSisclosetotheroughglandboundary
+L; thus, we have a distance constraint:
+sj �argmin
+sj ∈v
+􏽘
+11
+i�0
+li − vi,j
+��
+�
+�
+�
+�
+�
+�
+�
+�
+2, (11)
+where i �0,1, ...,11 represents the sequence of the direc-
+tions, j �0,1, ..., Jrepresents the number of the epithelial
+nucleusinthe i-direction, li representstheintersectionofthe
+i-direction and the rough gland boundaryL, andVi,j rep-
+resents epithelial nucleus in thei-direction. Taking the 0-
+direction as the start direction, the similarity of the feature
+triangles in each direction is retrieved counterclockwise.
+Taking Figure 6(b) as an example, ﬁrst, the features
+Δv
+0,0v1,0o, Δv0,0v1,1o, Δv0,0v1,2oandthelumenfeature Δc0c1o
+are compared with the outer contourL. w+_he candidate
+contour point in direction 1 is determined by constraint
+condition equations (11) and (14). Similarly, candidate
+contour points in direction 1 are used as reference starting
+pointstodeterminecandidatecontourpointsindirection2.
+After sequentially determining candidate contour points in
+12 directions, this forms a candidate contour chain. As-
+suming that there areJ candidate points in the starting
+reference direction 0, J candidate contours are formed
+accordingtotheabovemethod.InFigure6(c),thebrownish
+yellow is the lumen contour, the orange color is the lumen
+contourfeaturetriangle,andtheredisoneofthecandidate
+contoursobtained.w+_heoptimalglandcontourisdetermined
+fromthecandidatecontouraccordingtoconstraintequation
+(15), and ﬁnally, the gland contour is smoothed by cubic
+spline interpolation.
+2.4.ExperimentResultsandDiscussion
+2.4.1. Data.w+_he image dataset is the Gland Segmentation
+(GlaS) Challenge dataset organized for MICCAI 2015 in
+addition to our own dataset. Our own dataset includes 100
+calibrated pathological images of benign and malignant
+colon adenocarcinoma. w+_hey were taken from 34 H&E
+stainedpathologicalsectionsofcolonadenocarcinomawith
+cancerstageT3orT4.Slicesbelongtodiﬀerentpatients,and
+theyareprocessedindiﬀerentlaboratoryenvironments.w+_he
+datasethasaverydiversediversityinastainingdistribution
+and an organizational structure. w+_he pathological slices are
+scanned through the whole slice to obtain a digital picture
+withapixelprecisionof0.465microns.w+_hefull-frameimage
+is readjusted to a pixel precision of 0.620 microns (equiv-
+alenttoa20xmagniﬁcation).w+_hen,wecropthemrandomly
+toasizeof128 ×128andaugmentthemto22000piecesfor
+training and veriﬁcation of the models. w+_he nucleus is
+manually annotated by an experienced pathologist. w+_his
+study needs to identify epithelial nucleus, so the nuclear
+annotation is divided into epithelial nucleus and others.
+2.4.2. Stain Separation.w+_he dataset consists of 22,000 his-
+topathology patches with the size of 128×128 each. w+_his
+o
+0
+30°
+1
+(a)
+v(0,0)
+o
+01
+v(0,2)v(1,1) v(1,2)
+c1
+c0
+v(0,1)
+v(1,0) (b)
+0
+1
+2
+3
+4 5
+6
+7
+8
+9
+10
+l
+11 (c)
+Figure6:Featurerepresentation approachbased onthe axisofleastinertia. (a)w+_he axisofleastinertia isusedasthereferenceaxis. (b)
+Characteristictriangle.(c)w+_hebrownishyellowcoloristhelumencontour,theorangecoloristhelumencontourfeaturetriangle,andthe
+red color is one of the candidate contours obtained based on the constraint.
+Complexity 7
+
+(a) (b) (c) (d) (e) (f) (g)
+Figure7:Stainseparationresult.w+_heﬁrstcolumnistheoriginalimage,thesecondcolumnisthestainseparationresultofhematoxylinandthe
+stain intensity map, and the third and fourth columns are the eosin and background stain separation results and stain intensity map. (a)
+Original.(b)H-stainseparation.(c)H-stainintensity.(d)E-stainseparation.(e)E-stainintensity.(f)B-stainseparation.(g)B-stainintensity.
+(a)
+ (b)
+ (c)
+Figure8:H&E-stainingandseparationresultsofdiﬀerentdatasets:(a)originalpathologicalimage,(b)H-stainingimage,and(c)E-staining
+image.
+8 Complexity
+
+workemploystheADAMoptimizer,andtheinitiallearning
+rateof1-e3isgraduallyreducedattheendofeachepoch.To
+emphasizethisfurther,Figure7showstheH&Eimagestain
+separation result. w+_he results indicate that the background
+and H- and E-stain of histopathology images can be suc-
+cessfully separated, while the structure of the tissue is
+retained.
+w+_he pathological image containing the complete glan-
+dular structure is cropped without any interval to a size of
+128 ×128, and the insuﬃcient area was ﬁlled with zero
+operation. Figure 8 shows the separation results of H- and
+E-staining of the pathological images from two diﬀerent
+datasets.w+_heresultsshowthat,forpathologicalimageswith
+diﬀerent sources and large diﬀerences in staining, the deep
+learning staining separation method can successfully sepa-
+rate H- and E-stains, and the separation staining result is
+consistent while maintaining the tissue structure.
+After stain separation, H- and E-stains can be distin-
+guished. We do not have ground truth to qualitatively
+evaluatetheseparationeﬀect,butwecanvisualizetheblue-
+violet characteristics. w+_he H-staining maps are obtained by
+the two traditional staining separation methods mentioned
+in[44,45],andthedeeplearning-basedstainingseparation
+method is further investigated, and on the basis ofstaining
+(a)
+ (b)
+ (c)
+(d)
+ (e)
+ (f)
+(g)
+ (h)
+ (i)
+(j)
+ (k)
+ (l)
+Figure 9: Nucleus segmentation of H-stain images based on three stain separation methods: (a–c) H-stain images based on diﬀerent
+methods, (d–f) grayscale image, (g–i) binary image, and (j–l) segmentation mask overlaid on the original pathological image.
+Complexity 9
+
+Original imageMitkoNMFSDSA CDProposed
+Figure 10: Comparison results against traditional methods.
+10 Complexity
+
+(a)
+ (b)
+ (c)
+ (d)
+Figure11:SegmentationoflumensbasedontheimprovedSPFapproach.(a)Backgroundstainintensitymap.(b)TraditionalSPFapproach
+segmentationresult,anditcanbeseenthatthelumencannotbeaccuratelysegmented.(c)ImprovedSPFapproachsegmentationresult.(d)
+w+_he small target has been removed.
+(a)
+ (b)
+ (c)
+Figure12: Segmentation of lumens using various contour models. w+_he ﬁrst row shows the results of the DRLSE model, the LBF model
+resultsareshowninthesecondrow,thethirdrowshowstheresultsoftheLGDFmodel,thefourthrowshowstheresultsoftheLIFmodel,
+andtheresultsoftheproposedmethodareshownintheﬁfthrow.Column(a)showsthepositionoftheinitialcontour.Column(b)shows
+the output obtained after several iterations. Column (c) shows the results of gland cavity segmentation.
+Complexity 11
+
+separation, the cell nucleus is used to evaluate the eﬀect of
+stain separation. Figure 9 shows the process of segmenting
+nucleusontheH-stainedimages.First,theH-stainedimage
+isconvertedintoagrayscaleimageandthenconvertedintoa
+binary image as a nuclear segmentation mask, and ﬁnally,
+the segmentation mask is overlaid on the original patho-
+logical image for us to analyze the eﬀect of the nuclear
+segmentation.
+Asingularvaluedecompositionmethodbasedonoptical
+densityandanindependentcomponentanalysismethodin
+the wavelet domain, two traditional methods [44], and the
+deeplearningmethodproposedhereareusedtoseparatethe
+same pathological tissue image, and the H-stain image is
+usedfornucleussegmentationprocessing.Figures9(a–c)are
+theH-stainedimagesobtainedbythethreestainseparation
+methods, Figures 9(d–f) are their corresponding grayscale
+images, Figures 9(g–i) are their corresponding binary im-
+ages,andFigures9(j–l)aretheoutcomeafterweoverlaythe
+binary segmentation mask on the original image. Com-
+paring the results in Figures 9(j–l), it can be found that
+Figures9(a-b),whichhavepoorstainseparationeﬀects,lead
+to oversegmentation or undersegmentation of the nucleus.
+Figure 10 shows the comparison results of diﬀerent
+methods. w+_he Mikto method is used for cell division, so it
+canonlybeusedtoisolateH-staining.Colordeconvolution
+(CD) is a classic method of stain separation, but manual
+interventionisrequiredtocalculatetheoptimalstainmatrix.
+UsingtheCDmethodcanpreservethestructurebutcannot
+well separate the background color. SDSA is the latest
+method to separate staining using statistical analysis of
+multiresolution staining data. It can be seen that SDSA
+successfully segments H-staining, but when there are more
+thantwostainsintheimage,theseparationoutcomeispoor.
+2.4.3. Lumen Segmentation. w+_he segmentation of glands
+depends on the interaction between the rough gland
+boundary and the lumen, so it is necessary to accurately
+segment the lumen. In the experiment, the segmentation
+Table1: Comparing results of diﬀerent competition algorithms on the public GlaS dataset.
+Method F1 score Object Dice Object Hausdorﬀ
+Test A Test B Test A Test B Test A Test B
+Proposed-N+L 0.901 0.851 0.893 0.842 44.125 94.528
+Proposed-N 0.886 0.816 0.886 0.823 45.236 103.686
+CUMedVision1 0.868 0.769 0.867 0.800 74.596 153.646
+CUMedVision2 0.912 0.716 0.897 0.781 45.418 160.347
+ExB1 0.891 0.703 0.882 0.786 57.413 145.575
+ExB2 0.892 0.686 0.884 0.754 54.785 187.442
+ExB3 0.896 0.719 0.886 0.765 57.350 159.873
+Freiburg1 0.834 0.605 0.875 0.783 57.194 146.607
+Freiburg2 0.870 0.695 0.876 0.786 57.093 148.463
+CVML 0.652 0.541 0.644 0.654 155.433 176.244
+LIB 0.777 0.306 0.781 0.617 112.706 190.447
+Vision4GlaS 0.635 0.527 0.737 0.610 107.491 210.105
+Table2: Comparing results with the state-of-the-art algorithms.
+Accuracy (%)
+(TP +TN)/(TP +TN +FP +FN) Dice 2TP/(2TP+FN +FP)
+Median Mean Std Median Mean Std
+Bassem et al. [17] 78.56 77.32 9.12 0.763 0.750 0.120
+Sirinukunwattana et al. [22] 80.51 79.14 8.36 0.780 0.770 0.098
+Linbo et al. [27] 81.11 80.48 6.52 0.801 0.795 0.089
+Kainz et al. [46] 82.53 81.08 6.13 0.825 0.815 0.076
+Guannan et al. [47] 85.32 83.60 5.32 0.841 0.832 0.062
+Proposed 88.34 86.91 3.72 0.874 0.869 0.047
+[46]
+[27]
+Proposed
+[47]
+[22]
+[17]
+ROC curve
+0
+0.2
+0.4
+0.6
+0.8
+1
+True positive
+0.2 0.4 0.6 0.8 10
+False positive
+Figure 13: w+_he ROC curves of diﬀerent algorithms.
+12 Complexity
+
+resultsoftheSPFapproachandtheimprovedSPFapproach
+on the lumens are compared. In the level set approach, for
+binary selection and Gaussian ﬁlter regularization, the SPF
+can result in satisfactory segmentation.
+SincetheimprovedSPFapproachisbasedonstatistical
+information, the background channel obtained from the
+stain separation process, in which the lumen and the
+background probability tend to be consistent, causes some
+smallbackgroundblocksintheimagetobesegmented.w+_he
+smalltargetisremovedfromthesegmentedimage,andthe
+ﬁnal segmentation result is shown in Figure 11(d).
+Multiple segmentation techniques (e.g., DRLSE, LBF,
+LGDF,andLIF)areusedtosegmenttheglandularcavity.As
+showninFigure12,theDRLSEmodelproducesincomplete
+subdivisions;theLGDFmodelcansegmentthecavityfrom
+otherareas.w+_heLIFandLBFmodelsarenotsuitableforthe
+segmentation of the gland cavity. w+_hese models encounter
+challengessuchaslongerresponsetimeandmoreiterations.
+AnnotationProposed in [22]Proposed in [27]Proposed NProposed N + L Proposed in [17]
+Figure14:w+_hesegmentationoutcomesformultipleinstancesontheindependentdataset,wheregreenisthemanuallyannotatedcontour
+and yellow is the segmentation contour by diﬀerent methods.
+Complexity 13
+
+ByusingthenewSPF-levelsetsegmentationmethod,these
+shortcomings are overcome. w+_he comparison results show
+that the proposed model is easy to implement, and its
+calculation time is only 21s compared with other active
+contour models.
+2.4.4. Gland Segmentation.w+_his work is evaluated on the
+publicGlaSdatasetandcomparedwithothermethodsinthe
+GlaS competition. We use 100 images for system training
+and65forsystemtesting,where45testimagesbelongtotest
+set A and the remaining 20 belong to test set B. For
+quantitativeanalysis,weuseF1score,objectDice,andobject
+Hausdorﬀ. Regarding Hausdorﬀ distance, lower values are
+better; and for other measures, higher values are better.
+Table1showsthequantitativeresults,whereastheproposed
+methodproducescompetitiveresults,comparedwiththose
+algorithms presented in the competition. w+_he proposed-N
+approach is only based on rough gland boundary obtained
+from the epithelial nucleus, and the proposed-N+L ap-
+proachisbasedonroughglandboundaryNandthelumen
+contourL.w+_healgorithmﬁrstusesdeeplearningmethodsto
+perform staining separation. For diﬀerent target segmen-
+tations,suchaslumens,epithelialcells,andnucleus,onecan
+accurately segment targets on the basis of staining separa-
+tion.IntestsetA,theproposedalgorithmperformedpoorly
+onF1andtheobjectDicebutperformsbetterontestsetB.
+In terms of measuring the shape similarity via object
+Hausdorﬀ, a lower score indicates that, in malignant cases,
+the method takes into account the eﬀect of the morpho-
+logicalfeaturesoflumens,sotheresultshaveahighershape
+similarity to the ground truth.
+We compare the proposed approach with the state-of-
+the-art algorithms [17, 22, 27, 46, 47] on our independent
+dataset. w+_he relevant measurement indicators are shown in
+Table 2. It can be seen from Table 2 that the proposed
+approachproducesthebestsegmentationresults.Figure13
+shows the ROC curves of the diﬀerent algorithms.
+As can be seen from Table 2, the proposed segmentation
+approach based on lumen and rough gland boundary im-
+provestheaveragepixelprecisionbyatleast3%,andtheDice
+similarity coeﬃcient has the improvement of 0.033. At the
+same time, the standard deviation of the pixel precision and
+Dice is at a low level, indicating that the segmentation ap-
+proach is relatively stable and can eﬀectively handle the
+problemofabnormalglandsegmentation.Figure14showsthe
+segmentationeﬀectformultipleinstancesinourindependent
+dataset, where green is the manually annotated contour and
+yellow is the segmentation contour by diﬀerent methods.
+It can be seen from Figure 14 that the gland segmen-
+tationmethodbasedonlyonepithelialcellnucleus,suchas
+the one proposed in [17] and our proposed-N, relies too
+much on the accuracy of nuclear recognition. Inaccurate
+nuclear recognition directly leads to inaccurate gland seg-
+mentation. However, the method of polygonal approxi-
+mation,suchastheoneproposedin[12],cannotdetectthe
+externalcontourofthegland.w+_hedoubleparallelstructure
+method [27] combining the inside of the gland and the
+contourcansegmenttheglandcontourmoreaccurately,but
+sometimesitcannotsegmentadheringglands.Insummary,
+forthemalignantandcomplextumorimages,ourproposed
+method produces better segmentation results.
+3. Conclusions
+Histologicalassessmentofglandsisoneofthechallengesin
+coloncancergrading.Analysisofhistologicalslidesstained
+with hematoxylin and eosin is considered to be the “gold
+standard” in histological diagnosis. However, relying on
+artiﬁcialvisualanalysisistime-consumingandlaborious,as
+pathologistsneedtothoroughlyexamineeachcasetoensure
+accuratediagnosis.Inordertoimprovethediagnosticability
+ofautomatedapproaches,wehereproposedanapproachfor
+accurately segmenting glands in colon histopathology im-
+ages based on the characteristics of lumens and gland
+boundaries. First, this work constructed a U-net for sepa-
+rationofH&EimagestoobtainH-,E-,andbackgroundstain
+intensity maps. Subsequently, the epithelial nucleus is
+identiﬁed on the histopathology images, and the segmen-
+tation of lumen is performed on the background intensity
+map.w+_hen,the axisofthe leastinertia andchainisusedto
+representthelumenandglandboundaryfeatures.Basedon
+the detection of lumens and epithelial nucleus, more ac-
+curately gland segmentation has been performed based on
+the rough gland boundary.
+w+_he main contribution of the approach includes three
+points. Firstly, a new unsupervised stain separation ap-
+proach was proposed, which made the information con-
+tainedinthe H&Eimageeasy toidentifyand deal withthe
+uneven stain intensity and the inconspicuous stain diﬀer-
+ence. w+_he superiority of the proposed stain separation ap-
+proach was proved. Second, this work developed and
+combinedanewsetoffeaturesforsegmentationofglands.It
+consideredthemorphologicalcharacteristicsoftheinternal
+lumen of the gland structure. During the process of carci-
+nogenesis,thelumenoftheglandusuallyundergoesobvious
+distortion, which makes the surrounding epithelial cells
+irregularlyarranged,butmostwerestill distributedaround
+thelumen.w+_herefore,theapproachofcombiningtheaxisof
+leastinertiawasproposedtorepresentthecharacteristicsof
+lumens and gland boundaries. Since lumens are more in-
+dependentandeasiertosegmentthantheepithelialcells,the
+segmentation approach based on lumens can be used to
+achieve the segmentation of glands attached to each other.
+w+_he results showed that the proposed approach had im-
+provedthesegmentationaccuracy.Finally,thisworkshowed
+a feature representation of lumens and gland boundaries,
+and we will continue to study the application of this ap-
+proach for benign and malignant feature extraction of
+tumors.
+Data Availability
+w+_he data used to support the ﬁndings of this study were
+supplied by the Nantong University under license and so
+cannotbemadefreelyavailable.Requestsforaccesstothese
+data should be made to Kun Zhang at zhangkun_nt@
+163.com.
+14 Complexity
+
+Conflicts of Interest
+w+_he authors declare that there are no conﬂicts of interest
+regarding the publication of this paper.
+Acknowledgments
+w+_his work was ﬁnancially supported by Invest NI, the Na-
+tionalNaturalScienceFoundationofChina(no.61671255),
+theNaturalScienceFoundationofJiangsuProvince,China
+(Grant no. BK20170443), and the Natural Science Foun-
+dation of the Higher Education Institutions of Jiangsu
+Province, China (Grant nos. 17KJB520030, 18KJB510038,
+and19KJA350002)andinpartbytheprogramfor“QingLan
+Project” of Colleges and Universities in Jiangsu Province
+(Grant no. XNY-039).
+References
+[1] R. Peyret, A. Bouridane, F. Kheliﬁ et al., “Automatic classi-
+ﬁcation of colorectal and prostatic histologic tumor images
+using multiscale multispectral local binary pattern texture
+features and stacked generalization,” Neurocomputing,
+vol. 275, pp. 83–93, 2018.
+[2] R.Farjam,H.Soltanian-Zadeh,K.Jafari-Khouzanietal.,“An
+image analysis approach for automatic malignancy deter-
+mination of prostate pathological images,”Cytometr Part B:
+Clinical Cytometry, vol. 72B, no. 4, pp. 227–240, 2007.
+[3] T.Gultekin,C.F.Koyuncu,C.Sokmensuer,andC.Gunduz-
+Demir, “Two-tier tissue decomposition for histopathological
+image representation and classiﬁcation,”IEEE Transactions
+on Medical Imaging, vol. 34, no.1, pp. 275–283, 2015.
+[4] R. Awan, K. Sirinukunwattana, D. Epstein et al., “Glandular
+morphometrics for objective grading of colorectal adeno-
+carcinoma histology images,”Scientiﬁc Reports, vol. 7, no.1,
+2017.
+[5] R. Awan, S. Al-Maadeed, and R. Al-Saady, “Using spectral
+imagingfortheanalysisofabnormalitiesforcolorectalcancer:
+when is it helpful?”PLoS One, vol. 13, no. 6, Article ID
+e0197431, 2018.
+[6] A.Chaddad,C.Desrosiers,A.Bouridaneetal.,“Multitexture
+analysis of colorectal cancer continuum using multispectral
+imagery,”PLoSOne,vol.11,no.2,ArticleIDe0149893,2016.
+[7] K. Sirinukunwattana, J. P. Pluim, H. Chen et al., “Gland
+segmentation in colon histology images: the glas challenge
+contest,”Medical Image Analysis, vol.35, pp.489–502,2017.
+[8] E. Ahn, A. Kumar, M. Fulham et al., “Convolutional sparse
+kernel network for unsupervised medical image analysis,”
+Medical Image Analysis, vol. 56, pp.140–151, 2019.
+[9] Z.Ding,G.Fleishman,X.Yangetal.,“Fastpredictivesimple
+geodesic regression,” Medical Image Analysis, vol. 56,
+pp.193–209, 2019.
+[10] H. Sokooti, G. Saygili, B. Glocker et al., “Quantitative error
+prediction of medical image registration using regression
+forests,” Medical Image Analysis, vol. 56, pp.110–121, 2019.
+[11] L. Chen, P. Bentley, K. Mori et al., “Self-supervised learning
+for medical image analysis using image context restoration,”
+Medical Image Analysis, vol. 58, p.101539, 2019.
+[12] X.Yi,E.Walia,andP.Babyn,“Generativeadversarialnetwork
+inmedicalimaging:areview,” MedicalImageAnalysis,vol.58,
+p.101552, 2019.
+[13] P. Kainz, “Semantic segmentation of colon glands with deep
+convolutional neural networks and total variation segmen-
+tation,” PeerJ.vol. 5, p. e3874, 2017.
+[14] O. Ronneberger, “U-net: convolutional networks for bio-
+medical image segmentation,” inProceedings of the Inter-
+national Conference on Medical Image Computing and
+Computer-Assisted Intervention, Springer, New York, NY,
+USA, 2015.
+[15] L.-C. Chen, G. Papandreou, I. Kokkinos, K. Murphy, and
+A. L. Yuille, “Deeplab: semantic image segmentation with
+deep convolutional nets, atrous convolution, and fully con-
+nected CRFs,” IEEE Transactions on Pattern Analysis and
+Machine Intelligence, vol. 40, no. 4, pp. 834–848, 2018.
+[16] K.Zoltan,T.Zoltan,S.Sandoretal.,“Coloncancerdiagnosis
+ondigitaltissueimages,”in Proceedingsofthe2013IEEE9th
+International Conference on Computational Cybernetics
+(ICCC), Tihany, Hungary, July 2013.
+[17] B. B. Daniel, “A structure-based approach for colon gland
+segmentationindigitalpathology,”in Biomedical Optics and
+Imaging—Proceedings of SPIE, v 9791, San Diego, CA, USA,
+January 2016.
+[18] A. Banwari, N. Sengar, M. K. Dutta et al., “Automated Seg-
+mentationofColonGlandUsingHistopathologyImages,”in
+Proceedings of the 2016 Ninth International Conference on
+Contemporary Computing (IC3), Noida, India, August 2016.
+[19] A.Cohen,E.Rivlin,I.Shimshonietal.,“Memorybasedactive
+contouralgorithmusingpixel-levelclassiﬁedimagesforcolon
+crypt segmentation,” Computerized Medical Imaging and
+Graphics, vol. 43, pp.150–164, 2015.
+[20] K. Sirinukunwattana, D. R. Snead, and N. M. Rajpoot, “A
+novel texture descriptor for detection of gland structures in
+colon histopathology images,”Biomedical Optics and Imag-
+ing- Proceedings of SPIE, vol. 9420, 2015.
+[21] J. G. Jacobs, E. Panagiotaki, and D. C. Alexander, “Gleason
+grading of prostate tumours with max-margin conditional
+random ﬁelds,” in International Workshop on Machine
+Learning in Medical Imaging, Springer, Berlin, Germany,
+2014.
+[22] K. Sirinukunwattana, D. R. Snead, and N. M. Rajpoot, “A
+stochastic polygons model for gland structures in colon
+histopathology images,”IEEE Transactions on Medical Im-
+aging, vol. 34, no.11, pp. 2366–2378, 2015.
+[23] H.Fu,G.Qiu,J.Shuetal.,“Anovelpolarspacerandomﬁeld
+model for the detection of gland structures,”IEEE Transac-
+tions on Medical Imaging, vol. 33, no. 3, pp. 764–776, 2014.
+[24] H.R.Roth,L.Lu,A.Faragetal.,“Deeporgan:multi-leveldeep
+convolutional networks for automated pancreas segmenta-
+tion,” in Proceedings of the International Conference on
+Medical Image Computing and Computer-Assisted Interven-
+tion, Springer, Munich, Germany, October 2015.
+[25] O. Ronneberger, P. Fischer, and T. Brox, “U-net: Convolu-
+tional networks for biomedical image segmentation,” in
+ProceedingsoftheInternationalConferenceonMedicalImage
+Computing and Computer-Assisted Intervention, Springer,
+Munich, Germany, October 2015.
+[26] H. Chen, X. Qi, L. Yu et al., “Dcan: deep contour-aware
+networksforaccurateglandsegmentation,”in Proceedingsof
+the IEEE Conference on Computer Vision and Pattern
+Recognition, Las Vegas, NV, USA, June 2016.
+[27] L. Wang, H. Zhen, X. Fang et al., “A uniﬁed two-parallel-
+branch deep neural network for joint gland contour and
+segmentation learning,” Future Generation Computer Sys-
+tems, vol.100, pp. 316–324, 2019.
+Complexity 15
+
+[28] Y. Xu, Y. Li, M. Liu et al., “Gland instance segmentation by
+deep multichannel side supervision,” inProceedings of the
+International Conference on Medical Image Computing and
+Computer-Assisted Intervention, Springer, Shenzhen, China,
+October 2016.
+[29] Y. Xu, Y. Li, Y. Wang et al., “Gland instance segmentation
+usingdeepmultichannelneuralnetworks,” IEEETransactions
+on Biomedical Engineering, vol. 64, no. 12, pp. 2901–2912,
+2017.
+[30] S.E.ARaza,L.Cheung,D.Epsteinetal.,“Glandsegmentation
+using multi-input-multi-output convolutional neural net-
+work,” inProceedings of the Annual Conference on Medical
+Image Understanding and Analysis, Springer, Edinburgh,
+Scotland, July 2017.
+[31] Y.Zhang,L.Yang,J.Chenetal.,“Deepadversarialnetworks
+for biomedical image segmentation utilizing unannotated
+images,” inProceedings of the International Conference on
+Medical Image Computing and Computer-Assisted Interven-
+tion, Springer, Quebec City, QC, Canada, September 2017.
+[32] N. Alsubaie, N. Trahearn, S. E. A. Raza et al., “Stain decon-
+volution using statistical analysis of multi-resolution stain
+colour representation,”PLoS One, vol. 12, no. 1, Article ID
+e0169875, 2017.
+[33] F. Bray, J. Ferlay, I. Soerjomataram et al., “Global cancer
+statistics2018:globocanestimatesofincidenceandmortality
+worldwide for 36 cancers in 185 countries,”CA: A Cancer
+Journal for Clinicians, vol. 68, no. 6, pp. 394–424, 2018.
+[34] H.Greenspan,B.Van Ginneken,and R.M.Summers,“Guest
+editorialdeeplearninginmedicalimaging:overviewandfuture
+promise of an exciting new technique,”IEEE Transactions on
+Medical Imaging, vol. 35, no. 5, pp.1153–1159, 2016.
+[35] K. Sirinukunwattana, R. Ahmed, E. Shan et al., “Locality
+sensitive deep learning for detection and classiﬁcation of
+nucleusinroutinecoloncancerhistopathologyimages,” IEEE
+Transactions on Medical Imaging, vol. 35, no. 5, pp. 1196–
+1206, 2016.
+[36] C.Li,J.Su,L.Yuetal.,“Avariationallevelsetapproachimage
+segmentation model with application to intensity inhomo-
+gene magnetic resonance imaging,”Multimedia Tools and
+Applications, vol. 77, no. 23, pp. 30703–30727, 2018.
+[37] G.-G. Carlos, S. Luisa, C.-R. J. Luis et al., “Multi-GPU de-
+velopment of a neural networks based reconstructor for
+adaptive optics,”Complexity, vol. 2018, Article ID 5348265,
+9 pages, 2018.
+[38] C.Xin,Y.Zuyuan, Y.Chaoetal.,“Sparsegenecoexpression
+network analysis reveals eif3j-as1 as a prognostic marker for
+breast cancer,” Complexity, vol. 2018, Article ID 1656273,
+12 pages, 2018.
+[39] G.Tatjana,S.Zoran,M.Branislavetal.,“Follow-upandrisk
+assessment in patients with myocardial infarction using ar-
+tiﬁcial neural networks,”Complexity, vol. 2017, Article ID
+8953083, 8 pages, 2017.
+[40] R.V. Sol,R. Ferrer-Cancho,J. M.Montoyaetal.,“Selection,
+tinkering,andemergenceincomplexnetworks,” Complexity,
+vol. 8, no.1, pp. 20–23, 2002.
+[41] Z. Han, B. Wei, Y. Zheng et al., “Breast cancer multi-clas-
+siﬁcationfromhistopathologicalimageswithstructureddeep
+learning model,”Scientiﬁc Reports, vol. 7, no.1, 2017.
+[42] S. Hussain, S. Saxena, S. Shrivastava et al., “Multiplexed
+autoantibody signature for serological detection of canine
+mammary tumours,”Scientiﬁc Reports, vol. 8, no.1, 2018.
+[43] T. F. Chan and L. A. Vese, “Active contours without edges,”
+IEEE Transactions on Image Processing, vol. 10, no. 2,
+pp. 266–277, 2001.
+[44] M.Macenko,M.Niethammer,J.S.Marronetal.,“Amethod
+for normalizing histology slides for quantitative analysis,” in
+Proceedings of the 2009 IEEE International Symposium on
+Biomedical Imaging:From Nano to Macro, pp. 1107–1110,
+Boston, MA, USA, July 2009.
+[45] J. Fu, K. Zhang, and P. Zhang, “Poorly diﬀerentiated colo-
+rectal gland segmentation approach based on internal and
+externalstressinhistologyimages,”in Proceedingsofthe2020
+5th International Conference on Computer and Communi-
+cation Systems (ICCCS), pp. 338–342, Shanghai, China, May
+2020.
+[46] K. Philipp, P. Michael, and U. Martin, “Segmentation and
+classiﬁcationofcolon glandswithdeepconvolutional neural
+networks and total variation regularization,”PeerJ, vol. 5,
+p. e3874, 2017.
+[47] G. Li and A. Raza, “Multiresolution cell orientation con-
+gruence descriptors for epithelium segmentation in endo-
+metrial histopathology images,” Medical Image Analysis,
+vol. 37, pp. 91–100, 2017.
+16 Complexity

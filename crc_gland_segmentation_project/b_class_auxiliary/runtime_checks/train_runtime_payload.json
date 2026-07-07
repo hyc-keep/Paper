@@ -1,0 +1,47 @@
+{
+  "run_name": "A1_UNet_GlaS_v1_seed3407",
+  "mode": "runtime_check",
+  "device": "cpu",
+  "max_steps": 1,
+  "steps_executed": 1,
+  "experiment_config": "configs/experiment/A1_UNet_GlaS_v1_seed3407.yaml",
+  "data_config": "configs/data/glas.yaml",
+  "model_config": "configs/model/unet_v1.yaml",
+  "train_config": "configs/train/unet_flow_v1.yaml",
+  "eval_config": "configs/eval/eval_proto_v1.yaml",
+  "sample_id": "GlaS_official_train_train_42",
+  "sample_path": "datasets/01_GlaS_official_raw/train_42.bmp",
+  "mask_path": "datasets/01_GlaS_official_raw/train_42_anno.bmp",
+  "input_shape": [
+    2,
+    3,
+    512,
+    512
+  ],
+  "input_dtype": "float32",
+  "target_shape": [
+    2,
+    1,
+    512,
+    512
+  ],
+  "target_dtype": "float32",
+  "target_unique_values": [
+    0,
+    1
+  ],
+  "output_shape": [
+    2,
+    1,
+    512,
+    512
+  ],
+  "output_dtype": "float32",
+  "loss_value": 1.2771382331848145,
+  "loss_is_finite": true,
+  "backward_executed": true,
+  "optimizer_step_executed": true,
+  "runtime_profile": "full_training_runtime",
+  "entrypoint_check_pass": true,
+  "entrypoint_check_reason": "formal_train_step_completed"
+}

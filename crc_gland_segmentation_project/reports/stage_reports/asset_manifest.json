@@ -1,0 +1,210 @@
+{
+  "asset_manifest_version": "asset_manifest_v1",
+  "data_protocol_package_version": "01_data_protocol_v1",
+  "split_assets": [
+    {
+      "dataset": "glas",
+      "split_name": "train",
+      "relative_path": "splits/glas/glas_train68.csv",
+      "exists": true,
+      "row_count": 68
+    },
+    {
+      "dataset": "glas",
+      "split_name": "val",
+      "relative_path": "splits/glas/glas_val17.csv",
+      "exists": true,
+      "row_count": 17
+    },
+    {
+      "dataset": "glas",
+      "split_name": "testA",
+      "relative_path": "splits/glas/glas_testA60.csv",
+      "exists": true,
+      "row_count": 60
+    },
+    {
+      "dataset": "glas",
+      "split_name": "testB",
+      "relative_path": "splits/glas/glas_testB20.csv",
+      "exists": true,
+      "row_count": 20
+    },
+    {
+      "dataset": "crag",
+      "split_name": "train",
+      "relative_path": "splits/crag/crag_train153.csv",
+      "exists": true,
+      "row_count": 153
+    },
+    {
+      "dataset": "crag",
+      "split_name": "val",
+      "relative_path": "splits/crag/crag_val20.csv",
+      "exists": true,
+      "row_count": 20
+    },
+    {
+      "dataset": "crag",
+      "split_name": "test",
+      "relative_path": "splits/crag/crag_test40.csv",
+      "exists": true,
+      "row_count": 40
+    }
+  ],
+  "check_assets": [
+    {
+      "key": "data_check_report",
+      "relative_path": "reports/data_checks/data_check_report.md",
+      "exists": true
+    },
+    {
+      "key": "dataset_stats",
+      "relative_path": "reports/data_checks/dataset_stats.csv",
+      "exists": true
+    },
+    {
+      "key": "duplicate_check_report",
+      "relative_path": "reports/data_checks/duplicate_check_report.md",
+      "exists": true
+    },
+    {
+      "key": "foreground_summary",
+      "relative_path": "reports/data_checks/foreground_summary.csv",
+      "exists": true
+    },
+    {
+      "key": "object_size_summary",
+      "relative_path": "reports/data_checks/object_size_summary.csv",
+      "exists": true
+    },
+    {
+      "key": "manual_audit_notes",
+      "relative_path": "reports/data_checks/manual_audit_notes.md",
+      "exists": true
+    }
+  ],
+  "label_assets": [
+    {
+      "key": "label_protocol_report",
+      "relative_path": "reports/data_checks/label_protocol_report.md",
+      "exists": true
+    },
+    {
+      "key": "binary_mask_summary",
+      "relative_path": "reports/data_checks/binary_mask_summary.csv",
+      "exists": true
+    },
+    {
+      "key": "boundary_target_report",
+      "relative_path": "reports/data_checks/boundary_target_report.md",
+      "exists": true
+    },
+    {
+      "key": "distance_target_report",
+      "relative_path": "reports/data_checks/distance_target_report.md",
+      "exists": true
+    }
+  ],
+  "preview_assets": [
+    {
+      "dataset": "glas",
+      "split_name": "train",
+      "relative_dir": "reports/data_preview/glas/train68",
+      "exists": true,
+      "raw_count": 5,
+      "mask_bin_count": 5,
+      "overlay_count": 5,
+      "status": "pass"
+    },
+    {
+      "dataset": "glas",
+      "split_name": "val",
+      "relative_dir": "reports/data_preview/glas/val17",
+      "exists": true,
+      "raw_count": 3,
+      "mask_bin_count": 3,
+      "overlay_count": 3,
+      "status": "pass"
+    },
+    {
+      "dataset": "glas",
+      "split_name": "testA",
+      "relative_dir": "reports/data_preview/glas/testA60",
+      "exists": true,
+      "raw_count": 2,
+      "mask_bin_count": 2,
+      "overlay_count": 2,
+      "status": "pass"
+    },
+    {
+      "dataset": "glas",
+      "split_name": "testB",
+      "relative_dir": "reports/data_preview/glas/testB20",
+      "exists": true,
+      "raw_count": 2,
+      "mask_bin_count": 2,
+      "overlay_count": 2,
+      "status": "pass"
+    },
+    {
+      "dataset": "crag",
+      "split_name": "train",
+      "relative_dir": "reports/data_preview/crag/train153",
+      "exists": true,
+      "raw_count": 5,
+      "mask_bin_count": 5,
+      "overlay_count": 5,
+      "status": "pass"
+    },
+    {
+      "dataset": "crag",
+      "split_name": "val",
+      "relative_dir": "reports/data_preview/crag/val20",
+      "exists": true,
+      "raw_count": 3,
+      "mask_bin_count": 3,
+      "overlay_count": 3,
+      "status": "pass"
+    },
+    {
+      "dataset": "crag",
+      "split_name": "test",
+      "relative_dir": "reports/data_preview/crag/test40",
+      "exists": true,
+      "raw_count": 3,
+      "mask_bin_count": 3,
+      "overlay_count": 3,
+      "status": "pass"
+    }
+  ],
+  "config_source_assets": [
+    {
+      "type": "config",
+      "relative_path": "configs/data/glas.yaml",
+      "exists": true
+    },
+    {
+      "type": "config",
+      "relative_path": "configs/data/crag.yaml",
+      "exists": true
+    },
+    {
+      "type": "source",
+      "relative_path": "datasets/DATASETS_README.md",
+      "exists": true
+    },
+    {
+      "type": "source",
+      "relative_path": "datasets/DATASET_SOURCE_NOTES.md",
+      "exists": true
+    }
+  ],
+  "handoff_ready": true,
+  "assets_traceable": true,
+  "protocol_explainable": true,
+  "data_stage_pass": true,
+  "preflight_pass": true,
+  "next_action": "enter_02_unet",
+  "project_root": "D:/12_Medical_Image_Segmentation/Paper/crc_gland_segmentation_project"
+}

@@ -1,0 +1,105 @@
+experiment:
+  run_name: A1_UNet_GlaS_v1_seed3407
+  stage_code: A1
+  dataset_code: glas
+  model_name: unet
+  config_version: v1
+  train_seed: 3407
+  result_tag: reproduced
+  aggregation: single_seed
+  smoke_check_run_name: A1_UNet_GlaS_v1_seed3407_smoke
+  config_refs:
+    data: configs/data/glas.yaml
+    model: configs/model/unet_v1.yaml
+    train: configs/train/unet_flow_v1.yaml
+    eval: configs/eval/eval_proto_v1.yaml
+data:
+  dataset_code: glas
+  dataset_role: primary_benchmark
+  dataset_root: datasets/01_GlaS_official_raw
+  dataset_source_note: datasets/DATASET_SOURCE_NOTES.md
+  dataset_version: glas_official_raw_v1
+  dataset_layout_version: glas_layout_v1
+  data_proto_version: 01_data_protocol_v1
+  split_dir: splits/glas
+  csv_files:
+    train: glas_train68.csv
+    val: glas_val17.csv
+    testA: glas_testA60.csv
+    testB: glas_testB20.csv
+  split_csv_schema_version: glas_csv_schema_v1
+  sample_id_rule_version: glas_sample_id_rule_v1
+  split_seed: 3407
+  input_size: [512, 512]
+  image_interp: bilinear
+  mask_interp: nearest
+  normalize_mean: [0.485, 0.456, 0.406]
+  normalize_std: [0.229, 0.224, 0.225]
+  stain_normalization: off
+  mask_positive_rule: mask_gt_0
+  mask_rule_version: mask_rule_v1
+  mask_disk_value_rule: 255
+  boundary_target_version: boundary_target_v1
+  boundary_width: 3
+  distance_target_version: distance_target_v1
+  distance_type: euclidean
+  distance_norm: zero_one
+  visual_proto_version: data_visual_proto_v1
+  num_preview_samples: 2
+  asset_status: restored_and_frozen
+model:
+  model_name: unet
+  model_version: unet_v1
+  in_channels: 3
+  out_channels: 1
+  base_channels: 32
+  arch_source: standard_unet_encoder_decoder_skip
+train:
+  train_proto_version: train_proto_v1
+  aug_version: light_aug_v1
+  aug_profile_name: light_aug_v1
+  eval_aug_enable: false
+  loss_name: bce_dice
+  loss_version: seg_loss_v1
+  bce_weight: 1.0
+  dice_weight: 1.0
+  loss_eps: 1e-06
+  optimizer: AdamW
+  lr: 0.001
+  weight_decay: 0.0001
+  scheduler: ReduceLROnPlateau
+  scheduler_monitor: val_objdice
+  scheduler_factor: 0.5
+  scheduler_patience: 5
+  scheduler_min_lr: 1e-06
+  epoch_max: 120
+  early_stop_patience: 20
+  batch_size: 2
+  num_workers: 0
+  amp: true
+  smoke_epochs: 1
+  smoke_train_batches: 2
+  light_aug:
+    random_hflip_prob: 0.5
+    random_vflip_prob: 0.5
+    rotate90_enable: true
+    rotate90_prob: 0.5
+    crop_scale_min: 0.9
+    crop_scale_max: 1.0
+    crop_ratio_min: 0.95
+    crop_ratio_max: 1.05
+    random_resized_crop_prob: 0.3
+    brightness_prob: 0.2
+    brightness_limit: 0.1
+    contrast_prob: 0.2
+    contrast_limit: 0.1
+eval:
+  eval_proto_version: eval_proto_v1
+  best_selector: val_objdice_max
+  best_metric_name: val_objdice
+  threshold_value: 0.5
+  threshold_source: val17
+  eval_cast_policy: float32_before_threshold
+  postprocess_version: none_in_v1
+  boundary_metric_width: 3
+  connected_components_connectivity: 1

@@ -1,0 +1,373 @@
+1
+AttentionBoost: Learning What to Attend for Gland
+Segmentation in Histopathological Images by
+Boosting Fully Convolutional Networks
+(Supplementary Material)
+Gozde Nur Gunesli, Cenk Sokmensuer, and Cigdem Gunduz-Demir
+Abstract—This technical report contains the supplementary
+material for an error-driven multi-stage model that we developed
+for gland instance segmentation in histopathological images [1].
+Index Terms —Deep learning, attention learning, adaptive
+boosting, gland instance segmentation, instance segmentation
+I. I NTRODUCTION
+W
+E recently developed a new error-driven multi-attention
+learning model, which we call AttentionBoost, for
+instance segmentation. This model proposes to design a multi-
+stage network and adaptively learn what image parts (pixels)
+each stage network needs to attend and the level of this
+attention directly on image data. For this purpose, it intro-
+duces a new loss adjustment mechanism that uses adaptive
+boosting for a dense prediction task [1]. This technical report
+provides supplementary material for additional deﬁnitions and
+experiments used in the evaluation of the proposed model.
+II. E VALUATION METRICS
+In order to quantitatively evaluate the results of the proposed
+model and the comparison methods, three criteria are used.
+These are the object-level F-score, the object-level Dice index,
+and the object-level Hausdorff distance metrics, which were
+also used in the GlaS Challenge Contest [2]. The deﬁnitions
+of these metrics are given below.
+1) F-score: A segmented gland object is considered as true
+positive (TP) if it intersects with at least 50 percent of a ground
+truth object, and as false positive (FP) otherwise. A ground
+truth object is considered as false negative (FN) if at least its
+50 percent does not intersect with any segmented gland object.
+The object-level F-score is deﬁned as:
+F-score = 2· precision· recall
+precision + recall (1)
+precision = |TP|/(|TP| +|FP|)
+recall = |TP|/(|TP| +|FN|)
+This work was supported by the Scientiﬁc and Technological Research
+Council of Turkey under the project number T ¨UB˙ITAK 116E075.
+G. N. Gunesli is with the Department of Computer Engineering, Bilkent
+University, Ankara TR-06800, Turkey (e-mail: nur.gunesli@bilkent.edu.tr).
+C. Sokmensuer is with the Department of Pathology, Medical
+School, Hacettepe University, Ankara TR-06100, Turkey (e-mail: csok-
+mens@hacettepe.edu.tr).
+C. Gunduz-Demir is with the Department of Computer Engineering
+and Neuroscience Graduate Program, Bilkent University, Ankara TR-06800,
+Turkey (e-mail: gunduz@cs.bilkent.edu.tr).
+2) Dice index: Let S ={si} be a set of segmented gland
+objects in all images of a given dataset and G ={gj} be a set
+of ground truth objects in these images. To calculate the object-
+level Dice index on these two sets, the objects in S andG are
+ﬁrst matched: Each si∈ S is matched with a ground truth
+object γ(si)∈G that maximally overlaps si. Similarly, each
+gj∈G is matched with a segmented gland object σ(gj)∈S
+that maximally overlaps gj. Then, by accumulating the Dice
+indices calculated for all matching object pairs, the object-level
+Dice index is deﬁned as follows:
+Dice(S,G ) = 1
+2
+
+
+∑
+si∈S
+ω(si)·DI (si,γ (si))
++
+∑
+gj∈G
+ω(gj)·DI (gj,σ (gj))
+
+ (2)
+where ω(si) = |si| / ∑
+sm∈S
+sm and ω(gj) = |gj| / ∑
+gm∈G
+gm.
+Here DI (x,y ) = 2·|x∩y|/(|x| +|y|) is the Dice index of a
+pair of objects x andy, one from the segmented gland objects
+and the other from the ground truth objects. If there is no
+matching ground truth object of a segmented gland object (or
+vice versa), the contribution of this object to the Dice index
+is zero.
+3) Hausdorff distance: Likewise, the objects inS andG are
+matched to calculate the object-level Hausdorff distance. Each
+si∈ S is matched with γ(si)∈ G that maximally overlaps
+si. If there is no overlap, γ(si) is the ground truth object
+that has the minimum Hausdorff distance from si. Similarly,
+each gj ∈ G is matched with σ(gj) ∈ S that maximally
+overlaps gj. If there is no overlap, σ(gj) is the segmented
+gland object that has the minimum Hausdorff distance fromgj.
+Then, by accumulating the Hausdorff distances calculated for
+all matching object pairs, the object-level Hausdorff distance
+is deﬁned as follows:
+Hausdorff (S,G ) = 1
+2
+
+
+∑
+si∈S
+ω(si)·HD (si,γ (si))
++
+∑
+gj∈G
+ω(gj)·HD (gj,σ (gj))
+
+ (3)
+HD (x,y ) = max{ sup
+px∈x
+inf
+py∈y
+||px−py||, sup
+py∈y
+inf
+px∈x
+||px−py||}
+is the Hausdorff distance between a pair of objects x and y,
+
+2
+Fig. 1. F-scores, Dice indices, and Hausdorff distances as a function of the
+epoch number. These metrics are calculated for the training images.
+one from the segmented gland objects and the other from the
+ground truth objects. Note that sup
+px∈x
+inf
+py∈y
+||px−py|| gives the
+maximum of the minimum distances calculated from every
+pixel px of object x to any pixel py of object y.
+III. M ULTI-STAGE NETWORK TRAINING
+We analyze the qualitative and quantitative results obtained
+during network training. For this purpose, for an exemplary
+network, the segmentation (probability) maps are generated for
+each training image at the end of each epoch and glands are
+located on these segmentation maps. Afterwards, the object-
+level F-score, Dice index and Hausdorff distance are calcu-
+lated. Fig. 1 shows these performance metrics as a function
+of the epoch number. Moreover, for two selected training
+images (one containing normal glands and one containing
+cancerous glands), qualitative results are obtained at different
+epochs during training. These qualitative results are illustrated
+in Figs. 2 and 3.
+IV. P ARAMETER ANALYSIS
+AttentionBoost uses two external parameters in its gland
+instance segmentation step: conﬁdence parameter α and area
+threshold Athr. For the gland instance segmentation task,
+we analyze the effects of these parameters on the model’s
+performance. To this end, for each parameter, we ﬁx the value
+of the other parameter and measure the test set performance
+as a function of the parameter of interest.
+This step inputs the average probability map ˆYavg (I) =
+{ˆyavg (p)}p∈I for imageI and locates gland objects (instances)
+on this map. For that, it ﬁrst identiﬁes certain gland and
+background pixels on which seed regions are deﬁned. The
+conﬁdence parameter α determines which pixels are consid-
+ered as certain, see Eqn. 4 of the main paper [1]. When
+it is selected too large, only pixels p for which ˆyavg (p) is
+very close to 1 and very close to 0 are selected for the
+gland and background seed regions, respectively. Such average
+posteriors can only be obtained when the networks at all
+stages give the same output with high conﬁdence. However,
+this is not an expected output of our multi-stage network,
+especially for hard-to-learn pixels, since it is designed with
+the purpose of correcting mistakes of one stage by another.
+Thus, larger α values result in selecting a smaller number of
+certain gland pixels, which decreases the number of gland seed
+regions to be grown. This, in turn, greatly lowers the model’s
+performance. On the other hand, when it is selected too small,
+almost all pixels are considered as certain. This also lowers
+the performance, by leading to more undersegmented gland
+objects, since pixels whose ˆyavg (p) is around 0.5 are typically
+found on gland boundaries and these pixels are considered
+as certain when smaller α values are used. This analysis is
+depicted in Fig. 4(a).
+The area thresholdAthr is used to eliminate small gland and
+background seed regions to be grown. Too small Athr values
+cannot eliminate noisy gland seed regions, leading to false pos-
+itives. On the other hand, too large Athr values eliminate seed
+regions corresponding to small gland instances, leading to false
+negatives. Both lower the F-score. Note that this parameter
+only slightly affects the Dice index and the Hausdorff distance
+since they are weighted averages of these measures calculated
+for individual gland objects where the weights are determined
+by their areas. Since this elimination typically affects small
+glands, it does not change these measures too much. This
+analysis is depicted in Fig. 4(b).
+This step has also an internal parameter, fsize, which is
+the size of the majority ﬁlter applied on the grown gland
+regions to smooth their boundaries. Although its selected
+value affects the appearance of gland boundaries, it only very
+slightly affects the performance measures since the number of
+boundary pixels is low. Thus, for the sake of simplicity, the
+smallest ﬁlter size fsize = 3 is used in the experiments.
+V. N UMBER OF PARAMETERS
+In our experiments, we use the same network architecture
+as the base models of the comparison methods. This network
+architecture is given in Fig. 3 of the main paper [1]. However,
+for fair comparisons, we keep the number of their parameters
+(network weights) on par with ours by selecting an appropriate
+number of feature maps in their ﬁrst convolutional layers.
+For each comparison method, Table I provides this number
+of feature maps as well as the number of its total network
+parameters. It also provides these numbers for the ablation
+studies, referring the corresponding table numbers in the main
+paper [1]. Note that the total number of network parameters
+also affect the computational time required for training a
+network. For each comparison method and ablation study, the
+average computational time required for the network training
+is also given in Table I.
+VI. E FFECTS OF USING SHARED WEIGHTS
+In our experiments, we conduct two ablation studies to
+understand the effects of using different weights at each stage
+network of the AttentionBoost model. For that, we implement
+variants of the proposed model, in which all stage networks
+share weights. In the ﬁrst variant, each stage network uses
+the same base model with the original AttentionBoost model.
+
+3
+epoch = 1
+epoch = 5
+epoch = 10
+epoch = 20
+epoch = 30
+epoch = 40
+epoch = 50
+early
+stopping epoch
+epoch = 100
+stopping epoch
+(a) (b) (c) (d) (e) (f)
+Fig. 2. Probability maps obtained for a training image containing normal glands at different epochs. (a) Posterior map ˆY1(I) generated by the ﬁrst stage. (b)
+Posterior map ˆY2(I) generated by the second stage. (c) Posterior map ˆY3(I) generated by the third stage. (d) Posterior map ˆY4(I) generated by the fourth
+stage. (e) Average posterior map ˆYavg (I) obtained by aggregating the posterior maps of all stages. (f) Posterior map Y(I) produced by the ground truth
+segmentation. These maps include pixel posteriors where 1 indicates that a pixel belongs to the gland class and 0 indicates that it belongs to the background.
+Posteriors between 1 and 0.5 are shown with increasing tints of red and posteriors between 0 and 0.5 are shown with increasing tints of blue. Note that in
+these images posteriors close to 0.5 seem whitish.
+
+4
+epoch = 1
+epoch = 5
+epoch = 10
+epoch = 20
+epoch = 30
+epoch = 40
+epoch = 50
+early
+stopping epoch
+epoch = 100
+stopping epoch
+(a) (b) (c) (d) (e) (f)
+Fig. 3. Probability maps obtained for a training image containing cancerous glands at different epochs. (a) Posterior map ˆY1(I) generated by the ﬁrst stage.
+(b) Posterior map ˆY2(I) generated by the second stage. (c) Posterior map ˆY3(I) generated by the third stage. (d) Posterior map ˆY4(I) generated by the fourth
+stage. (e) Average posterior map ˆYavg (I) obtained by aggregating the posterior maps of all stages. (f) Posterior map Y(I) produced by the ground truth
+segmentation. These maps include pixel posteriors where 1 indicates that a pixel belongs to the gland class and 0 indicates that it belongs to the background.
+Posteriors between 1 and 0.5 are shown with increasing tints of red and posteriors between 0 and 0.5 are shown with increasing tints of blue. Note that in
+these images posteriors close to 0.5 seem whitish.
+
+5
+TABLE I
+NUMBER OF FEATURE MAPS USED IN THE FIRST CONVOLUTIONAL LAYERS , NUMBER OF TOTAL NETWORK PARAMETERS , AND COMPUTATIONAL TIME
+FOR NETWORK TRAINING . G RAY ROWS INDICATE THE TABLE NUMBERS IN THE MAIN PAPER THAT REPORT THE RESULTS OF THE METHODS GIVEN IN
+THE ROWS BELOW .
+Number of feature
+maps in the ﬁrst Number of total Training time
+convolutional layer network parameters (seconds)
+Tables II and III
+AttentionBoost 32 31,387,780 4844± 403
+Boundary-loss-adjustment 64 31,378,945 2887± 155
+Multi-task 54 31,264,870 3480± 122
+Iterative 32 31,387,780 4412± 474
+Table IV
+AttentionBoost 32 31,387,780 4844± 403
+AttentionBoost (shared weights) 32 7,846,945 3569± 157
+AttentionBoost (shared weights× 2) 64 31,379,521 19936± 955
+AttentionBoost (w/o normalization) 32 31,387,780 3910± 165
+Table V
+AttentionBoost (2-stages) 32 15,693,890 1971± 139
+AttentionBoost (3-stages) 32 23,540,835 3595± 460
+AttentionBoost (4-stages) 32 31,387,780 4844± 403
+AttentionBoost (5-stages) 32 39,234,725 5277± 251
+AttentionBoost (6-stages) 32 47,081,670 6199± 601
+AttentionBoost (7-stages) 32 54,928,615 6662± 431
+Table VI
+SingleStage-two classes (U-Net) 64 31,378,945 2844± 176
+SingleStage-two classes (G-Conv) 32 31,372,161 7502± 743
+SingleStage-two classes (G-Res) 32 33,130,721 8051± 202
+SingleStage-three classes (U-Net) 64 31,379,075 2909± 156
+SingleStage-three classes (G-Conv) 32 31,372,227 7678± 530
+SingleStage-three classes (G-Res) 32 33,130,787 7983± 218
+AttentionBoost (U-Net) 32 31,387,780 4844± 403
+AttentionBoost (G-Conv) 16 31,373,636 8814± 454
+AttentionBoost (G-Res) 16 33,150,020 9942± 188
+Table VII
+AttentionBoost (same model: 4b32f ) 32, 32, 32, 32 31,387,780 4844± 403
+AttentionBoost (different models: 32, 32, 64, 64 78,452,932 8820± 5924b32f, 4b32f, 4b64f, and 4b64f )
+AttentionBoost (different models: 32, 64, 32, 64 60,755,140 7896± 5823b32f, 3b64f, 4b32f, and 4b64f )
+(a) (b)
+Fig. 4. Test set F-scores, Dice indices, and Hausdorff distances as a function
+of (a) the conﬁdence parameter α and (b) the area threshold Athr.
+For this ﬁrst variant, the changes in the model and in network
+training are summarized as follows.
+• The number of parameters to be learned decreases from
+31,387,780 to 7,846,945.
+• The number of epochs at the stopping time (convergence
+point) decreases from 79.4 to 32.2 on the average (over
+ﬁve folds). The convergence plots for the ﬁrst fold are
+provided in Fig.5. Note that since the training procedure
+uses an early stopping approach, these convergence plots
+are obtained until the end of the 180th and 130th epochs,
+respectively, although the convergence times are less than
+these numbers of epochs.
+• The computational time required by each epoch remains
+almost the same (approximately 26-27 seconds) since the
+training procedure unfolds the network to be learned.
+• The same training and validation sets are used for this
+ablation study.
+Our experiments show that the ﬁrst variant leads to lower
+performance measures. In order to understand whether the
+performance decrease is a result of weight sharing or due to the
+decrease in the parameter number, we implement the second
+variant, which doubles the number of feature maps in the base
+model. For the second variant, the changes in the model and
+in network training are summarized as follows.
+• Doubling the number of feature maps gives a network
+with 31,379,521 parameters.
+• The number of epochs at the stopping time greatly
+increases; it becomes 184.8 on the average. The conver-
+gence plot for the ﬁrst fold is also provided in Fig 5.
+• The computational time required by each epoch becomes
+approximately 70 seconds since the training procedure
+unfolds the network.
+• The same training and validation sets are also used for
+this ablation study.
+
+6
+(a) (b)
+(c)
+Fig. 5. Convergence plots for (a) the proposed AttentionBoost model and (b)-(c) two variants that use shared weights for all of their networks. The ﬁrst
+variant uses the same base model with the proposed AttentionBoost model whereas the second variant doubles the number of the feature maps in the base
+model. These convergence plots are obtained for the ﬁrst trained network (for the ﬁrst fold). Since the training procedure uses an early stopping approach,
+these convergence plots are obtained until the end of the 180th, 130th, and 287th epochs, respectively, although the convergence times (stopping points) are
+80, 30, and 187 epochs for these three methods.
+VII. U SE OF DIFFERENT BASE MODELS
+We conduct additional experiments to investigate the effects
+of using different base models at different stages of our
+multi-stage network. For that, we use three more U-Net like
+networks whose architectures contain different numbers of
+layers and feature maps. The architectures of these networks
+(base models) are illustrated in Fig. 6. Similar to the one used
+in [1], all these networks have convolutional layers with 3× 3
+ﬁlters, pooling/upsampling layers with 2×2 ﬁlters, and dropout
+layers with a drop-out factor of 0.2. They use the sigmoid
+activation function at their last layers and the ReLu activation
+function elsewhere. Likewise, they are trained from scratch
+with an early stopping approach. The learning rate and the
+momentum value are adjusted using the AdaDelta optimizer.
+The selected batch size is 1.
+REFERENCES
+[1] G. N. Gunesli, C. Sokmensuer, and C. Gunduz-Demir, “ AttentionBoost:
+Learning what to attend for gland segmentation in histopathological
+images by boosting fully convolutional networks,” IEEE Trans. Med.
+Imaging, submitted 2020.
+[2] K. Sirinukunwattana et al., , “Gland segmentation in colon histology im-
+ages: The GlaS Challenge Contest,” arXiv preprint arXiv:1603.00275v2 ,
+2016.
+
+7
+(a)
+(b)
+(c)
+Fig. 6. Architectures of the FCNs, referred as (a) 3b32f, (b) 3b64f, and (c) 4b64f. Each box represents a feature map with its dimensions and number of
+channels being indicated in order on its right. Each arrow corresponds to an operation which is distinguishable by its color.

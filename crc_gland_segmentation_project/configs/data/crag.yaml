@@ -1,0 +1,32 @@
+dataset_code: crag
+dataset_role: second_benchmark
+dataset_root: datasets/02_CRAG_reorganized_local_copy
+dataset_source_note: datasets/DATASET_SOURCE_NOTES.md
+dataset_version: crag_reorganized_local_copy_v1
+dataset_layout_version: crag_layout_v1
+data_proto_version: 01_data_protocol_v1
+split_dir: splits/crag
+csv_files:
+  train: crag_train153.csv
+  val: crag_val20.csv
+  test: crag_test40.csv
+split_csv_schema_version: crag_csv_schema_v1
+sample_id_rule_version: crag_sample_id_rule_v1
+train_pool_rule: train_sup_16_plus_train_unsup_137
+input_size: [512, 512]
+image_interp: bilinear
+mask_interp: nearest
+normalize_mean: [0.485, 0.456, 0.406]
+normalize_std: [0.229, 0.224, 0.225]
+stain_normalization: off
+mask_positive_rule: mask_gt_0
+mask_rule_version: mask_rule_v1
+mask_disk_value_rule: 0_255
+boundary_target_version: boundary_target_v1
+boundary_width: 3
+distance_target_version: distance_target_v1
+distance_type: euclidean
+distance_norm: zero_one
+visual_proto_version: data_visual_proto_v1
+num_preview_samples: 2
+asset_status: restored_and_frozen

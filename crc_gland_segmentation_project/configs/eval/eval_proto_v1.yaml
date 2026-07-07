@@ -1,0 +1,9 @@
+eval_proto_version: eval_proto_v1
+best_selector: val_objdice_max
+best_metric_name: val_objdice
+threshold_value: 0.5
+threshold_source: val17
+eval_cast_policy: float32_before_threshold
+postprocess_version: none_in_v1
+boundary_metric_width: 3
+connected_components_connectivity: 8

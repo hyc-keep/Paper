@@ -1,0 +1,99 @@
+# =========================
+# OS / editor / local temp
+# =========================
+Thumbs.db
+.DS_Store
+.idea/
+.vscode/
+
+# =========================
+# Python / virtual env
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+.env
+
+# =========================
+# Local bundled environment
+# =========================
+.conda/
+
+# =========================
+# Large raw datasets
+# =========================
+datasets/
+crc_gland_segmentation_project/datasets/
+结直肠腺体分割_pdf库/
+
+# Historical local archives not needed for server execution baseline
+_archive_pre_skill_restart_20260703/
+_root_cleanup_archived_duplicates/
+
+# Heavy local reference corpus; keep local, do not sync as Git baseline
+结直肠腺体分割_正式参考资料/
+
+# =========================
+# Large runtime artifacts
+# =========================
+**/checkpoints/
+**/*.ckpt
+**/visuals/
+**/predictions/
+**/tensorboard/
+**/*.npy
+**/*.npz
+
+# Generated report assets not needed for GitHub server baseline
+crc_gland_segmentation_project/reports/data_preview/
+crc_gland_segmentation_project/reports/data_targets/
+crc_gland_segmentation_project/reports/data_checks/manual_audit_visual_review.ipynb
+
+# =========================
+# Runtime logs / pids
+# =========================
+**/*.log
+**/*.stderr
+**/*.stdout
+**/*.pid
+**/*.pid.txt
+
+# =========================
+# Temporary archives / exports
+# =========================
+*.zip
+*.7z
+*.tar
+*.gz
+*.rar
+
+# Historical extraction caches / long-path generated files
+**/_pdf_extract/
+**/plan根目录旧抽取缓存/
+**/pdf_extract/
+**/extract_cache/
+
+# =========================
+# Common image outputs
+# Keep docs and intentionally tracked root images if needed
+# =========================
+image.png
+**/overlay.png
+**/overlay.jpg
+**/overlay.jpeg
+
+# =========================
+# Do not ignore important text assets:
+# run_meta.yaml / run_summary.md / testA_metrics.csv / testB_metrics.csv
+# metric_crosscheck_note.md / error_cases.md / reports / docs / configs / src
+# =========================

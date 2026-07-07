@@ -1,0 +1,239 @@
+# Formal Doc Gate Report
+
+## 1. 输入文档
+- `scripts/README.md`
+- `b_class_auxiliary/runtime_checks/runtime_check_report.md`
+- `b_class_auxiliary/runtime_checks/code_quality_gate_report.md`
+- `b_class_auxiliary/runtime_checks/post_qc_guard.md`
+- `b_class_auxiliary/coding_guards/20260703_01_data_protocol_stage_lock/20260703_01_data_protocol_pre_check_guard.md`
+- `reports/stage_reports/implementation_tracking/01_数据协议/README.md`
+- `reports/stage_reports/implementation_tracking/01_数据协议/implementation_status.md`
+- `reports/stage_reports/implementation_tracking/01_数据协议/00_交付范围内正式对象清单.md`
+- `reports/stage_reports/implementation_tracking/01_数据协议/scripts_train.py.md`
+- `reports/stage_reports/implementation_tracking/01_数据协议/tools_prepare_glas_split.py.md`
+- `reports/stage_reports/implementation_tracking/01_数据协议/tools_prepare_crag_split.py.md`
+- `reports/stage_reports/implementation_tracking/01_数据协议/tools_convert_masks.py.md`
+- `reports/stage_reports/implementation_tracking/01_数据协议/tools_build_boundary_targets.py.md`
+- `reports/stage_reports/implementation_tracking/01_数据协议/tools_build_distance_targets.py.md`
+- `reports/stage_reports/implementation_tracking/01_数据协议/tools_check_dataset_pairs.py.md`
+- `reports/stage_reports/implementation_tracking/01_数据协议/tools_preview_dataset_samples.py.md`
+- `reports/stage_reports/implementation_tracking/01_数据协议/tools_validate_data_assets.py.md`
+- `reports/stage_reports/implementation_tracking/01_数据协议/reports_stage_reports_data_stage_acceptance.md.md`
+- `reports/stage_reports/implementation_tracking/01_数据协议/当前阶段为什么能pass以及下一步怎么看.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/01_设计依据.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/02_插入位置与参数范围.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/03_实验步骤.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/04_保留或删除标准.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/01_设计依据.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/02_边界标签生成规则.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/03_实验步骤.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/04_保留或删除标准.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/01_设计依据.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/02_距离图与lambda范围.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/03_实验步骤.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/04_保留或降级标准.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/01_统一公平协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/02_UNetPP适配方案.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/03_DeepLabV3P适配方案.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/04_AttUNet适配方案.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/05_增强对比进入条件.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/06_引用值与复现值标记规则.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/07_阶段验收.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/01_任务定位.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/02_训练与验证协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/03_结果解释规则.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/04_阶段验收.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/01_结果记录模板.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/02_主表与消融表回填规则.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/03_可视化与失败案例清单.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/04_stage_summary模板.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/05_投稿结果包检查表.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/00_阶段总协议.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/01_阶段门槛总表.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/02_止损与回退规则.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/03_中文保底条件.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/04_英文起步条件.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/cn_entry_readiness.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/en_entry_readiness.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/final_readiness_judgement.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/stage_gate_matrix.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/stop_loss_decision.md`
+- `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/writing_entry_decision.md`
+
+## 2. 检查范围
+- 检查正式模板/规程/协议文档是否缺少关键章节骨架。
+- 检查文档是否同时回答了角色边界、前置依赖、规则或证据、代码或工程落点、验收或回退。
+- 检查文档是否保留当前正式状态口径，而不是回退到旧二元写法。
+- 检查文档中的反引号路径是否能解析到真实存在的文件，而不是只写一个看起来像路径的字符串。
+- 检查治理文件组（中央 SKILL / 导航 / 总规范 / implementation_tracking 规程）是否共同覆盖状态口径、自动门禁命令和调用顺序。
+- 检查文档是否留下了最小路径锚点、来源锚点和质检痕迹。
+- 对启用了“单文档双达标模式”的正式文档，额外检查下面这些教学信号是否达到最小可执行强度：
+- `## 0. 先给结论` 是否存在，且开头至少有 3 条结论型 bullet。
+- `设计取舍对比` 是否是结构化对比，而不是只写一句“最后选了什么”。
+- `误区预防` 是否同时给出误区/误判和对应的纠正或正确理解。
+- `联读顺序` 是否给出带顺序词和可定位目标的真实阅读路径。
+- `收口自检` 是否给出至少 2 条带动作词和证据对象的自检/复核步骤。
+- `学习型说明文人工审稿清单.md` 是否不仅被回链，还明确出现人工终审/人工审稿动作。
+
+## 3. 结论
+- `formal_doc_gate_status`: `partial`
+
+## 4. 检查摘要
+
+- `章节与边界`: `partial=118`
+- `证据与锚点`: `partial=29`
+
+## 5. 详细结果
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/01_设计依据.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/01_设计依据.md` 缺少 `设计动机` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/01_设计依据.md` 缺少 `边界声明` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/01_设计依据.md` 存在无法解析到真实文件的路径锚点: `src/models/modules/lkma.py`, `configs/model/lkma_v1.yaml`, `configs/experiment/lkma_c1_v1.yaml`, `src/metrics/object_metrics.py`, `reports/stage_reports/lkma_visual_casebook.md`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/02_插入位置与参数范围.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/02_插入位置与参数范围.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/02_插入位置与参数范围.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/02_插入位置与参数范围.md` 存在无法解析到真实文件的路径锚点: `configs/model/lkma_v1.yaml`, `configs/experiment/lkma_c1_v1.yaml`, `src/models/r34_unet.py`, `src/models/modules/lkma.py`, `scripts/summarize_stage.py`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/03_实验步骤.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/03_实验步骤.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/03_实验步骤.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/03_实验步骤.md` 存在无法解析到真实文件的路径锚点: `configs/experiment/lkma_c1_v1.yaml`, `scripts/summarize_stage.py`, `reports/stage_reports/baseline_stage_summary.md`, `reports/stage_reports/lkma_stage_summary.md`, `scripts/test.py`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/04_保留或删除标准.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/04_保留或删除标准.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/04_保留或删除标准.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/05_LKMA/04_保留或删除标准.md` 存在无法解析到真实文件的路径锚点: `scripts/compare_runs.py`, `scripts/summarize_stage.py`, `reports/stage_reports/lkma_stage_summary.md`, `reports/tables/lkma_per_seed_summary.csv`, `reports/tables/baseline_vs_lkma_mean_std.csv`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/01_设计依据.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/01_设计依据.md` 缺少 `设计动机` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/01_设计依据.md` 缺少 `边界声明` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/01_设计依据.md` 存在无法解析到真实文件的路径锚点: `configs/experiment/boundary_d1_v1.yaml`, `reports/stage_reports/boundary_visual_casebook.md`, `scripts/summarize_stage.py`, `src/models/heads/boundary_head.py`, `src/losses/boundary_losses.py`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/02_边界标签生成规则.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/02_边界标签生成规则.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/02_边界标签生成规则.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/02_边界标签生成规则.md` 存在无法解析到真实文件的路径锚点: `configs/model/boundary_head_v1.yaml`, `src/losses/boundary_losses.py`, `src/losses/seg_losses.py`, `scripts/export_visuals.py`, `scripts/summarize_stage.py`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/03_实验步骤.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/03_实验步骤.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/03_实验步骤.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/03_实验步骤.md` 存在无法解析到真实文件的路径锚点: `scripts/test.py`, `scripts/summarize_stage.py`, `configs/experiment/boundary_d1_v1.yaml`, `scripts/export_visuals.py`, `reports/stage_reports/boundary_decision_note.md`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/04_保留或删除标准.md` 缺少 `角色边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/04_保留或删除标准.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/04_保留或删除标准.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/04_保留或删除标准.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/06_Boundary/04_保留或删除标准.md` 存在无法解析到真实文件的路径锚点: `scripts/compare_runs.py`, `scripts/summarize_stage.py`, `reports/stage_reports/boundary_decision_note.md`, `scripts/test.py`, `reports/tables/boundary_per_seed_summary.csv`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/01_设计依据.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/01_设计依据.md` 缺少 `设计动机` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/01_设计依据.md` 缺少 `边界声明` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/01_设计依据.md` 存在无法解析到真实文件的路径锚点: `configs/experiment/distance_e1_v1.yaml`, `reports/stage_reports/distance_visual_casebook.md`, `scripts/summarize_stage.py`, `src/losses/distance_losses.py`, `configs/model/distance_loss_v1.yaml`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/02_距离图与lambda范围.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/02_距离图与lambda范围.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/02_距离图与lambda范围.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/02_距离图与lambda范围.md` 存在无法解析到真实文件的路径锚点: `configs/model/distance_loss_v1.yaml`, `scripts/test.py`, `src/losses/distance_losses.py`, `src/losses/seg_losses.py`, `configs/experiment/distance_e1_v1.yaml`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/03_实验步骤.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/03_实验步骤.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/03_实验步骤.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/03_实验步骤.md` 存在无法解析到真实文件的路径锚点: `scripts/test.py`, `scripts/summarize_stage.py`, `configs/experiment/distance_e1_v1.yaml`, `reports/stage_reports/distance_decision_note.md`, `src/eval/run_eval.py`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/04_保留或降级标准.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/04_保留或降级标准.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/04_保留或降级标准.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/07_Distance/04_保留或降级标准.md` 存在无法解析到真实文件的路径锚点: `scripts/compare_runs.py`, `scripts/summarize_stage.py`, `reports/tables/current_base_vs_distance_mean_std.csv`, `reports/tables/distance_per_seed_summary.csv`, `reports/tables/distance_cost_comparison.csv`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/01_统一公平协议.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/01_统一公平协议.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/01_统一公平协议.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/01_统一公平协议.md` 存在无法解析到真实文件的路径锚点: `configs/experiment/external_h1_v1.yaml`, `scripts/run_external.py`, `src/eval/checkpoint_selector.py`, `src/eval/run_eval.py`, `src/metrics/object_metrics.py`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/02_UNetPP适配方案.md` 缺少 `角色边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/02_UNetPP适配方案.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/02_UNetPP适配方案.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/02_UNetPP适配方案.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/02_UNetPP适配方案.md` 存在无法解析到真实文件的路径锚点: `configs/external/unetpp_v1.yaml`, `src/eval/run_eval.py`, `src/eval/checkpoint_selector.py`, `scripts/compare_runs.py`, `scripts/summarize_stage.py`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/03_DeepLabV3P适配方案.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/03_DeepLabV3P适配方案.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/03_DeepLabV3P适配方案.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/03_DeepLabV3P适配方案.md` 存在无法解析到真实文件的路径锚点: `configs/external/deeplabv3p_v1.yaml`, `src/eval/run_eval.py`, `scripts/compare_runs.py`, `scripts/summarize_stage.py`, `src/eval/checkpoint_selector.py`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/04_AttUNet适配方案.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/04_AttUNet适配方案.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/04_AttUNet适配方案.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/04_AttUNet适配方案.md` 存在无法解析到真实文件的路径锚点: `configs/external/attunet_v1.yaml`, `src/eval/run_eval.py`, `scripts/compare_runs.py`, `scripts/summarize_stage.py`, `src/eval/checkpoint_selector.py`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/05_增强对比进入条件.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/05_增强对比进入条件.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/05_增强对比进入条件.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/05_增强对比进入条件.md` 存在无法解析到真实文件的路径锚点: `reports/stage_reports/plus_external_entry_decision.md`, `scripts/plan_external_plus.py`, `scripts/validate_sources.py`, `scripts/run_external.py`, `reports/stage_reports/external_reproduction_note.md`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/06_引用值与复现值标记规则.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/06_引用值与复现值标记规则.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/06_引用值与复现值标记规则.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/06_引用值与复现值标记规则.md` 存在无法解析到真实文件的路径锚点: `scripts/compare_runs.py`, `scripts/validate_sources.py`, `reports/tables/task_specific_direct_comparison_draft.csv`, `reports/tables/external_main_table_draft.csv`, `scripts/summarize_stage.py`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/07_阶段验收.md` 缺少 `交付物` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/07_阶段验收.md` 缺少 `验收问题` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/07_阶段验收.md` 缺少 `红线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/07_阶段验收.md` 缺少 `结论` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/08_外部对比/07_阶段验收.md` 存在无法解析到真实文件的路径锚点: `scripts/summarize_stage.py`, `reports/stage_reports/external_stage_summary.md`, `scripts/run_external.py`, `scripts/validate_sources.py`, `scripts/compare_runs.py`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/01_任务定位.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/01_任务定位.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/01_任务定位.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/01_任务定位.md` 存在无法解析到真实文件的路径锚点: `reports/stage_reports/crag_stage_summary.md`, `scripts/compare_runs.py`, `reports/tables/CRAG_direct_comparison_table.md`, `src/eval/run_eval.py`, `reports/tables/`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/02_训练与验证协议.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/02_训练与验证协议.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/02_训练与验证协议.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/02_训练与验证协议.md` 存在无法解析到真实文件的路径锚点: `scripts/compare_runs.py`, `src/eval/checkpoint_selector.py`, `src/eval/run_eval.py`, `reports/tables/`, `reports/tables/CRAG_direct_comparison_table.md`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/03_结果解释规则.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/03_结果解释规则.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/03_结果解释规则.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/03_结果解释规则.md` 存在无法解析到真实文件的路径锚点: `scripts/compare_runs.py`, `reports/tables/CRAG_direct_comparison_table.md`, `src/eval/run_eval.py`, `scripts/summarize_stage.py`, `reports/stage_reports/crag_stage_summary.md`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/04_阶段验收.md` 缺少 `交付物` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/04_阶段验收.md` 缺少 `验收问题` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/04_阶段验收.md` 缺少 `红线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/04_阶段验收.md` 缺少 `结论` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/09_CRAG验证/04_阶段验收.md` 存在无法解析到真实文件的路径锚点: `scripts/summarize_stage.py`, `reports/stage_reports/crag_stage_summary.md`, `src/eval/run_eval.py`, `scripts/compare_runs.py`, `reports/tables/CRAG_direct_comparison_table.md`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/01_结果记录模板.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/01_结果记录模板.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/01_结果记录模板.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/01_结果记录模板.md` 存在无法解析到真实文件的路径锚点: `reports/tables/`, `reports/official_run_registry.md`, `reports/tables/glas_main_metrics.csv`, `reports/tables/crag_main_metrics.csv`, `reports/tables/direct_comparison.csv`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/02_主表与消融表回填规则.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/02_主表与消融表回填规则.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/02_主表与消融表回填规则.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/02_主表与消融表回填规则.md` 存在无法解析到真实文件的路径锚点: `reports/tables/`, `reports/tables/glas_main_metrics.csv`, `scripts/validate_sources.py`, `reports/tables/glas_ablation.csv`, `reports/tables/external_main_table.csv`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/03_可视化与失败案例清单.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/03_可视化与失败案例清单.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/03_可视化与失败案例清单.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/03_可视化与失败案例清单.md` 存在无法解析到真实文件的路径锚点: `reports/figures/`, `notes/failure_case_notes.md`, `scripts/validate_sources.py`, `reports/figures/glas/ablation/`, `scripts/compare_runs.py`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/04_stage_summary模板.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/04_stage_summary模板.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/04_stage_summary模板.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/04_stage_summary模板.md` 存在无法解析到真实文件的路径锚点: `scripts/summarize_stage.py`, `reports/stage_reports/stage_summary_index.md`, `reports/stage_reports/02_unet_summary.md`, `reports/stage_reports/03_unet_stability_summary.md`, `reports/stage_reports/04_baseline_summary.md`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/05_投稿结果包检查表.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/05_投稿结果包检查表.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/05_投稿结果包检查表.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/10_结果汇总/05_投稿结果包检查表.md` 存在无法解析到真实文件的路径锚点: `reports/tables/`, `reports/figures/`, `scripts/summarize_stage.py`, `reports/official_run_registry.md`, `scripts/validate_sources.py`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/01_阶段门槛总表.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/01_阶段门槛总表.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/01_阶段门槛总表.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/02_止损与回退规则.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/02_止损与回退规则.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/02_止损与回退规则.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/02_止损与回退规则.md` 存在无法解析到真实文件的路径锚点: `reports/stage_reports/seed_escalation_note.md`, `reports/tables/additional_seed_summary.csv`, `reports/tables/main_vs_additional_seed_compare.csv`。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/03_中文保底条件.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/03_中文保底条件.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/03_中文保底条件.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/04_英文起步条件.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/04_英文起步条件.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/04_英文起步条件.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/cn_entry_readiness.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/cn_entry_readiness.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/cn_entry_readiness.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/en_entry_readiness.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/en_entry_readiness.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/en_entry_readiness.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/final_readiness_judgement.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/final_readiness_judgement.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/final_readiness_judgement.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/stage_gate_matrix.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/stage_gate_matrix.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/stage_gate_matrix.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/stop_loss_decision.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/stop_loss_decision.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/stop_loss_decision.md` 缺少 `门控/通过线` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/writing_entry_decision.md` 缺少 `前置依赖` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/writing_entry_decision.md` 缺少 `变量或边界` 类关键章节。
+- [partial] 文档 `D:/12_Medical_Image_Segmentation/Paper/结直肠腺体分割_plan_优化版/01_实验执行/11_总验收与止损/writing_entry_decision.md` 缺少 `门控/通过线` 类关键章节。
